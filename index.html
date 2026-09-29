@@ -124,7 +124,33 @@ select option{background:#1D2026}
   .mark{font-size:28px}.sub{font-size:15px;letter-spacing:2px}
   .gtxt{display:none}
 }
+/* ---- DETALLE ---- */
+.det{margin-top:16px}
+.seg{margin-left:auto;display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:transparent;padding:7px 14px;cursor:pointer;color:var(--muted);font-size:13px;font-weight:600}
+.seg button.on{background:var(--red-soft);color:var(--text)}
+.dk{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:14px;color:var(--muted);font-size:13px}
+.dk b{font-family:"Barlow Condensed";font-size:26px;color:var(--text);display:block;font-variant-numeric:tabular-nums}
+.bars{display:flex;flex-direction:column;gap:2px}
+.bar{display:grid;grid-template-columns:minmax(110px,280px) 1fr;gap:12px;align-items:center;padding:5px 0;border-radius:6px;cursor:default}
+.bar:hover{background:rgba(255,255,255,.03)}
+.bar .n{font-size:13px;color:#C3C6CC;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right}
+.bar .n small{display:block;color:var(--muted);font-size:11px;letter-spacing:1px}
+.track{height:22px;display:flex;align-items:center;gap:8px;border-left:1px solid var(--line)}
+.track i{display:block;height:100%;background:var(--red);border-radius:0 4px 4px 0;transition:width .45s ease}
+.bars.has-sel .bar:not(.sel) .track i{opacity:.35}
+.track span{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.dtip{position:fixed;pointer-events:none;background:#23262e;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;z-index:70;opacity:0;transition:opacity .12s;max-width:260px}
+.dtip.show{opacity:1}
+.dmap-h{display:flex;justify-content:space-between;gap:12px;margin:20px 0 8px;font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--muted)}
+#dmap{height:300px;border-radius:10px;overflow:hidden;background:#dfe3e8;z-index:0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:12px;color:#C3C6CC}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:50%;box-shadow:0 0 0 2px #fff}
+.leaflet-popup-content{font-family:"Barlow",system-ui,sans-serif;font-size:13px;line-height:1.4;color:#222}
+@media (max-width:720px){#dmap{height:240px}.bar{grid-template-columns:105px 1fr}}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 </head>
 <body>
 
@@ -165,6 +191,16 @@ select option{background:#1D2026}
       <div id="msg" class="msg"></div>
     </aside>
   </div>
+
+  <section class="card det">
+    <div class="head"><div class="step">03</div><h2>Detalle</h2>
+      <div class="seg"><button class="on" data-m="u" type="button">Unidades</button><button data-m="t" type="button">Monto</button></div></div>
+    <div class="dk" id="dk"></div>
+    <div class="bars" id="bars"><div class="empty-b">Cargando pedidos…</div></div>
+    <div class="dmap-h"><span>MAPA DE PEDIDOS</span><span id="nogps"></span></div>
+    <div id="dmap"></div>
+    <div class="legend" id="legend"></div>
+  </section>
 </main>
 
 <div class="mbar">
@@ -455,6 +491,7 @@ async function send(){
     $("#okId").textContent = "ID: "+j.id;
     $("#okTot").textContent = `${j.filas} unidad(es) · $${money(j.total)}`;
     $("#okOv").classList.add("show");
+    loadDetalle();
   }catch(e){
     if(e.server){ toast("Error: "+e.message,true); }
     else { const q=Q.get(); q.push(payload); Q.set(q); toast("Sin conexión: pedido guardado, se enviará automáticamente"); resetOrder(); }
@@ -473,6 +510,74 @@ $("#okNew").onclick = ()=>{ $("#okOv").classList.remove("show"); resetOrder(); }
   setTimeout(requestGeo,800);   // pide GPS sutilmente al cargar
   flushQueue();
 })();
+
+/* ================= DETALLE + MAPA ================= */
+const VCOLOR = { // color fijo por vendedor
+  "ANDINO MONTALVO DIEGO EDUARDO":"#2a78d6","PLUAS NAVARRO GABRIEL ALEJANDRO":"#eb6834",
+  "ELIZALDE SANCHEZ MARIA FERNANDA":"#1baf7a","INFANTE ZAMBRANO PEDRO JUNIOR":"#eda100","MORA ESCALANTE ALISSON STEVEN":"#e87ba4"};
+let PED = [], metric = "u", dmap = null, dlayer = null;
+
+function drawDetalle(){
+  const sel = vend();
+  const agg = Object.keys(VENDEDORES).map(n=>{const ps=PED.filter(p=>p.vendedor===n);
+    return {n,z:VENDEDORES[n].zona,ped:ps.length,u:ps.reduce((s,p)=>s+p.unidades,0),t:ps.reduce((s,p)=>s+p.total,0)};})
+    .sort((a,b)=>b[metric]-a[metric]);
+  const max = Math.max(1,...agg.map(a=>a[metric]));
+  const U = PED.reduce((s,p)=>s+p.unidades,0), T = PED.reduce((s,p)=>s+p.total,0);
+  $("#dk").innerHTML = `<div>PEDIDOS<b>${PED.length}</b></div><div>UNIDADES<b>${U}</b></div><div>MONTO<b>$${money(T)}</b></div>`;
+  const el = $("#bars"); el.classList.toggle("has-sel",!!sel);
+  el.innerHTML = agg.map(a=>`<div class="bar${a.n===sel?" sel":""}" data-tip="<b>${esc(a.n)}</b><br>${esc(a.z)}<br>${a.ped} pedidos · ${a.u} unidades<br>$${money(a.t)}">
+    <div class="n">${esc(a.n)}<small>${esc(a.z)}</small></div>
+    <div class="track"><i style="width:${(a[metric]/max*82).toFixed(1)}%"></i><span>${metric==="u"?a.u+" u.":"$"+money(a.t)}</span></div></div>`).join("");
+
+  if(!window.L) return;
+  if(!dmap){
+    dmap = L.map("dmap",{scrollWheelZoom:false}).setView([-1.6,-78.4],6);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"&copy; OpenStreetMap"}).addTo(dmap);
+    dlayer = L.layerGroup().addTo(dmap);
+  }
+  dlayer.clearLayers();
+  const pts = [];
+  PED.forEach(p=>{
+    if(p.lat==null||p.lng==null||isNaN(p.lat)) return;
+    const mods = Object.entries(p.modelos||{}).map(([m,n])=>`${esc(m)} ×${n}`).join(", ");
+    L.circleMarker([p.lat,p.lng],{radius:5+Math.sqrt(p.unidades)*2.5,color:"#fff",weight:2,
+        fillColor:VCOLOR[p.vendedor]||"#888",fillOpacity:(!sel||p.vendedor===sel)?.9:.25})
+      .bindPopup(`<b>${esc(p.clientes.join(", "))}</b><br>${esc(p.vendedor)}<br>${esc(p.fecha)} ${esc(p.hora)} · ${esc(p.ciudad)}<br>${mods}<br><b>${p.unidades} u. · $${money(p.total)}</b>`)
+      .addTo(dlayer);
+    pts.push([p.lat,p.lng]);
+  });
+  if(pts.length) dmap.fitBounds(pts,{padding:[30,30],maxZoom:12});
+  const sin = PED.length - pts.length;
+  $("#nogps").textContent = sin ? `${sin} sin GPS` : "";
+  $("#legend").innerHTML = Object.keys(VCOLOR).map(n=>`<span><i style="background:${VCOLOR[n]}"></i>${esc(n)}</span>`).join("");
+}
+async function loadDetalle(){
+  try{
+    if(new URLSearchParams(location.search).has("demo")) PED = demoPed();
+    else{
+      const j = await (await fetch(SCRIPT_URL+"?action=data&_="+Date.now())).json();
+      if(!j.ok) throw new Error(j.error); PED = j.pedidos||[];
+    }
+  }catch(e){ $("#bars").innerHTML = `<div class="empty-b">No se pudo cargar el detalle</div>`; return; }
+  drawDetalle();
+}
+document.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".seg button").forEach(x=>x.classList.toggle("on",x===b)); metric=b.dataset.m; drawDetalle();});
+$("#vendedor").addEventListener("change",()=>{ if(PED.length) drawDetalle(); });
+const dtip = document.createElement("div"); dtip.className="dtip"; document.body.appendChild(dtip);
+$("#bars").addEventListener("mousemove",e=>{const b=e.target.closest(".bar"); if(!b){dtip.classList.remove("show");return;}
+  dtip.innerHTML=b.dataset.tip; dtip.classList.add("show");
+  dtip.style.left=Math.min(e.clientX+14,innerWidth-dtip.offsetWidth-8)+"px"; dtip.style.top=(e.clientY+14)+"px";});
+$("#bars").addEventListener("mouseleave",()=>dtip.classList.remove("show"));
+function demoPed(){
+  const c={SIERRA:[-0.18,-78.48],GUAYAS:[-2.17,-79.9],ORIENTE:[-1.49,-77.99],"MANABÍ":[-0.95,-80.72],"LOS RÍOS":[-1.8,-79.53]};
+  return Array.from({length:30},(_,i)=>{const n=Object.keys(VENDEDORES)[i%5],z=VENDEDORES[n].zona,u=1+i%5;
+    return {vendedor:n,zona:z,fecha:"2026-09-"+String(1+i%28).padStart(2,"0"),hora:"10:00",ciudad:"CIUDAD",
+      lat:c[z][0]+Math.sin(i)*.3,lng:c[z][1]+Math.cos(i)*.3,unidades:u,total:u*2100,clientes:["CLIENTE "+i],modelos:{"ECO 150":u}};});
+}
+window.addEventListener("load",loadDetalle);
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 </body>
 </html>
