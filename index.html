@@ -599,7 +599,11 @@ function drawDetalle(){
   if(!window.L) return;
   if(!dmap){
     dmap = L.map("dmap",{scrollWheelZoom:false}).setView([-1.6,-78.4],6);
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",{subdomains:"abcd",maxZoom:20,attribution:"&copy; OpenStreetMap &copy; CARTO"}).addTo(dmap);
+    // Mapa estándar OpenStreetMap; si OSM bloquea (p.ej. abierto como archivo local), cambia solo a CARTO
+    const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"&copy; OpenStreetMap",referrerPolicy:"strict-origin-when-cross-origin"}).addTo(dmap);
+    let tErr = 0;
+    osm.on("tileerror",()=>{ if(++tErr===4){ dmap.removeLayer(osm);
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",{subdomains:"abcd",maxZoom:20,attribution:"&copy; OpenStreetMap &copy; CARTO"}).addTo(dmap); }});
     dlayer = L.layerGroup().addTo(dmap);
   }
   dlayer.clearLayers();
