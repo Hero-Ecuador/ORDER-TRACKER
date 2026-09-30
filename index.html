@@ -36,7 +36,7 @@ h2{margin:0;font-family:"Barlow Condensed";font-weight:700;font-size:20px;letter
 .muted{color:var(--muted);font-size:13px;margin-left:auto}
 .seller .grid3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:14px}
 .f{display:flex;flex-direction:column;gap:6px;min-width:0}
-.f>span{font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--muted)}
+.f>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--muted)}
 select,input{width:100%;background:var(--card-2);border:1px solid var(--line);border-radius:10px;padding:11px 12px;outline:none;min-height:44px;transition:border-color .15s,box-shadow .15s}
 select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 17px) 19px,calc(100% - 12px) 19px;background-size:5px 5px;background-repeat:no-repeat;padding-right:30px}
 select:focus,input:focus{border-color:var(--red);box-shadow:0 0 0 3px var(--red-soft)}
@@ -56,9 +56,10 @@ select option{background:#1D2026}
 @keyframes slideIn{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
 @keyframes slideOut{to{opacity:0;transform:translateX(40px);height:0}}
 .num{font-family:"Barlow Condensed";font-weight:800;font-size:22px;color:var(--red);text-align:center;padding-top:22px}
-.fields{display:grid;grid-template-columns:2.2fr .8fr 1.3fr 1fr;gap:10px;min-width:0}
+.fields{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:10px;min-width:0}
+.fields>.f{grid-column:span 2}.fields>.c-cli{grid-column:span 4}.fields>.c-mod,.fields>.c-col{grid-column:span 3}.fields>.c-dir{grid-column:span 4}
 .fields select,.fields input{background:var(--card)}
-.c-dir{grid-column:span 2}
+
 .price{min-height:44px;display:flex;align-items:center;justify-content:flex-end;padding:0 12px;border-radius:10px;border:1px dashed var(--line);font-weight:700;font-size:17px;font-variant-numeric:tabular-nums;color:var(--muted)}
 .price.set{border-style:solid;border-color:rgba(228,0,43,.4);color:#fff;background:var(--red-soft)}
 .withBtn{display:flex;gap:6px}
@@ -120,10 +121,30 @@ select option{background:#1D2026}
   .acts{flex-direction:row;position:absolute;top:8px;right:10px;padding:0}
   .acts button{width:32px;height:32px}
   .fields{grid-template-columns:1fr 1fr;padding-top:34px}
-  .c-cli,.c-dir,.c-pre{grid-column:span 2}
+  .fields>.f{grid-column:span 1}.fields>.c-cli,.fields>.c-dir,.fields>.c-pre{grid-column:span 2}
   .mark{font-size:28px}.sub{font-size:15px;letter-spacing:2px}
   .gtxt{display:none}
 }
+/* ---- GERENCIA ---- */
+.hdr-r{display:flex;gap:8px}
+#lockBtn svg{color:var(--muted)}
+#lockBtn.on{border-color:rgba(228,0,43,.5);color:var(--text)}
+#lockBtn.on svg{color:var(--red-2)}
+#gerencia[hidden]{display:none}
+.login input{margin-top:14px;text-align:center}
+.login .ghost{margin-top:8px}
+.ok-ic.lk{background:var(--red-soft);color:var(--red-2)}
+.lerr{color:var(--red-2);font-size:13px;min-height:18px;margin-top:8px}
+.cum{display:flex;flex-direction:column;gap:12px}
+.cr{display:grid;grid-template-columns:minmax(110px,280px) 1fr 70px 56px;gap:12px;align-items:center}
+.cr .n{font-size:13px;color:#C3C6CC;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cr .n small{display:block;color:var(--muted);font-size:11px;letter-spacing:1px}
+.meter{height:12px;background:var(--card-2);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.meter i{display:block;height:100%;background:var(--red);border-radius:0 4px 4px 0;transition:width .5s ease}
+.cr .fr{font-size:13px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.cr .pc{font-family:"Barlow Condensed";font-weight:800;font-size:22px;text-align:right;font-variant-numeric:tabular-nums}
+.cr .pend{grid-column:2 / -1;font-size:11px;color:var(--muted);margin-top:-8px}
+@media (max-width:720px){.cr{grid-template-columns:1fr 60px 48px}.cr .n{grid-column:1 / -1;text-align:left}.cr .pend{grid-column:1 / -1}}
 /* ---- DETALLE ---- */
 .det{margin-top:16px}
 .seg{margin-left:auto;display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -156,7 +177,10 @@ select option{background:#1D2026}
 
 <header class="top">
   <div class="brand"><span class="mark">HERO</span><span class="sub">ORDER TRACKER</span></div>
-  <button id="gpsPill" class="pill" type="button" title="Ubicación"><span class="dot"></span><span class="gtxt" id="gpsTxt">Ubicación</span></button>
+  <div class="hdr-r">
+    <button id="lockBtn" class="pill" type="button" title="Acceso gerencia"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span class="gtxt" id="lockTxt">Gerencia</span></button>
+    <button id="gpsPill" class="pill" type="button" title="Ubicación"><span class="dot"></span><span class="gtxt" id="gpsTxt">Ubicación</span></button>
+  </div>
 </header>
 
 <main class="wrap">
@@ -192,6 +216,7 @@ select option{background:#1D2026}
     </aside>
   </div>
 
+  <div id="gerencia" hidden>
   <section class="card det">
     <div class="head"><div class="step">03</div><h2>Detalle</h2>
       <div class="seg"><button class="on" data-m="u" type="button">Unidades</button><button data-m="t" type="button">Monto</button></div></div>
@@ -201,7 +226,26 @@ select option{background:#1D2026}
     <div id="dmap"></div>
     <div class="legend" id="legend"></div>
   </section>
+
+  <section class="card det">
+    <div class="head"><div class="step">04</div><h2>Cumplimiento</h2><span class="muted">Unidades entregadas / pedidas</span></div>
+    <div class="dk" id="ck"></div>
+    <div class="cum" id="cum"></div>
+  </section>
+  </div>
 </main>
+
+<div class="overlay" id="loginOv">
+  <form class="ok-card login" id="loginForm">
+    <div class="ok-ic lk"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+    <h3>ACCESO GERENCIA</h3>
+    <p>Ingresa la contraseña para ver Detalle y Cumplimiento</p>
+    <input type="password" id="pwd" placeholder="Contraseña" autocomplete="current-password">
+    <div class="lerr" id="lerr"></div>
+    <button class="cta" type="submit" id="loginBtn">ENTRAR</button>
+    <button class="ghost" type="button" id="loginCancel">Cancelar</button>
+  </form>
+</div>
 
 <div class="mbar">
   <div class="mt"><div>TOTAL · <span id="mUnits">0 u.</span></div><b id="mAmount">$0.00</b></div>
@@ -264,7 +308,22 @@ const PRECIOS = {
 const PROVINCIAS = ["AZUAY","BOLÍVAR","CAÑAR","CARCHI","CHIMBORAZO","COTOPAXI","EL ORO","ESMERALDAS","GALÁPAGOS","GUAYAS","IMBABURA","LOJA",
   "LOS RÍOS","MANABÍ","MORONA SANTIAGO","NAPO","ORELLANA","PASTAZA","PICHINCHA","SANTA ELENA","SANTO DOMINGO DE LOS TSÁCHILAS",
   "SUCUMBÍOS","TUNGURAHUA","ZAMORA CHINCHIPE"];
-const REQUIRED = ["cliente","plazo","modelo","direccion","provincia","ciudad"];
+const REQUIRED = ["cliente","plazo","modelo","color","anio","direccion","provincia","ciudad"];
+// Tabla madre de colores (modelo de la tabla de precios -> nombre en tabla colores)
+const COLOR_MODELO = {"ECO 150":"ECO 150","ECO DELUXE":"ECO DELUXE","HUNK 125":"HUNK 125R","HUNK 160":"HUNK 160 4V",
+  "XOOM 110":"XOOM 110","XOOM 125":"XOOM 125R","XPULSE 200":"XPULSE 200 4V FI","XPULSE RALLY":"XPULSE 200 RALLY"};
+const COLORES = {
+  "ECO 150":["AZUL","BLANCO","NEGRO","ROJO"],
+  "ECO DELUXE":["AZUL","PLOMO","ROJO"],
+  "HUNK 125R":["AZUL","NEGRO","PLOMO","ROJO"],
+  "HUNK 160 4V":["NEGRO","PLATEADO"],
+  "XOOM 110":["AZUL","NEGRO","PERLADO"],
+  "XOOM 125R":["AMARILLO","AZUL","NEGRO","PERLADO","PLOMO","ROJO"],
+  "XPULSE 200 4V FI":["AZUL","BLANCO","NEGRO","PLOMO","ROJO"],
+  "XPULSE 200 RALLY":["BLANCO"]
+};
+const coloresDe = m => COLORES[COLOR_MODELO[m]] || [];
+const ANIOS = [2025,2026,2027];   // AÑO MOTO: edita aquí las opciones
 const MAX_ROWS = 50;
 
 /* ================= STATE ================= */
@@ -273,7 +332,7 @@ let rows = [];
 let seq = 0;
 let geo = null;           // {lat,lng,acc}
 let geoAddr = null;       // cache reverse geocode
-const newRow = (base={}) => ({id:++seq,cliente:"",plazo:"",modelo:"",direccion:"",provincia:"",ciudad:"",...base});
+const newRow = (base={}) => ({id:++seq,cliente:"",plazo:"",modelo:"",color:"",anio:"",direccion:"",provincia:"",ciudad:"",...base});
 
 const norm = s => String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase().trim();
 const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -295,10 +354,12 @@ function rowHTML(r,i){
     <div class="fields">
       <label class="f c-cli"><span>CLIENTE *</span><select data-k="cliente"${v?"":" disabled"}>${opts(v?v.clientes:[],r.cliente,v?"Selecciona cliente…":"Elige primero el vendedor")}</select></label>
       <label class="f"><span>PLAZO *</span><select data-k="plazo">${opts(PLAZOS,r.plazo,"Plazo")}</select></label>
-      <label class="f"><span>MODELO *</span><select data-k="modelo">${opts(MODELOS,r.modelo,"Modelo")}</select></label>
-      <div class="f c-pre"><span>PRECIO UNITARIO</span><div class="price${p!=null?" set":""}" data-price>${p!=null?"$"+money(p):"—"}</div></div>
-      <label class="f c-dir"><span>DIRECCIÓN DE TIENDA *</span><div class="withBtn"><input data-k="direccion" value="${esc(r.direccion)}" placeholder="Calle principal y secundaria" autocomplete="off"><button type="button" class="pin" data-act="geo" title="Completar con mi ubicación">${PIN}</button></div></label>
-      <label class="f"><span>PROVINCIA *</span><select data-k="provincia">${opts(PROVINCIAS,r.provincia,"Provincia")}</select></label>
+      <label class="f c-mod"><span>MODELO *</span><select data-k="modelo">${opts(MODELOS,r.modelo,"Modelo")}</select></label>
+      <label class="f c-col"><span>COLOR *</span><select data-k="color"${r.modelo?"":" disabled"}>${opts(coloresDe(r.modelo),r.color,r.modelo?"Color":"Elige modelo")}</select></label>
+      <label class="f"><span>AÑO MOTO *</span><select data-k="anio">${opts(ANIOS,r.anio,"Año")}</select></label>
+      <div class="f c-pre"><span title="PRECIO UNITARIO">PRECIO UNIT.</span><div class="price${p!=null?" set":""}" data-price>${p!=null?"$"+money(p):"—"}</div></div>
+      <label class="f c-dir"><span>DIRECCIÓN DE DESPACHO *</span><div class="withBtn"><input data-k="direccion" value="${esc(r.direccion)}" placeholder="Dirección tienda" autocomplete="off"><button type="button" class="pin" data-act="geo" title="Completar con mi ubicación">${PIN}</button></div></label>
+      <label class="f c-prov"><span>PROVINCIA *</span><select data-k="provincia">${opts(PROVINCIAS,r.provincia,"Provincia")}</select></label>
       <label class="f"><span>CIUDAD *</span><input data-k="ciudad" value="${esc(r.ciudad)}" placeholder="Ciudad" autocomplete="off"></label>
     </div>
     <div class="acts">
@@ -361,6 +422,11 @@ function onField(e){
   const rowEl = e.target.closest(".row"); const r = rowById(rowEl.dataset.id);
   r[k] = e.target.value;
   e.target.classList.remove("err");
+  if(k==="modelo"){
+    const cs = coloresDe(r.modelo), sel = rowEl.querySelector('[data-k="color"]');
+    if(!cs.includes(r.color)) r.color = cs.length===1 ? cs[0] : "";
+    sel.innerHTML = opts(cs,r.color,r.modelo?"Color":"Elige modelo"); sel.disabled = !r.modelo; sel.classList.remove("err");
+  }
   if(k==="plazo"||k==="modelo"){
     const p = priceOf(r), el = rowEl.querySelector("[data-price]");
     el.textContent = p!=null ? "$"+money(p) : "—"; el.classList.toggle("set",p!=null);
@@ -376,7 +442,7 @@ $("#rows").addEventListener("click",e=>{
     setTimeout(()=>{ rows.splice(idx,1); render(); },200);
   } else if(b.dataset.act==="dup"){
     if(rows.length>=MAX_ROWS) return toast("Máximo "+MAX_ROWS+" líneas",true);
-    rows.splice(idx+1,0,newRow({cliente:r.cliente,plazo:r.plazo,direccion:r.direccion,provincia:r.provincia,ciudad:r.ciudad}));
+    rows.splice(idx+1,0,newRow({cliente:r.cliente,plazo:r.plazo,anio:r.anio,direccion:r.direccion,provincia:r.provincia,ciudad:r.ciudad}));
     render();
   } else if(b.dataset.act==="geo"){
     fillFromGeo(r,b);
@@ -456,7 +522,7 @@ function buildPayload(){
     vendedor: v, zona: VENDEDORES[v].zona,
     lat: geo?geo.lat:"", lng: geo?geo.lng:"", acc: geo?geo.acc:"",
     ts_cliente: new Date().toISOString(),
-    lineas: rows.map((r,i)=>({linea:i+1,cliente:r.cliente,plazo:Number(r.plazo),modelo:r.modelo,precio:priceOf(r),
+    lineas: rows.map((r,i)=>({linea:i+1,cliente:r.cliente,plazo:Number(r.plazo),modelo:r.modelo,color:r.color,anio:Number(r.anio),precio:priceOf(r),
       direccion:r.direccion.trim().toUpperCase(),provincia:r.provincia,ciudad:r.ciudad.trim().toUpperCase()}))
   };
 }
@@ -491,7 +557,7 @@ async function send(){
     $("#okId").textContent = "ID: "+j.id;
     $("#okTot").textContent = `${j.filas} unidad(es) · $${money(j.total)}`;
     $("#okOv").classList.add("show");
-    loadDetalle();
+    if(KEY) loadDetalle();
   }catch(e){
     if(e.server){ toast("Error: "+e.message,true); }
     else { const q=Q.get(); q.push(payload); Q.set(q); toast("Sin conexión: pedido guardado, se enviará automáticamente"); resetOrder(); }
@@ -533,7 +599,7 @@ function drawDetalle(){
   if(!window.L) return;
   if(!dmap){
     dmap = L.map("dmap",{scrollWheelZoom:false}).setView([-1.6,-78.4],6);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"&copy; OpenStreetMap"}).addTo(dmap);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",{subdomains:"abcd",maxZoom:20,attribution:"&copy; OpenStreetMap &copy; CARTO"}).addTo(dmap);
     dlayer = L.layerGroup().addTo(dmap);
   }
   dlayer.clearLayers();
@@ -552,16 +618,61 @@ function drawDetalle(){
   $("#nogps").textContent = sin ? `${sin} sin GPS` : "";
   $("#legend").innerHTML = Object.keys(VCOLOR).map(n=>`<span><i style="background:${VCOLOR[n]}"></i>${esc(n)}</span>`).join("");
 }
-async function loadDetalle(){
-  try{
-    if(new URLSearchParams(location.search).has("demo")) PED = demoPed();
-    else{
-      const j = await (await fetch(SCRIPT_URL+"?action=data&_="+Date.now())).json();
-      if(!j.ok) throw new Error(j.error); PED = j.pedidos||[];
-    }
-  }catch(e){ $("#bars").innerHTML = `<div class="empty-b">No se pudo cargar el detalle</div>`; return; }
-  drawDetalle();
+/* ---- Acceso gerencia (la contraseña se valida en el Apps Script) ---- */
+const IS_DEMO = new URLSearchParams(location.search).has("demo");
+let KEY = ""; try{ KEY = localStorage.getItem("hot_key")||""; }catch(_){}
+function setLocked(locked){
+  $("#gerencia").hidden = locked;
+  $("#lockBtn").classList.toggle("on",!locked);
+  $("#lockTxt").textContent = locked ? "Gerencia" : "Salir";
+  if(!locked && dmap) setTimeout(()=>dmap.invalidateSize(),50);
 }
+async function loadDetalle(){
+  if(!KEY && !IS_DEMO){ setLocked(true); return false; }
+  try{
+    if(IS_DEMO) PED = demoPed();
+    else{
+      const j = await (await fetch(SCRIPT_URL+"?action=data&key="+encodeURIComponent(KEY)+"&_="+Date.now())).json();
+      if(!j.ok && j.error==="AUTH"){ KEY=""; try{localStorage.removeItem("hot_key");}catch(_){} setLocked(true); return "auth"; }
+      if(!j.ok) throw new Error(j.error);
+      if(!Array.isArray(j.pedidos)) throw new Error("El Apps Script no tiene la versión nueva. Vuelve a implementarlo.");
+      PED = j.pedidos;
+    }
+  }catch(e){ setLocked(false); $("#bars").innerHTML = `<div class="empty-b">No se pudo cargar el detalle: ${esc(e.message)}</div>`; return false; }
+  setLocked(false);
+  drawDetalle(); drawCumplimiento();
+  return true;
+}
+function drawCumplimiento(){
+  const agg = Object.keys(VENDEDORES).map(n=>{const ps=PED.filter(p=>p.vendedor===n);
+    const ped=ps.reduce((s,p)=>s+p.unidades,0), ent=ps.reduce((s,p)=>s+(p.entregadas||0),0), mar=ps.reduce((s,p)=>s+(p.marcadas||0),0);
+    return {n,z:VENDEDORES[n].zona,ped,ent,pend:ped-mar,pct:ped?ent/ped:0};}).sort((a,b)=>b.pct-a.pct||b.ped-a.ped);
+  const P=agg.reduce((s,a)=>s+a.ped,0), E=agg.reduce((s,a)=>s+a.ent,0), PE=agg.reduce((s,a)=>s+a.pend,0);
+  $("#ck").innerHTML = `<div>CUMPLIMIENTO GLOBAL<b>${P?Math.round(E/P*100):0}%</b></div><div>ENTREGADAS<b>${E}</b></div><div>PEDIDAS<b>${P}</b></div><div>SIN MARCAR<b>${PE}</b></div>`;
+  $("#cum").innerHTML = agg.map(a=>`<div class="cr">
+      <div class="n">${esc(a.n)}<small>${esc(a.z)}</small></div>
+      <div class="meter"><i style="width:${(a.pct*100).toFixed(1)}%"></i></div>
+      <div class="fr">${a.ent}/${a.ped}</div>
+      <div class="pc">${a.ped?Math.round(a.pct*100)+"%":"—"}</div>
+      ${a.pend?`<div class="pend">${a.pend} unidad(es) aún sin marcar en UNIDADES ENTREGADAS</div>`:""}
+    </div>`).join("");
+}
+$("#lockBtn").onclick = ()=>{
+  if(!$("#gerencia").hidden){ KEY=""; try{localStorage.removeItem("hot_key");}catch(_){} setLocked(true); toast("Sesión de gerencia cerrada"); return; }
+  $("#lerr").textContent=""; $("#pwd").value=""; $("#loginOv").classList.add("show"); setTimeout(()=>$("#pwd").focus(),50);
+};
+$("#loginCancel").onclick = ()=>$("#loginOv").classList.remove("show");
+$("#loginForm").onsubmit = async e=>{
+  e.preventDefault();
+  const v=$("#pwd").value.trim(); if(!v){ $("#lerr").textContent="Ingresa la contraseña"; return; }
+  $("#loginBtn").disabled=true; $("#loginBtn").textContent="VERIFICANDO…";
+  KEY=v; const r = await loadDetalle();
+  $("#loginBtn").disabled=false; $("#loginBtn").textContent="ENTRAR";
+  if(r==="auth"){ $("#lerr").textContent="Contraseña incorrecta"; return; }
+  try{ localStorage.setItem("hot_key",KEY); }catch(_){}
+  $("#loginOv").classList.remove("show");
+  setTimeout(()=>$("#gerencia").scrollIntoView({behavior:"smooth"}),150);
+};
 document.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll(".seg button").forEach(x=>x.classList.toggle("on",x===b)); metric=b.dataset.m; drawDetalle();});
 $("#vendedor").addEventListener("change",()=>{ if(PED.length) drawDetalle(); });
@@ -574,7 +685,7 @@ function demoPed(){
   const c={SIERRA:[-0.18,-78.48],GUAYAS:[-2.17,-79.9],ORIENTE:[-1.49,-77.99],"MANABÍ":[-0.95,-80.72],"LOS RÍOS":[-1.8,-79.53]};
   return Array.from({length:30},(_,i)=>{const n=Object.keys(VENDEDORES)[i%5],z=VENDEDORES[n].zona,u=1+i%5;
     return {vendedor:n,zona:z,fecha:"2026-09-"+String(1+i%28).padStart(2,"0"),hora:"10:00",ciudad:"CIUDAD",
-      lat:c[z][0]+Math.sin(i)*.3,lng:c[z][1]+Math.cos(i)*.3,unidades:u,total:u*2100,clientes:["CLIENTE "+i],modelos:{"ECO 150":u}};});
+      lat:c[z][0]+Math.sin(i)*.3,lng:c[z][1]+Math.cos(i)*.3,unidades:u,total:u*2100,entregadas:Math.floor(u*((i%5)+1)/6),marcadas:u-(i%3?0:1),clientes:["CLIENTE "+i],modelos:{"ECO 150":u}};});
 }
 window.addEventListener("load",loadDetalle);
 </script>
