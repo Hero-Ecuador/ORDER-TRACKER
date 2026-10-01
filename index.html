@@ -178,6 +178,12 @@ select option{background:#1D2026}
 .ml-act .save[disabled]{opacity:.4;cursor:default}
 .ml-note{font-size:12px;color:var(--muted);margin-top:8px}
 .ml-done{font-size:12px;margin-top:8px;color:#C3C6CC}
+.ml.anul{opacity:.55}
+.lnk{background:none;border:1px solid var(--line);border-radius:10px;color:var(--muted);padding:0 14px;min-height:40px;cursor:pointer;font-weight:600;font-size:13px}
+.lnk.del:hover{color:var(--red-2);border-color:var(--red)}
+.anul-box{border-top:1px dashed var(--line);padding-top:10px}
+.chk{display:flex;align-items:center;gap:6px;font-size:13px;color:#C3C6CC}
+.chk input{width:16px;height:16px;min-height:0;flex:0 0 auto;accent-color:var(--red)}
 /* ---- DETALLE ---- */
 .det{margin-top:16px}
 .seg{margin-left:auto;display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -275,6 +281,7 @@ select option{background:#1D2026}
     <div class="dk" id="mk"></div>
     <div class="tabs" id="misTabs">
       <button type="button" data-f="rep" class="on">Por reportar</button>
+      <button type="button" data-f="pend">Pendientes de entrega</button>
       <button type="button" data-f="done">Reportadas</button>
       <button type="button" data-f="all">Todas</button>
     </div>
@@ -374,12 +381,12 @@ const COLOR_MODELO = {"ECO 150":"ECO 150","ECO DELUXE":"ECO DELUXE","HUNK 125":"
   "XOOM 110":"XOOM 110","XOOM 125":"XOOM 125R","XPULSE 200":"XPULSE 200 4V FI","XPULSE RALLY":"XPULSE 200 RALLY"};
 const COLORES = {
   "ECO 150":["AZUL","BLANCO","NEGRO","ROJO"],
-  "ECO DELUXE":["AZUL","PLOMO","ROJO"],
-  "HUNK 125R":["AZUL","NEGRO","PLOMO","ROJO"],
-  "HUNK 160 4V":["NEGRO","PLATEADO"],
-  "XOOM 110":["AZUL","NEGRO","PERLADO"],
-  "XOOM 125R":["AMARILLO","AZUL","NEGRO","PERLADO","PLOMO","ROJO"],
-  "XPULSE 200 4V FI":["AZUL","BLANCO","NEGRO","PLOMO","ROJO"],
+  "ECO DELUXE":["NEGRO AZUL","NEGRO PLOMO","NEGRO ROJO"],
+  "HUNK 125R":["AZUL","NEGRO","ROJO"],
+  "HUNK 160 4V":["NEGRO","VERDE LIMA"],
+  "XOOM 110":["AZUL","NEGRO","BLANCO"],
+  "XOOM 125R":["AMARILLO","AZUL","BLANCO","PLOMO","ROJO"],
+  "XPULSE 200 4V FI":["NEGRO AZUL","BLANCO AZUL","PLOMO","NEGRO ROJO"],
   "XPULSE 200 RALLY":["BLANCO"]
 };
 const coloresDe = m => COLORES[COLOR_MODELO[m]] || [];
@@ -647,7 +654,7 @@ $("#okNew").onclick = ()=>{ $("#okOv").classList.remove("show"); resetOrder(); }
 const VCOLOR = { // color fijo por vendedor
   "ANDINO MONTALVO DIEGO EDUARDO":"#2a78d6","PLUAS NAVARRO GABRIEL ALEJANDRO":"#eb6834",
   "ELIZALDE SANCHEZ MARIA FERNANDA":"#1baf7a","MACIAS RAMIREZ VICTOR HUGO":"#eda100","MORA ESCALANTE ALISSON STEVEN":"#e87ba4"};
-let PED = [], metric = "u", dmap = null, dlayer = null;
+let ANULG = {}, PED = [], metric = "u", dmap = null, dlayer = null;
 
 function drawDetalle(){
   const sel = vend();
@@ -706,7 +713,7 @@ async function loadDetalle(){
       if(!j.ok && j.error==="AUTH"){ KEY=""; try{localStorage.removeItem("hot_key");}catch(_){} setLocked(true); return "auth"; }
       if(!j.ok) throw new Error(j.error);
       if(!Array.isArray(j.pedidos)) throw new Error("El Apps Script no tiene la versión nueva. Vuelve a implementarlo.");
-      PED = j.pedidos;
+      PED = j.pedidos; ANULG = j.anuladas||{};
     }
   }catch(e){ setLocked(false); $("#bars").innerHTML = `<div class="empty-b">No se pudo cargar el detalle: ${esc(e.message)}</div>`; return false; }
   setLocked(false);
@@ -717,7 +724,7 @@ function drawCumplimiento(){
   const sum=(ps,k)=>ps.reduce((s,p)=>s+(p[k]||0),0);
   const agg = Object.keys(VENDEDORES).map(n=>{const ps=PED.filter(p=>p.vendedor===n);
     const ped=sum(ps,"unidades"), ent=sum(ps,"entregadas"), mar=sum(ps,"marcadas"), fac=sum(ps,"facturadas"), nof=sum(ps,"noFacturadas");
-    return {n,z:VENDEDORES[n].zona,ped,ent,fac,nof,pend:ped-mar,porRep:Math.max(0,ent-fac-nof),pe:ped?ent/ped:0,pf:ent?fac/ent:0};})
+    return {n,z:VENDEDORES[n].zona,ped,ent,fac,nof,anu:ANULG[n]||0,pend:ped-mar,porRep:Math.max(0,ent-fac-nof),pe:ped?ent/ped:0,pf:ent?fac/ent:0};})
     .sort((a,b)=>b.pe-a.pe||b.ped-a.ped);
   const T=k=>agg.reduce((s,a)=>s+a[k],0), P=T("ped"), E=T("ent"), F=T("fac"), PR=T("porRep"), PE=T("pend");
   $("#ck").innerHTML = `<div>ENTREGA<b>${P?Math.round(E/P*100):0}%</b></div><div>FACTURACIÓN<b>${E?Math.round(F/E*100):0}%</b></div>
@@ -727,7 +734,7 @@ function drawCumplimiento(){
   $("#cum").innerHTML = agg.map(a=>`<div class="cv">
       <div class="n">${esc(a.n)}<small>${esc(a.z)}</small></div>
       <div class="ms">${mrow("ENTREGA",a.ent,a.ped,a.pe,"")}${mrow("FACTURACIÓN",a.fac,a.ent,a.pf,"f")}
-        ${(a.pend||a.porRep)?`<div class="pend">${a.pend?a.pend+" sin marcar entrega · ":""}${a.porRep?a.porRep+" entregada(s) sin reporte del vendedor":""}</div>`:""}</div>
+        ${(a.pend||a.porRep||a.anu)?`<div class="pend">${[a.pend?a.pend+" sin marcar entrega":"",a.porRep?a.porRep+" entregada(s) sin reporte del vendedor":"",a.anu?a.anu+" anulada(s) por el vendedor":""].filter(Boolean).join(" · ")}</div>`:""}</div>
     </div>`).join("");
   // razones
   const rz={}; PED.forEach(p=>Object.entries(p.razones||{}).forEach(([k,v])=>rz[k]=(rz[k]||0)+v));
@@ -739,7 +746,8 @@ function drawCumplimiento(){
 }
 
 /* ================= MIS PEDIDOS (vendedor) ================= */
-let MIS = null, MLINES = [], RAZ = [], misF = "rep", drafts = {};
+let MIS = null, MLINES = [], RAZ = [], misF = "rep", drafts = {}, anulOpen = {};
+let MOT_ANUL = ["CLIENTE YA NO DESEA","ERROR EN EL PEDIDO","PEDIDO DUPLICADO","CAMBIO DE MODELO / COLOR","OTRO"];
 try{ MIS = JSON.parse(localStorage.getItem("hot_mis")||"null"); }catch(_){}
 $("#misVen").innerHTML += Object.keys(VENDEDORES).map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join("");
 const lkey = l => l.uid+"|"+l.linea;
@@ -756,22 +764,27 @@ async function loadMis(){
     else{
       const j = await (await fetch(`${SCRIPT_URL}?action=mis&vendedor=${encodeURIComponent(MIS.vendedor)}&pin=${encodeURIComponent(MIS.pin)}&_=${Date.now()}`)).json();
       if(!j.ok){ if(j.error==="PIN"||j.error==="BLOQUEADO"){ const e=j.error; MIS=null; try{localStorage.removeItem("hot_mis");}catch(_){} setMis(false); return e; } throw new Error(j.error); }
-      MLINES = j.lineas||[]; RAZ = j.razones||[];
+      MLINES = j.lineas||[]; RAZ = j.razones||[]; if(j.motivosAnulacion) MOT_ANUL = j.motivosAnulacion;
     }
   }catch(e){ setMis(true); $("#misList").innerHTML = `<div class="empty-b">No se pudo cargar: ${esc(e.message)}</div>`; return false; }
   setMis(true); drawMis(); return true;
 }
 function drawMis(){
-  const ent = MLINES.filter(l=>l.entrega===1), fac = MLINES.filter(l=>l.facturado==="SI"), nof = MLINES.filter(l=>l.facturado==="NO");
-  const porRep = ent.filter(l=>!l.facturado);
-  $("#mk").innerHTML = `<div>PEDIDAS<b>${MLINES.length}</b></div><div>ENTREGADAS<b>${ent.length}</b></div><div>FACTURADAS<b>${fac.length}</b></div><div>NO FACTURADAS<b>${nof.length}</b></div><div>POR REPORTAR<b>${porRep.length}</b></div>`;
-  const list = misF==="rep" ? porRep : misF==="done" ? MLINES.filter(l=>l.facturado) : MLINES;
+  const live = MLINES.filter(l=>l.anulado!=="SI"), anul = MLINES.length - live.length;
+  const ent = live.filter(l=>l.entrega===1), fac = live.filter(l=>l.facturado==="SI"), nof = live.filter(l=>l.facturado==="NO");
+  const porRep = ent.filter(l=>!l.facturado), pend = live.filter(l=>l.entrega==="");
+  $("#mk").innerHTML = `<div>PEDIDAS<b>${live.length}</b></div><div>ENTREGADAS<b>${ent.length}</b></div><div>FACTURADAS<b>${fac.length}</b></div><div>NO FACTURADAS<b>${nof.length}</b></div><div>POR REPORTAR<b>${porRep.length}</b></div><div>ANULADAS<b>${anul}</b></div>`;
+  const list = misF==="rep" ? porRep : misF==="pend" ? pend : misF==="done" ? live.filter(l=>l.facturado) : MLINES;
   const sorted = [...list].sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
   $("#misList").innerHTML = sorted.length ? sorted.map(misHTML).join("")
-    : `<div class="empty-b">${misF==="rep"?"No tienes unidades entregadas pendientes de reportar":"Sin registros"}</div>`;
+    : `<div class="empty-b">${misF==="rep"?"No tienes unidades entregadas pendientes de reportar":misF==="pend"?"No tienes líneas pendientes de entrega":"Sin registros"}</div>`;
 }
 function misHTML(l){
   const k = lkey(l), d = drafts[k] || {facturado:l.facturado||"",razon:l.razon||"",comentario:l.comentario||""};
+  if(l.anulado==="SI") return `<div class="ml anul" data-k="${esc(k)}">
+    <div class="ml-top"><b>${esc(l.cliente)}</b><span class="bdg">ANULADA</span></div>
+    <div class="ml-sub">${esc(l.modelo)} ${esc(l.color)} ${esc(l.anio)} · $${money(l.precio)} · ${esc(l.fecha)} · ${esc(l.id)}</div>
+    <div class="ml-note">Anulada: ${esc(l.motivoAnulacion)}${l.fechaAnulacion?" · "+esc(l.fechaAnulacion):""}</div></div>`;
   const bd = l.entrega===1 ? `<span class="bdg ok">ENTREGADA</span>` : l.entrega===0 ? `<span class="bdg no">NO ENTREGADA</span>` : `<span class="bdg">PENDIENTE ENTREGA</span>`;
   const valid = d.facturado==="SI" || (d.facturado==="NO" && d.razon && (d.razon!=="OTRO" || d.comentario.trim()));
   const changed = d.facturado!==(l.facturado||"") || d.razon!==(l.razon||"") || d.comentario!==(l.comentario||"");
@@ -783,6 +796,16 @@ function misHTML(l){
       <input data-f="comentario" value="${esc(d.comentario)}" placeholder="${d.razon==="OTRO"?"Comentario (obligatorio)":"Comentario (opcional)"}">`:""}
       <button type="button" class="save" ${valid&&changed?"":"disabled"}>GUARDAR</button></div>`
       + (l.facturado?`<div class="ml-done">Reportado: <b>${l.facturado==="SI"?"FACTURADO":"NO FACTURADO — "+esc(l.razon)}</b>${l.freporte?" · "+esc(l.freporte):""}</div>`:"");
+  } else if(l.entrega===""){
+    const otras = MLINES.filter(x=>x.id===l.id && x.anulado!=="SI" && x.entrega==="" && lkey(x)!==k).length;
+    const a = anulOpen[k];
+    act = a ? `<div class="ml-act anul-box">
+        <select data-a="motivo">${opts(MOT_ANUL,a.motivo,"Motivo de anulación…")}</select>
+        ${otras?`<label class="chk"><input type="checkbox" data-a="todo"${a.todo?" checked":""}> Anular todo el pedido (${otras+1} líneas)</label>`:""}
+        <button type="button" class="save anul-ok" ${a.motivo?"":"disabled"}>CONFIRMAR ANULACIÓN</button>
+        <button type="button" class="lnk anul-cancel">Cancelar</button></div>`
+      : `<div class="ml-act"><span class="ml-note" style="margin:0;flex:1">Podrás reportar la facturación cuando la unidad figure como entregada.</span>
+        <button type="button" class="lnk del anul-open">Anular</button></div>`;
   } else act = `<div class="ml-note">Podrás reportar la facturación cuando la unidad figure como entregada.</div>`;
   return `<div class="ml" data-k="${esc(k)}">
     <div class="ml-top"><b>${esc(l.cliente)}</b>${bd}</div>
@@ -792,6 +815,25 @@ function misHTML(l){
 function draftOf(el){ const k=el.closest(".ml").dataset.k, l=MLINES.find(x=>lkey(x)===k);
   return drafts[k] ||= {facturado:l.facturado||"",razon:l.razon||"",comentario:l.comentario||""}; }
 $("#misList").addEventListener("click",async e=>{
+  const ao = e.target.closest(".anul-open"), ac = e.target.closest(".anul-cancel"), ok = e.target.closest(".anul-ok");
+  if(ao){ anulOpen[ao.closest(".ml").dataset.k] = {motivo:"",todo:false}; drawMis(); return; }
+  if(ac){ delete anulOpen[ac.closest(".ml").dataset.k]; drawMis(); return; }
+  if(ok){
+    const k = ok.closest(".ml").dataset.k, l = MLINES.find(x=>lkey(x)===k), a = anulOpen[k];
+    const targets = a.todo ? MLINES.filter(x=>x.id===l.id && x.anulado!=="SI" && x.entrega==="") : [l];
+    ok.disabled = true; ok.textContent = "ANULANDO…";
+    try{
+      if(!IS_DEMO){
+        const res = await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:JSON.stringify({action:"anular",vendedor:MIS.vendedor,pin:MIS.pin,items:targets.map(x=>({uid:x.uid,linea:x.linea,motivo:a.motivo}))})});
+        const j = await res.json(); if(!j.ok) throw new Error(j.error);
+      }
+      const f = new Date().toLocaleString("es-EC");
+      targets.forEach(x=>Object.assign(x,{anulado:"SI",motivoAnulacion:a.motivo,fechaAnulacion:f}));
+      delete anulOpen[k]; drawMis(); toast(targets.length>1?`${targets.length} líneas anuladas`:"Línea anulada");
+    }catch(err){ toast("No se anuló: "+err.message,true); ok.disabled=false; ok.textContent="CONFIRMAR ANULACIÓN"; }
+    return;
+  }
   const yn = e.target.closest(".yn button"), sv = e.target.closest(".save");
   if(yn){ const d=draftOf(yn); d.facturado=yn.dataset.v; if(d.facturado==="SI"){d.razon="";} drawMis(); return; }
   if(sv){
@@ -808,7 +850,9 @@ $("#misList").addEventListener("click",async e=>{
     }catch(err){ toast("No se guardó: "+err.message,true); sv.disabled=false; sv.textContent="GUARDAR"; }
   }
 });
-$("#misList").addEventListener("change",e=>{const f=e.target.dataset.f; if(!f) return; draftOf(e.target)[f]=e.target.value; drawMis();});
+$("#misList").addEventListener("change",e=>{
+  const aa=e.target.dataset.a; if(aa){ const a=anulOpen[e.target.closest(".ml").dataset.k]; if(aa==="motivo") a.motivo=e.target.value; else a.todo=e.target.checked; drawMis(); return; }
+  const f=e.target.dataset.f; if(!f) return; draftOf(e.target)[f]=e.target.value; drawMis();});
 $("#misList").addEventListener("input",e=>{ if(e.target.dataset.f!=="comentario") return; const d=draftOf(e.target); d.comentario=e.target.value;
   const card=e.target.closest(".ml"), l=MLINES.find(x=>lkey(x)===card.dataset.k), btn=card.querySelector(".save");
   const valid = d.facturado==="SI" || (d.facturado==="NO" && d.razon && (d.razon!=="OTRO" || d.comentario.trim()));
@@ -838,7 +882,7 @@ function demoMis(){
   const v = MIS.vendedor, cl = VENDEDORES[v].clientes;
   return Array.from({length:8},(_,i)=>({uid:"demo"+i,linea:1,id:"HO-DEMO-"+i,fecha:"2026-09-"+String(20+i),cliente:cl[i%cl.length],
     modelo:["ECO 150","XOOM 110","HUNK 160","XPULSE 200"][i%4],color:"NEGRO",anio:2026,plazo:6,precio:1706.42,ciudad:"QUITO",
-    entrega:i<5?1:(i===5?0:""),status:"",facturado:i===0?"SI":i===1?"NO":"",razon:i===1?"CRÉDITO NO APROBADO":"",comentario:"",freporte:i<2?"2026-09-28 10:00":""}));
+    entrega:i<5?1:(i===5?0:""),status:"",anulado:i===7?"SI":"",motivoAnulacion:i===7?"CLIENTE YA NO DESEA":"",fechaAnulacion:"",facturado:i===0?"SI":i===1?"NO":"",razon:i===1?"CRÉDITO NO APROBADO":"",comentario:"",freporte:i<2?"2026-09-28 10:00":""}));
 }
 window.addEventListener("load",loadMis);
 
