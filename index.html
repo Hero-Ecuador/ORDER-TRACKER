@@ -144,7 +144,40 @@ select option{background:#1D2026}
 .cr .fr{font-size:13px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
 .cr .pc{font-family:"Barlow Condensed";font-weight:800;font-size:22px;text-align:right;font-variant-numeric:tabular-nums}
 .cr .pend{grid-column:2 / -1;font-size:11px;color:var(--muted);margin-top:-8px}
-@media (max-width:720px){.cr{grid-template-columns:1fr 60px 48px}.cr .n{grid-column:1 / -1;text-align:left}.cr .pend{grid-column:1 / -1}}
+.cv{display:grid;grid-template-columns:minmax(110px,280px) 1fr;gap:12px;align-items:start;padding:10px 0;border-bottom:1px solid var(--line)}
+.cv:last-child{border-bottom:0}
+.cv .n{font-size:13px;color:#C3C6CC;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-top:2px}
+.cv .n small{display:block;color:var(--muted);font-size:11px;letter-spacing:1px}
+.cv .ms{display:flex;flex-direction:column;gap:6px}
+.mrow{display:grid;grid-template-columns:100px 1fr 64px 52px;gap:10px;align-items:center}
+.mrow .lb{font-size:11px;letter-spacing:1px;color:var(--muted);font-weight:600}
+.mrow .fr{font-size:13px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.mrow .pc{font-family:"Barlow Condensed";font-weight:800;font-size:20px;text-align:right;font-variant-numeric:tabular-nums}
+.meter.f i{background:#FF8A9C}
+.cv .pend{font-size:11px;color:var(--muted)}
+@media (max-width:720px){.cv{grid-template-columns:1fr}.cv .n{text-align:left}.mrow{grid-template-columns:92px 1fr 50px 44px}}
+/* ---- MIS PEDIDOS ---- */
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--line);background:transparent;border-radius:999px;padding:7px 14px;cursor:pointer;color:var(--muted);font-size:13px;font-weight:600}
+.tabs button.on{background:var(--red-soft);border-color:rgba(228,0,43,.5);color:var(--text)}
+.mlist{display:flex;flex-direction:column;gap:10px}
+.ml{background:var(--card-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.ml-top{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.ml-top b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ml-sub{font-size:12px;color:var(--muted);margin-top:3px}
+.bdg{font-size:11px;font-weight:700;letter-spacing:.8px;border-radius:999px;padding:3px 9px;white-space:nowrap;border:1px solid var(--line);color:var(--muted)}
+.bdg.ok{color:#4ADE80;border-color:rgba(74,222,128,.4)}
+.bdg.no{color:var(--red-2);border-color:rgba(255,45,79,.4)}
+.ml-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.yn{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.yn button{border:0;background:var(--card);padding:10px 14px;cursor:pointer;color:var(--muted);font-weight:600;font-size:13px}
+.yn button.on[data-v=SI]{background:rgba(74,222,128,.15);color:#4ADE80}
+.yn button.on[data-v=NO]{background:var(--red-soft);color:var(--red-2)}
+.ml-act select,.ml-act input{min-height:40px;padding:8px 10px;background:var(--card);flex:1 1 180px;width:auto}
+.ml-act .save{border:0;border-radius:10px;background:var(--red);color:#fff;font-weight:700;padding:0 16px;min-height:40px;cursor:pointer;letter-spacing:1px}
+.ml-act .save[disabled]{opacity:.4;cursor:default}
+.ml-note{font-size:12px;color:var(--muted);margin-top:8px}
+.ml-done{font-size:12px;margin-top:8px;color:#C3C6CC}
 /* ---- DETALLE ---- */
 .det{margin-top:16px}
 .seg{margin-left:auto;display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -178,6 +211,7 @@ select option{background:#1D2026}
 <header class="top">
   <div class="brand"><span class="mark">HERO</span><span class="sub">ORDER TRACKER</span></div>
   <div class="hdr-r">
+    <button id="misBtn" class="pill" type="button" title="Mis pedidos"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span class="gtxt" id="misTxt">Mis pedidos</span></button>
     <button id="lockBtn" class="pill" type="button" title="Acceso gerencia"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span class="gtxt" id="lockTxt">Gerencia</span></button>
     <button id="gpsPill" class="pill" type="button" title="Ubicación"><span class="dot"></span><span class="gtxt" id="gpsTxt">Ubicación</span></button>
   </div>
@@ -228,12 +262,38 @@ select option{background:#1D2026}
   </section>
 
   <section class="card det">
-    <div class="head"><div class="step">04</div><h2>Cumplimiento</h2><span class="muted">Unidades entregadas / pedidas</span></div>
+    <div class="head"><div class="step">04</div><h2>Cumplimiento</h2><span class="muted">Pedidas → Entregadas → Facturadas</span></div>
     <div class="dk" id="ck"></div>
     <div class="cum" id="cum"></div>
+    <div class="dmap-h"><span>RAZONES DE NO FACTURACIÓN</span><span id="rzTot"></span></div>
+    <div class="bars" id="rz"></div>
   </section>
   </div>
+
+  <section class="card det" id="misSec" hidden>
+    <div class="head"><div class="step">05</div><h2>Mis pedidos</h2><span class="muted" id="misWho"></span></div>
+    <div class="dk" id="mk"></div>
+    <div class="tabs" id="misTabs">
+      <button type="button" data-f="rep" class="on">Por reportar</button>
+      <button type="button" data-f="done">Reportadas</button>
+      <button type="button" data-f="all">Todas</button>
+    </div>
+    <div id="misList" class="mlist"></div>
+  </section>
 </main>
+
+<div class="overlay" id="misOv">
+  <form class="ok-card login" id="misForm">
+    <div class="ok-ic lk"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></div>
+    <h3>MIS PEDIDOS</h3>
+    <p>Elige tu nombre e ingresa tu PIN</p>
+    <select id="misVen" style="margin-top:14px;width:100%"><option value="">Selecciona tu nombre…</option></select>
+    <input type="password" id="misPin" placeholder="PIN" inputmode="numeric" maxlength="6" autocomplete="off">
+    <div class="lerr" id="misErr"></div>
+    <button class="cta" type="submit" id="misLogin">ENTRAR</button>
+    <button class="ghost" type="button" id="misCancel">Cancelar</button>
+  </form>
+</div>
 
 <div class="overlay" id="loginOv">
   <form class="ok-card login" id="loginForm">
@@ -323,7 +383,10 @@ const COLORES = {
   "XPULSE 200 RALLY":["BLANCO"]
 };
 const coloresDe = m => COLORES[COLOR_MODELO[m]] || [];
-const ANIOS = [2025,2026,2027];   // AÑO MOTO: edita aquí las opciones
+// AÑO MOTO: años por defecto y excepciones por modelo
+const ANIOS = [2026,2027];
+const ANIOS_MODELO = { "ECO DELUXE":[2026] };
+const aniosDe = m => m ? (ANIOS_MODELO[m] || ANIOS) : [];
 const MAX_ROWS = 50;
 
 /* ================= STATE ================= */
@@ -356,7 +419,7 @@ function rowHTML(r,i){
       <label class="f"><span>PLAZO *</span><select data-k="plazo">${opts(PLAZOS,r.plazo,"Plazo")}</select></label>
       <label class="f c-mod"><span>MODELO *</span><select data-k="modelo">${opts(MODELOS,r.modelo,"Modelo")}</select></label>
       <label class="f c-col"><span>COLOR *</span><select data-k="color"${r.modelo?"":" disabled"}>${opts(coloresDe(r.modelo),r.color,r.modelo?"Color":"Elige modelo")}</select></label>
-      <label class="f"><span>AÑO MOTO *</span><select data-k="anio">${opts(ANIOS,r.anio,"Año")}</select></label>
+      <label class="f"><span>AÑO MOTO *</span><select data-k="anio"${r.modelo?"":" disabled"}>${opts(aniosDe(r.modelo),r.anio,r.modelo?"Año":"Elige modelo")}</select></label>
       <div class="f c-pre"><span title="PRECIO UNITARIO">PRECIO UNIT.</span><div class="price${p!=null?" set":""}" data-price>${p!=null?"$"+money(p):"—"}</div></div>
       <label class="f c-dir"><span>DIRECCIÓN DE DESPACHO *</span><div class="withBtn"><input data-k="direccion" value="${esc(r.direccion)}" placeholder="Dirección tienda" autocomplete="off"><button type="button" class="pin" data-act="geo" title="Completar con mi ubicación">${PIN}</button></div></label>
       <label class="f c-prov"><span>PROVINCIA *</span><select data-k="provincia">${opts(PROVINCIAS,r.provincia,"Provincia")}</select></label>
@@ -426,6 +489,9 @@ function onField(e){
     const cs = coloresDe(r.modelo), sel = rowEl.querySelector('[data-k="color"]');
     if(!cs.includes(r.color)) r.color = cs.length===1 ? cs[0] : "";
     sel.innerHTML = opts(cs,r.color,r.modelo?"Color":"Elige modelo"); sel.disabled = !r.modelo; sel.classList.remove("err");
+    const as = aniosDe(r.modelo), selA = rowEl.querySelector('[data-k="anio"]');
+    if(!as.map(String).includes(String(r.anio))) r.anio = as.length===1 ? String(as[0]) : "";
+    selA.innerHTML = opts(as,r.anio,r.modelo?"Año":"Elige modelo"); selA.disabled = !r.modelo; selA.classList.remove("err");
   }
   if(k==="plazo"||k==="modelo"){
     const p = priceOf(r), el = rowEl.querySelector("[data-price]");
@@ -442,7 +508,7 @@ $("#rows").addEventListener("click",e=>{
     setTimeout(()=>{ rows.splice(idx,1); render(); },200);
   } else if(b.dataset.act==="dup"){
     if(rows.length>=MAX_ROWS) return toast("Máximo "+MAX_ROWS+" líneas",true);
-    rows.splice(idx+1,0,newRow({cliente:r.cliente,plazo:r.plazo,anio:r.anio,direccion:r.direccion,provincia:r.provincia,ciudad:r.ciudad}));
+    rows.splice(idx+1,0,newRow({cliente:r.cliente,plazo:r.plazo,direccion:r.direccion,provincia:r.provincia,ciudad:r.ciudad}));
     render();
   } else if(b.dataset.act==="geo"){
     fillFromGeo(r,b);
@@ -648,19 +714,134 @@ async function loadDetalle(){
   return true;
 }
 function drawCumplimiento(){
+  const sum=(ps,k)=>ps.reduce((s,p)=>s+(p[k]||0),0);
   const agg = Object.keys(VENDEDORES).map(n=>{const ps=PED.filter(p=>p.vendedor===n);
-    const ped=ps.reduce((s,p)=>s+p.unidades,0), ent=ps.reduce((s,p)=>s+(p.entregadas||0),0), mar=ps.reduce((s,p)=>s+(p.marcadas||0),0);
-    return {n,z:VENDEDORES[n].zona,ped,ent,pend:ped-mar,pct:ped?ent/ped:0};}).sort((a,b)=>b.pct-a.pct||b.ped-a.ped);
-  const P=agg.reduce((s,a)=>s+a.ped,0), E=agg.reduce((s,a)=>s+a.ent,0), PE=agg.reduce((s,a)=>s+a.pend,0);
-  $("#ck").innerHTML = `<div>CUMPLIMIENTO GLOBAL<b>${P?Math.round(E/P*100):0}%</b></div><div>ENTREGADAS<b>${E}</b></div><div>PEDIDAS<b>${P}</b></div><div>SIN MARCAR<b>${PE}</b></div>`;
-  $("#cum").innerHTML = agg.map(a=>`<div class="cr">
+    const ped=sum(ps,"unidades"), ent=sum(ps,"entregadas"), mar=sum(ps,"marcadas"), fac=sum(ps,"facturadas"), nof=sum(ps,"noFacturadas");
+    return {n,z:VENDEDORES[n].zona,ped,ent,fac,nof,pend:ped-mar,porRep:Math.max(0,ent-fac-nof),pe:ped?ent/ped:0,pf:ent?fac/ent:0};})
+    .sort((a,b)=>b.pe-a.pe||b.ped-a.ped);
+  const T=k=>agg.reduce((s,a)=>s+a[k],0), P=T("ped"), E=T("ent"), F=T("fac"), PR=T("porRep"), PE=T("pend");
+  $("#ck").innerHTML = `<div>ENTREGA<b>${P?Math.round(E/P*100):0}%</b></div><div>FACTURACIÓN<b>${E?Math.round(F/E*100):0}%</b></div>
+    <div>PEDIDAS<b>${P}</b></div><div>ENTREGADAS<b>${E}</b></div><div>FACTURADAS<b>${F}</b></div><div>SIN REPORTE VENDEDOR<b>${PR}</b></div>`;
+  const mrow=(lb,num,den,pct,cls)=>`<div class="mrow"><span class="lb">${lb}</span><div class="meter ${cls}"><i style="width:${(pct*100).toFixed(1)}%"></i></div>
+    <span class="fr">${num}/${den}</span><span class="pc">${den?Math.round(pct*100)+"%":"—"}</span></div>`;
+  $("#cum").innerHTML = agg.map(a=>`<div class="cv">
       <div class="n">${esc(a.n)}<small>${esc(a.z)}</small></div>
-      <div class="meter"><i style="width:${(a.pct*100).toFixed(1)}%"></i></div>
-      <div class="fr">${a.ent}/${a.ped}</div>
-      <div class="pc">${a.ped?Math.round(a.pct*100)+"%":"—"}</div>
-      ${a.pend?`<div class="pend">${a.pend} unidad(es) aún sin marcar en UNIDADES ENTREGADAS</div>`:""}
+      <div class="ms">${mrow("ENTREGA",a.ent,a.ped,a.pe,"")}${mrow("FACTURACIÓN",a.fac,a.ent,a.pf,"f")}
+        ${(a.pend||a.porRep)?`<div class="pend">${a.pend?a.pend+" sin marcar entrega · ":""}${a.porRep?a.porRep+" entregada(s) sin reporte del vendedor":""}</div>`:""}</div>
     </div>`).join("");
+  // razones
+  const rz={}; PED.forEach(p=>Object.entries(p.razones||{}).forEach(([k,v])=>rz[k]=(rz[k]||0)+v));
+  const ks=Object.keys(rz).sort((a,b)=>rz[b]-rz[a]), mx=Math.max(1,...ks.map(k=>rz[k])), tot=ks.reduce((s,k)=>s+rz[k],0);
+  $("#rzTot").textContent = tot ? tot+" no facturada(s)" : "";
+  $("#rz").innerHTML = ks.length ? ks.map(k=>`<div class="bar"><div class="n">${esc(k)}</div>
+    <div class="track"><i style="width:${(rz[k]/mx*82).toFixed(1)}%"></i><span>${rz[k]} · ${Math.round(rz[k]/tot*100)}%</span></div></div>`).join("")
+    : `<div class="empty-b">Aún no hay unidades reportadas como no facturadas</div>`;
 }
+
+/* ================= MIS PEDIDOS (vendedor) ================= */
+let MIS = null, MLINES = [], RAZ = [], misF = "rep", drafts = {};
+try{ MIS = JSON.parse(localStorage.getItem("hot_mis")||"null"); }catch(_){}
+$("#misVen").innerHTML += Object.keys(VENDEDORES).map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join("");
+const lkey = l => l.uid+"|"+l.linea;
+function setMis(on){
+  $("#misSec").hidden = !on;
+  $("#misBtn").classList.toggle("on",on);
+  $("#misTxt").textContent = on ? "Salir de mis pedidos" : "Mis pedidos";
+  $("#misWho").textContent = on ? MIS.vendedor : "";
+}
+async function loadMis(){
+  if(!MIS) { setMis(false); return false; }
+  try{
+    if(IS_DEMO){ MLINES = demoMis(); RAZ = ["CLIENTE DESISTIÓ","CRÉDITO NO APROBADO","CAMBIO DE MODELO / COLOR","PRECIO / CONDICIONES","DOCUMENTACIÓN INCOMPLETA","UNIDAD CON DAÑO / NOVEDAD","OTRO"]; }
+    else{
+      const j = await (await fetch(`${SCRIPT_URL}?action=mis&vendedor=${encodeURIComponent(MIS.vendedor)}&pin=${encodeURIComponent(MIS.pin)}&_=${Date.now()}`)).json();
+      if(!j.ok){ if(j.error==="PIN"||j.error==="BLOQUEADO"){ const e=j.error; MIS=null; try{localStorage.removeItem("hot_mis");}catch(_){} setMis(false); return e; } throw new Error(j.error); }
+      MLINES = j.lineas||[]; RAZ = j.razones||[];
+    }
+  }catch(e){ setMis(true); $("#misList").innerHTML = `<div class="empty-b">No se pudo cargar: ${esc(e.message)}</div>`; return false; }
+  setMis(true); drawMis(); return true;
+}
+function drawMis(){
+  const ent = MLINES.filter(l=>l.entrega===1), fac = MLINES.filter(l=>l.facturado==="SI"), nof = MLINES.filter(l=>l.facturado==="NO");
+  const porRep = ent.filter(l=>!l.facturado);
+  $("#mk").innerHTML = `<div>PEDIDAS<b>${MLINES.length}</b></div><div>ENTREGADAS<b>${ent.length}</b></div><div>FACTURADAS<b>${fac.length}</b></div><div>NO FACTURADAS<b>${nof.length}</b></div><div>POR REPORTAR<b>${porRep.length}</b></div>`;
+  const list = misF==="rep" ? porRep : misF==="done" ? MLINES.filter(l=>l.facturado) : MLINES;
+  const sorted = [...list].sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
+  $("#misList").innerHTML = sorted.length ? sorted.map(misHTML).join("")
+    : `<div class="empty-b">${misF==="rep"?"No tienes unidades entregadas pendientes de reportar":"Sin registros"}</div>`;
+}
+function misHTML(l){
+  const k = lkey(l), d = drafts[k] || {facturado:l.facturado||"",razon:l.razon||"",comentario:l.comentario||""};
+  const bd = l.entrega===1 ? `<span class="bdg ok">ENTREGADA</span>` : l.entrega===0 ? `<span class="bdg no">NO ENTREGADA</span>` : `<span class="bdg">PENDIENTE ENTREGA</span>`;
+  const valid = d.facturado==="SI" || (d.facturado==="NO" && d.razon && (d.razon!=="OTRO" || d.comentario.trim()));
+  const changed = d.facturado!==(l.facturado||"") || d.razon!==(l.razon||"") || d.comentario!==(l.comentario||"");
+  let act;
+  if(l.entrega===1){
+    act = `<div class="ml-act">
+      <div class="yn"><button type="button" data-v="SI" class="${d.facturado==="SI"?"on":""}">Facturado</button><button type="button" data-v="NO" class="${d.facturado==="NO"?"on":""}">No facturado</button></div>
+      ${d.facturado==="NO"?`<select data-f="razon">${opts(RAZ,d.razon,"Razón…")}</select>
+      <input data-f="comentario" value="${esc(d.comentario)}" placeholder="${d.razon==="OTRO"?"Comentario (obligatorio)":"Comentario (opcional)"}">`:""}
+      <button type="button" class="save" ${valid&&changed?"":"disabled"}>GUARDAR</button></div>`
+      + (l.facturado?`<div class="ml-done">Reportado: <b>${l.facturado==="SI"?"FACTURADO":"NO FACTURADO — "+esc(l.razon)}</b>${l.freporte?" · "+esc(l.freporte):""}</div>`:"");
+  } else act = `<div class="ml-note">Podrás reportar la facturación cuando la unidad figure como entregada.</div>`;
+  return `<div class="ml" data-k="${esc(k)}">
+    <div class="ml-top"><b>${esc(l.cliente)}</b>${bd}</div>
+    <div class="ml-sub">${esc(l.modelo)} ${esc(l.color)} ${esc(l.anio)} · $${money(l.precio)} · ${esc(l.plazo)} m · ${esc(l.ciudad)} · ${esc(l.fecha)} · ${esc(l.id)}</div>
+    ${act}</div>`;
+}
+function draftOf(el){ const k=el.closest(".ml").dataset.k, l=MLINES.find(x=>lkey(x)===k);
+  return drafts[k] ||= {facturado:l.facturado||"",razon:l.razon||"",comentario:l.comentario||""}; }
+$("#misList").addEventListener("click",async e=>{
+  const yn = e.target.closest(".yn button"), sv = e.target.closest(".save");
+  if(yn){ const d=draftOf(yn); d.facturado=yn.dataset.v; if(d.facturado==="SI"){d.razon="";} drawMis(); return; }
+  if(sv){
+    const card=sv.closest(".ml"), k=card.dataset.k, l=MLINES.find(x=>lkey(x)===k), d=drafts[k];
+    sv.disabled=true; sv.textContent="GUARDANDO…";
+    try{
+      if(!IS_DEMO){
+        const res = await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:JSON.stringify({action:"facturacion",vendedor:MIS.vendedor,pin:MIS.pin,items:[{uid:l.uid,linea:l.linea,...d}]})});
+        const j = await res.json(); if(!j.ok) throw new Error(j.error);
+      }
+      Object.assign(l,{facturado:d.facturado,razon:d.facturado==="NO"?d.razon:"",comentario:d.comentario,freporte:new Date().toLocaleString("es-EC")});
+      delete drafts[k]; drawMis(); toast("Reporte guardado");
+    }catch(err){ toast("No se guardó: "+err.message,true); sv.disabled=false; sv.textContent="GUARDAR"; }
+  }
+});
+$("#misList").addEventListener("change",e=>{const f=e.target.dataset.f; if(!f) return; draftOf(e.target)[f]=e.target.value; drawMis();});
+$("#misList").addEventListener("input",e=>{ if(e.target.dataset.f!=="comentario") return; const d=draftOf(e.target); d.comentario=e.target.value;
+  const card=e.target.closest(".ml"), l=MLINES.find(x=>lkey(x)===card.dataset.k), btn=card.querySelector(".save");
+  const valid = d.facturado==="SI" || (d.facturado==="NO" && d.razon && (d.razon!=="OTRO" || d.comentario.trim()));
+  const changed = d.facturado!==(l.facturado||"") || d.razon!==(l.razon||"") || d.comentario!==(l.comentario||"");
+  btn.disabled = !(valid&&changed); });
+document.querySelectorAll("#misTabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#misTabs button").forEach(x=>x.classList.toggle("on",x===b)); misF=b.dataset.f; drawMis();});
+$("#misBtn").onclick = ()=>{
+  if(!$("#misSec").hidden){ MIS=null; drafts={}; try{localStorage.removeItem("hot_mis");}catch(_){} setMis(false); toast("Sesión cerrada"); return; }
+  $("#misErr").textContent=""; $("#misPin").value=""; $("#misVen").value = vend() || "";
+  $("#misOv").classList.add("show"); setTimeout(()=>($("#misVen").value?$("#misPin"):$("#misVen")).focus(),50);
+};
+$("#misCancel").onclick = ()=>$("#misOv").classList.remove("show");
+$("#misForm").onsubmit = async e=>{
+  e.preventDefault();
+  const v=$("#misVen").value, pin=$("#misPin").value.trim();
+  if(!v||!pin){ $("#misErr").textContent="Elige tu nombre e ingresa tu PIN"; return; }
+  $("#misLogin").disabled=true; $("#misLogin").textContent="VERIFICANDO…";
+  MIS={vendedor:v,pin}; const r = await loadMis();
+  $("#misLogin").disabled=false; $("#misLogin").textContent="ENTRAR";
+  if(r==="PIN"){ $("#misErr").textContent="PIN incorrecto"; return; }
+  if(r==="BLOQUEADO"){ $("#misErr").textContent="Demasiados intentos. Espera 10 minutos."; return; }
+  try{ localStorage.setItem("hot_mis",JSON.stringify(MIS)); }catch(_){}
+  $("#misOv").classList.remove("show");
+  setTimeout(()=>$("#misSec").scrollIntoView({behavior:"smooth"}),150);
+};
+function demoMis(){
+  const v = MIS.vendedor, cl = VENDEDORES[v].clientes;
+  return Array.from({length:8},(_,i)=>({uid:"demo"+i,linea:1,id:"HO-DEMO-"+i,fecha:"2026-09-"+String(20+i),cliente:cl[i%cl.length],
+    modelo:["ECO 150","XOOM 110","HUNK 160","XPULSE 200"][i%4],color:"NEGRO",anio:2026,plazo:6,precio:1706.42,ciudad:"QUITO",
+    entrega:i<5?1:(i===5?0:""),status:"",facturado:i===0?"SI":i===1?"NO":"",razon:i===1?"CRÉDITO NO APROBADO":"",comentario:"",freporte:i<2?"2026-09-28 10:00":""}));
+}
+window.addEventListener("load",loadMis);
+
 $("#lockBtn").onclick = ()=>{
   if(!$("#gerencia").hidden){ KEY=""; try{localStorage.removeItem("hot_key");}catch(_){} setLocked(true); toast("Sesión de gerencia cerrada"); return; }
   $("#lerr").textContent=""; $("#pwd").value=""; $("#loginOv").classList.add("show"); setTimeout(()=>$("#pwd").focus(),50);
@@ -689,7 +870,7 @@ function demoPed(){
   const c={SIERRA:[-0.18,-78.48],GUAYAS:[-2.17,-79.9],ORIENTE:[-1.49,-77.99],"MANABÍ":[-0.95,-80.72],"LOS RÍOS":[-1.8,-79.53]};
   return Array.from({length:30},(_,i)=>{const n=Object.keys(VENDEDORES)[i%5],z=VENDEDORES[n].zona,u=1+i%5;
     return {vendedor:n,zona:z,fecha:"2026-09-"+String(1+i%28).padStart(2,"0"),hora:"10:00",ciudad:"CIUDAD",
-      lat:c[z][0]+Math.sin(i)*.3,lng:c[z][1]+Math.cos(i)*.3,unidades:u,total:u*2100,entregadas:Math.floor(u*((i%5)+1)/6),marcadas:u-(i%3?0:1),clientes:["CLIENTE "+i],modelos:{"ECO 150":u}};});
+      lat:c[z][0]+Math.sin(i)*.3,lng:c[z][1]+Math.cos(i)*.3,unidades:u,total:u*2100,entregadas:Math.floor(u*((i%5)+1)/6),marcadas:u-(i%3?0:1),facturadas:Math.floor(u*((i%5)+1)/6*0.7),noFacturadas:i%2,razones:i%2?{[["CRÉDITO NO APROBADO","CLIENTE DESISTIÓ","DOCUMENTACIÓN INCOMPLETA"][i%3]]:1}:{},clientes:["CLIENTE "+i],modelos:{"ECO 150":u}};});
 }
 window.addEventListener("load",loadDetalle);
 </script>
