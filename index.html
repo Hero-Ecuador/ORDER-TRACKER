@@ -181,6 +181,12 @@ select option{background:#1D2026}
 .ml.anul{opacity:.55}
 .lnk{background:none;border:1px solid var(--line);border-radius:10px;color:var(--muted);padding:0 14px;min-height:40px;cursor:pointer;font-weight:600;font-size:13px}
 .lnk.del:hover{color:var(--red-2);border-color:var(--red)}
+.lnk.ed-open:hover{color:var(--text);border-color:#8C929C}
+.ed{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px;border-top:1px dashed var(--line);padding-top:12px}
+.ed .w2{grid-column:span 2}
+.ed select,.ed input{background:var(--card);min-height:40px;padding:8px 10px}
+.ed .price{min-height:40px}
+@media (max-width:720px){.ed{grid-template-columns:1fr 1fr}}
 .anul-box{border-top:1px dashed var(--line);padding-top:10px}
 .chk{display:flex;align-items:center;gap:6px;font-size:13px;color:#C3C6CC}
 .chk input{width:16px;height:16px;min-height:0;flex:0 0 auto;accent-color:var(--red)}
@@ -280,8 +286,8 @@ select option{background:#1D2026}
     <div class="head"><div class="step">05</div><h2>Mis pedidos</h2><span class="muted" id="misWho"></span></div>
     <div class="dk" id="mk"></div>
     <div class="tabs" id="misTabs">
-      <button type="button" data-f="rep" class="on">Por reportar</button>
-      <button type="button" data-f="pend">Pendientes de entrega</button>
+      <button type="button" data-f="pend" class="on">Pendientes de entrega</button>
+      <button type="button" data-f="rep">Por reportar facturación</button>
       <button type="button" data-f="done">Reportadas</button>
       <button type="button" data-f="all">Todas</button>
     </div>
@@ -360,10 +366,13 @@ const VENDEDORES = {
     "MUNDSERVI REPUESTOS S.A.S.","PINEDA MARCILLO SANDRA MARICELA","RUIZ ANDRADE ELBA FLORA","RUPERTI PIONCE CESAR XAVIER",
     "SOLORZANO CARREÑO NIEVE LILIANA","SUQUILANDA STTOPER AMADO JOEL","ZAMBRANO CEDEÑO ISAAC ISRAEL"]},
   "MORA ESCALANTE ALISSON STEVEN": { zona: "LOS RÍOS", clientes: [
-    "BAJAÑA SARMIENTO ANGEL OLMEDO","BURBANO MOREIRA KARLA JULADY","CHAVEZ BENITEZ EDWIN MANUEL","CHIZA HERRERA NIELZER ALEXANDER",
-    "FILIAN RUIZ CARLOS ALBERTO","GUERRERO MENDOZA JAVIER MAURICIO","JIMENEZ ROMAN GEOVANNY MILTON","MONTIEL ROMAN ALAIN GABRIEL",
-    "MOREIRA BENAVIDES JENNY VALENTINA","MURILLO RAMOS LADY VALERIA","SALAZAR GUERRERO ROBERTO CARLOS","TENELEMA QUIÑONEZ KLEYNAR SAMANTA",
-    "VARGAS LIMONES DIEGO ARMANDO","VELIZ COELLO ALLISON JEANETTE"]}
+    "BAJAÑA SARMIENTO ANGEL OLMEDO","BENAVIDES PANTOJA OMAR HERNAN","BURBANO MOREIRA KARLA JULADY",
+    "CEDEÑO MACIAS CARLOS HUMBERTO","CHAVEZ BENITEZ EDWIN MANUEL","CHIZA HERRERA NIELZER ALEXANDER","CUJILEMA CUJILEMA GUILLERMO",
+    "DMARCIAL S.A.S.","FILIAN RUIZ CARLOS ALBERTO","GUERRERO MENDOZA JAVIER MAURICIO","IMPORTADORA KIKAR S.A.",
+    "JIMENEZ ROMAN GEOVANNY MILTON","MONTIEL ROMAN ALAIN GABRIEL","MOREIRA BENAVIDES JENNY VALENTINA",
+    "MURILLO RAMOS LADY VALERIA","RUIZ ANDRADE ELBA FLORA","SALAZAR GUERRERO ROBERTO CARLOS","SOLORZANO CARREÑO NIEVE LILIANA",
+    "SUQUILANDA STTOPER AMADO JOEL","TENELEMA QUIÑONEZ KLEYNAR SAMANTA","VARGAS LIMONES DIEGO ARMANDO",
+    "VELIZ COELLO ALLISON JEANETTE"]}
 };
 const MODELOS = ["ECO DELUXE","ECO 150","HUNK 125","HUNK 160","XOOM 110","XOOM 125","XPULSE 200","XPULSE RALLY"];
 const PLAZOS = [6,7,8];
@@ -746,7 +755,7 @@ function drawCumplimiento(){
 }
 
 /* ================= MIS PEDIDOS (vendedor) ================= */
-let MIS = null, MLINES = [], RAZ = [], misF = "rep", drafts = {}, anulOpen = {};
+let MIS = null, MLINES = [], RAZ = [], misF = "pend", drafts = {}, anulOpen = {}, editOpen = {};
 let MOT_ANUL = ["CLIENTE YA NO DESEA","ERROR EN EL PEDIDO","PEDIDO DUPLICADO","CAMBIO DE MODELO / COLOR","OTRO"];
 try{ MIS = JSON.parse(localStorage.getItem("hot_mis")||"null"); }catch(_){}
 $("#misVen").innerHTML += Object.keys(VENDEDORES).map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join("");
@@ -774,6 +783,8 @@ function drawMis(){
   const ent = live.filter(l=>l.entrega===1), fac = live.filter(l=>l.facturado==="SI"), nof = live.filter(l=>l.facturado==="NO");
   const porRep = ent.filter(l=>!l.facturado), pend = live.filter(l=>l.entrega==="");
   $("#mk").innerHTML = `<div>PEDIDAS<b>${live.length}</b></div><div>ENTREGADAS<b>${ent.length}</b></div><div>FACTURADAS<b>${fac.length}</b></div><div>NO FACTURADAS<b>${nof.length}</b></div><div>POR REPORTAR<b>${porRep.length}</b></div><div>ANULADAS<b>${anul}</b></div>`;
+  const cnt = {pend:pend.length, rep:porRep.length, done:live.filter(l=>l.facturado).length, all:MLINES.length};
+  document.querySelectorAll("#misTabs button").forEach(b=>{ b.dataset.lbl ||= b.textContent; b.textContent = `${b.dataset.lbl} (${cnt[b.dataset.f]})`; });
   const list = misF==="rep" ? porRep : misF==="pend" ? pend : misF==="done" ? live.filter(l=>l.facturado) : MLINES;
   const sorted = [...list].sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
   $("#misList").innerHTML = sorted.length ? sorted.map(misHTML).join("")
@@ -796,6 +807,8 @@ function misHTML(l){
       <input data-f="comentario" value="${esc(d.comentario)}" placeholder="${d.razon==="OTRO"?"Comentario (obligatorio)":"Comentario (opcional)"}">`:""}
       <button type="button" class="save" ${valid&&changed?"":"disabled"}>GUARDAR</button></div>`
       + (l.facturado?`<div class="ml-done">Reportado: <b>${l.facturado==="SI"?"FACTURADO":"NO FACTURADO — "+esc(l.razon)}</b>${l.freporte?" · "+esc(l.freporte):""}</div>`:"");
+  } else if(l.entrega==="" && editOpen[k]){
+    act = editHTML(editOpen[k]);
   } else if(l.entrega===""){
     const otras = MLINES.filter(x=>x.id===l.id && x.anulado!=="SI" && x.entrega==="" && lkey(x)!==k).length;
     const a = anulOpen[k];
@@ -805,6 +818,7 @@ function misHTML(l){
         <button type="button" class="save anul-ok" ${a.motivo?"":"disabled"}>CONFIRMAR ANULACIÓN</button>
         <button type="button" class="lnk anul-cancel">Cancelar</button></div>`
       : `<div class="ml-act"><span class="ml-note" style="margin:0;flex:1">Podrás reportar la facturación cuando la unidad figure como entregada.</span>
+        <button type="button" class="lnk ed-open">Editar</button>
         <button type="button" class="lnk del anul-open">Anular</button></div>`;
   } else act = `<div class="ml-note">Podrás reportar la facturación cuando la unidad figure como entregada.</div>`;
   return `<div class="ml" data-k="${esc(k)}">
@@ -812,11 +826,53 @@ function misHTML(l){
     <div class="ml-sub">${esc(l.modelo)} ${esc(l.color)} ${esc(l.anio)} · $${money(l.precio)} · ${esc(l.plazo)} m · ${esc(l.ciudad)} · ${esc(l.fecha)} · ${esc(l.id)}</div>
     ${act}</div>`;
 }
+function editHTML(e){
+  const cl = (VENDEDORES[MIS.vendedor]||{clientes:[]}).clientes;
+  const p = (PRECIOS[e.plazo]||{})[e.modelo];
+  const ok = e.cliente && e.plazo && e.modelo && e.color && e.anio && e.direccion.trim() && e.provincia && e.ciudad.trim();
+  const F = (lb,html,cls="") => `<label class="f ${cls}"><span>${lb}</span>${html}</label>`;
+  return `<div class="ed">
+    ${F("CLIENTE",`<select data-e="cliente">${opts(cl,e.cliente,"Cliente")}</select>`,"w2")}
+    ${F("PLAZO",`<select data-e="plazo">${opts(PLAZOS,e.plazo,"Plazo")}</select>`)}
+    ${F("MODELO",`<select data-e="modelo">${opts(MODELOS,e.modelo,"Modelo")}</select>`)}
+    ${F("COLOR",`<select data-e="color">${opts(coloresDe(e.modelo),e.color,"Color")}</select>`)}
+    ${F("AÑO MOTO",`<select data-e="anio">${opts(aniosDe(e.modelo),e.anio,"Año")}</select>`)}
+    ${F("PRECIO UNIT.",`<div class="price${p!=null?" set":""}">${p!=null?"$"+money(p):"—"}</div>`)}
+    ${F("DIRECCIÓN DE DESPACHO",`<input data-e="direccion" value="${esc(e.direccion)}" placeholder="Dirección tienda">`,"w2")}
+    ${F("PROVINCIA",`<select data-e="provincia">${opts(PROVINCIAS,e.provincia,"Provincia")}</select>`)}
+    ${F("CIUDAD",`<input data-e="ciudad" value="${esc(e.ciudad)}" placeholder="Ciudad">`)}
+  </div>
+  <div class="ml-act"><span class="ml-note" style="margin:0;flex:1">Se actualiza la misma fila en la hoja (queda registro en HISTORIAL).</span>
+    <button type="button" class="save ed-ok" ${ok?"":"disabled"}>GUARDAR CAMBIOS</button>
+    <button type="button" class="lnk ed-cancel">Cancelar</button></div>`;
+}
 function draftOf(el){ const k=el.closest(".ml").dataset.k, l=MLINES.find(x=>lkey(x)===k);
   return drafts[k] ||= {facturado:l.facturado||"",razon:l.razon||"",comentario:l.comentario||""}; }
 $("#misList").addEventListener("click",async e=>{
   const ao = e.target.closest(".anul-open"), ac = e.target.closest(".anul-cancel"), ok = e.target.closest(".anul-ok");
   if(ao){ anulOpen[ao.closest(".ml").dataset.k] = {motivo:"",todo:false}; drawMis(); return; }
+  const eo = e.target.closest(".ed-open"), ec = e.target.closest(".ed-cancel"), eok = e.target.closest(".ed-ok");
+  if(eo){ const k=eo.closest(".ml").dataset.k, l=MLINES.find(x=>lkey(x)===k);
+    editOpen[k] = {cliente:l.cliente, plazo:String(l.plazo), modelo:l.modelo, color:l.color, anio:String(l.anio),
+      direccion:String(l.direccion||""), provincia:String(l.provincia||""), ciudad:String(l.ciudad||"")};
+    delete anulOpen[k]; drawMis(); return; }
+  if(ec){ delete editOpen[ec.closest(".ml").dataset.k]; drawMis(); return; }
+  if(eok){
+    const k = eok.closest(".ml").dataset.k, l = MLINES.find(x=>lkey(x)===k), ed = editOpen[k];
+    eok.disabled = true; eok.textContent = "GUARDANDO…";
+    try{
+      let precio = (PRECIOS[ed.plazo]||{})[ed.modelo];
+      if(!IS_DEMO){
+        const res = await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:JSON.stringify({action:"editar",vendedor:MIS.vendedor,pin:MIS.pin,item:{uid:l.uid,linea:l.linea,...ed,
+            plazo:Number(ed.plazo),anio:Number(ed.anio),direccion:ed.direccion.trim().toUpperCase(),ciudad:ed.ciudad.trim().toUpperCase()}})});
+        const j = await res.json(); if(!j.ok) throw new Error(j.error); precio = j.precio;
+      }
+      Object.assign(l,{...ed,plazo:Number(ed.plazo),anio:Number(ed.anio),direccion:ed.direccion.trim().toUpperCase(),ciudad:ed.ciudad.trim().toUpperCase(),precio});
+      delete editOpen[k]; drawMis(); toast("Línea actualizada");
+    }catch(err){ toast("No se guardó: "+err.message,true); eok.disabled=false; eok.textContent="GUARDAR CAMBIOS"; }
+    return;
+  }
   if(ac){ delete anulOpen[ac.closest(".ml").dataset.k]; drawMis(); return; }
   if(ok){
     const k = ok.closest(".ml").dataset.k, l = MLINES.find(x=>lkey(x)===k), a = anulOpen[k];
@@ -851,9 +907,19 @@ $("#misList").addEventListener("click",async e=>{
   }
 });
 $("#misList").addEventListener("change",e=>{
+  const ef=e.target.dataset.e;
+  if(ef){ const ed=editOpen[e.target.closest(".ml").dataset.k]; ed[ef]=e.target.value;
+    if(ef==="modelo"){ const cs=coloresDe(ed.modelo), as=aniosDe(ed.modelo).map(String);
+      if(!cs.includes(ed.color)) ed.color = cs.length===1?cs[0]:"";
+      if(!as.includes(ed.anio)) ed.anio = as.length===1?as[0]:""; }
+    drawMis(); return; }
   const aa=e.target.dataset.a; if(aa){ const a=anulOpen[e.target.closest(".ml").dataset.k]; if(aa==="motivo") a.motivo=e.target.value; else a.todo=e.target.checked; drawMis(); return; }
   const f=e.target.dataset.f; if(!f) return; draftOf(e.target)[f]=e.target.value; drawMis();});
-$("#misList").addEventListener("input",e=>{ if(e.target.dataset.f!=="comentario") return; const d=draftOf(e.target); d.comentario=e.target.value;
+$("#misList").addEventListener("input",e=>{
+  if(e.target.dataset.e==="direccion"||e.target.dataset.e==="ciudad"){ const card=e.target.closest(".ml"), ed=editOpen[card.dataset.k]; ed[e.target.dataset.e]=e.target.value;
+    const ok = ed.cliente && ed.plazo && ed.modelo && ed.color && ed.anio && ed.direccion.trim() && ed.provincia && ed.ciudad.trim();
+    card.querySelector(".ed-ok").disabled = !ok; return; }
+  if(e.target.dataset.f!=="comentario") return; const d=draftOf(e.target); d.comentario=e.target.value;
   const card=e.target.closest(".ml"), l=MLINES.find(x=>lkey(x)===card.dataset.k), btn=card.querySelector(".save");
   const valid = d.facturado==="SI" || (d.facturado==="NO" && d.razon && (d.razon!=="OTRO" || d.comentario.trim()));
   const changed = d.facturado!==(l.facturado||"") || d.razon!==(l.razon||"") || d.comentario!==(l.comentario||"");
@@ -882,7 +948,7 @@ function demoMis(){
   const v = MIS.vendedor, cl = VENDEDORES[v].clientes;
   return Array.from({length:8},(_,i)=>({uid:"demo"+i,linea:1,id:"HO-DEMO-"+i,fecha:"2026-09-"+String(20+i),cliente:cl[i%cl.length],
     modelo:["ECO 150","XOOM 110","HUNK 160","XPULSE 200"][i%4],color:"NEGRO",anio:2026,plazo:6,precio:1706.42,ciudad:"QUITO",
-    entrega:i<5?1:(i===5?0:""),status:"",anulado:i===7?"SI":"",motivoAnulacion:i===7?"CLIENTE YA NO DESEA":"",fechaAnulacion:"",facturado:i===0?"SI":i===1?"NO":"",razon:i===1?"CRÉDITO NO APROBADO":"",comentario:"",freporte:i<2?"2026-09-28 10:00":""}));
+    entrega:i<5?1:(i===5?0:""),status:"",direccion:"AV. AMAZONAS Y COLON",provincia:"PICHINCHA",anulado:i===7?"SI":"",motivoAnulacion:i===7?"CLIENTE YA NO DESEA":"",fechaAnulacion:"",facturado:i===0?"SI":i===1?"NO":"",razon:i===1?"CRÉDITO NO APROBADO":"",comentario:"",freporte:i<2?"2026-09-28 10:00":""}));
 }
 window.addEventListener("load",loadMis);
 
