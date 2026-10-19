@@ -458,7 +458,7 @@ const VENDEDORES = {
     "VELIZ COELLO ALLISON JEANETTE"]}
 };
 const MODELOS = ["ECO DELUXE","ECO 150","HUNK 125","HUNK 160","XOOM 110","XOOM 125","XPULSE 200","XPULSE RALLY"];
-const PLAZOS = [6,7,8];
+const PLAZOS = [6,7,8,"CONTADO"];
 const PRECIOS = {
   6:{"ECO DELUXE":1288,"ECO 150":1706.42,"HUNK 125":1986.24,"HUNK 160":2936.82,"XOOM 110":1744,"XOOM 125":2224.84,"XPULSE 200":3680,"XPULSE RALLY":4140},
   7:{"ECO DELUXE":1304.1,"ECO 150":1727.75,"HUNK 125":2011.09,"HUNK 160":2973.53,"XOOM 110":1765.8,"XOOM 125":2252.65,"XPULSE 200":3726,"XPULSE RALLY":4191.75},
@@ -690,7 +690,7 @@ function buildPayload(){
     vendedor: v, zona: VENDEDORES[v].zona,
     lat: geo?geo.lat:"", lng: geo?geo.lng:"", acc: geo?geo.acc:"",
     ts_cliente: new Date().toISOString(),
-    lineas: rows.map((r,i)=>({linea:i+1,cliente:r.cliente,plazo:Number(r.plazo),modelo:r.modelo,color:r.color,anio:Number(r.anio),precio:priceOf(r),
+    lineas: rows.map((r,i)=>({linea:i+1,cliente:r.cliente,plazo:r.plazo==="CONTADO"?"CONTADO":Number(r.plazo),modelo:r.modelo,color:r.color,anio:Number(r.anio),precio:priceOf(r),
       direccion:r.direccion.trim().toUpperCase(),provincia:r.provincia,ciudad:r.ciudad.trim().toUpperCase()}))
   };
 }
@@ -944,7 +944,7 @@ function drawMis(){
   $("#misList").innerHTML = sorted.length ? sorted.map(misHTML).join("") : `<div class="empty-b">Sin líneas en esta pestaña</div>`;
 }
 function lineInfo(l, withVend){
-  return `<div class="ml-sub">${withVend?`<b>${esc(l.vendedor)}</b> · ${esc(l.zona)} · `:""}${esc(l.modelo)} ${esc(l.color)} ${esc(l.anio)} · $${money(l.precio)} · ${esc(l.plazo)} m</div>
+  return `<div class="ml-sub">${withVend?`<b>${esc(l.vendedor)}</b> · ${esc(l.zona)} · `:""}${esc(l.modelo)} ${esc(l.color)} ${esc(l.anio)} · $${money(l.precio)} · ${l.plazo==="CONTADO"?"CONTADO":esc(l.plazo)+" m"}</div>
     <div class="ml-sub">${esc(l.direccion)} · ${esc(l.ciudad)}, ${esc(l.provincia)}</div>
     <div class="ml-sub dim">Pedido ${fdt(l.tsPed)} · ${esc(l.id)} · línea ${l.linea}</div>`;
 }
@@ -1034,7 +1034,7 @@ $("#misList").addEventListener("click",async e=>{
     const ed = editOpen[k];
     eok.disabled = true; eok.textContent = "GUARDANDO…";
     try{
-      const item = {uid:l.uid,linea:l.linea,...ed,plazo:Number(ed.plazo),anio:Number(ed.anio),direccion:ed.direccion.trim().toUpperCase(),ciudad:ed.ciudad.trim().toUpperCase()};
+      const item = {uid:l.uid,linea:l.linea,...ed,plazo:ed.plazo==="CONTADO"?"CONTADO":Number(ed.plazo),anio:Number(ed.anio),direccion:ed.direccion.trim().toUpperCase(),ciudad:ed.ciudad.trim().toUpperCase()};
       let precio = (PRECIOS[ed.plazo]||{})[ed.modelo];
       if(!IS_DEMO){ const j = await postJSON({action:"editar",vendedor:MIS.vendedor,pin:MIS.pin,item}); precio = j.precio; }
       Object.assign(l,{...item,precio}); delete editOpen[k]; drawMis(); toast("Línea actualizada");
