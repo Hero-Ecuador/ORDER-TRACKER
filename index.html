@@ -190,6 +190,38 @@ select option{background:#1D2026}
 .anul-box{border-top:1px dashed var(--line);padding-top:10px}
 .chk{display:flex;align-items:center;gap:6px;font-size:13px;color:#C3C6CC}
 .chk input{width:16px;height:16px;min-height:0;flex:0 0 auto;accent-color:var(--red)}
+/* ---- ROLES / TIEMPOS ---- */
+.step{white-space:nowrap}
+.bdgs{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.bdg.wt{color:#FBBF24;border-color:rgba(251,191,36,.4)}
+.ml-sub.dim,.dim{color:#6B7079}
+.rfil{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.rfil select{flex:1 1 240px;width:auto}.rfil input{flex:2 1 260px;width:auto}
+.mono{font-family:ui-monospace,Consolas,monospace;letter-spacing:1px;text-transform:uppercase}
+.f>span em{font-style:normal;color:var(--muted);margin-left:6px}.f>span em.okc{color:#4ADE80}
+.yn.tr button.on[data-v=SI],.yn.fc button.on[data-v=SI]{background:rgba(74,222,128,.15);color:#4ADE80}
+.yn.tr button.on[data-v=NO]{background:var(--red-soft);color:var(--red-2)}
+.yn.fc button.on[data-v=NO]{background:var(--red-soft);color:var(--red-2)}
+.yn{align-self:flex-start}
+.rz2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.tts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:8px}
+.tt{background:var(--card-2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.tt span{display:block;font-size:10px;letter-spacing:1.2px;color:var(--muted);font-weight:600;min-height:26px}
+.tt b{display:block;font-family:"Barlow Condensed";font-weight:800;font-size:28px;margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.tt small{font-size:11px;color:var(--muted)}
+table.tv{width:100%;border-collapse:collapse;font-size:13px}
+table.tv th,table.tv td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+table.tv th{font-size:11px;letter-spacing:1.2px;color:var(--muted);font-weight:600}
+table.tv td small{display:block;font-size:11px;color:var(--muted)}
+table.tv .rt{text-align:right;font-variant-numeric:tabular-nums}
+.tbl{overflow-x:auto}
+.hrs{display:grid;grid-template-columns:repeat(24,minmax(0,1fr));gap:2px;height:150px;align-items:end;padding-bottom:18px;position:relative}
+.hc{height:100%;display:flex;flex-direction:column;justify-content:flex-end;position:relative;cursor:default}
+.hc i{display:block;background:var(--red);border-radius:4px 4px 0 0;min-height:1px;transition:height .4s}
+.hc:hover i{background:var(--red-2)}
+.hc span{position:absolute;bottom:-18px;left:0;font-size:10px;color:var(--muted)}
+@media (max-width:1000px){.tts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:720px){.rz2{grid-template-columns:1fr}}
 /* ---- DETALLE ---- */
 .det{margin-top:16px}
 .seg{margin-left:auto;display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -224,6 +256,8 @@ select option{background:#1D2026}
   <div class="brand"><span class="mark">HERO</span><span class="sub">ORDER TRACKER</span></div>
   <div class="hdr-r">
     <button id="misBtn" class="pill" type="button" title="Mis pedidos"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span class="gtxt" id="misTxt">Mis pedidos</span></button>
+    <button id="logBtn" class="pill" type="button" title="Logística"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 6h13v10H1zM14 10h4l3 3v3h-7z"/><circle cx="5.5" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/></svg><span class="gtxt" id="logTxt">Logística</span></button>
+    <button id="coordBtn" class="pill" type="button" title="Coordinador"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h8M9 17h6"/></svg><span class="gtxt" id="coordTxt">Coordinador</span></button>
     <button id="lockBtn" class="pill" type="button" title="Acceso gerencia"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span class="gtxt" id="lockTxt">Gerencia</span></button>
     <button id="gpsPill" class="pill" type="button" title="Ubicación"><span class="dot"></span><span class="gtxt" id="gpsTxt">Ubicación</span></button>
   </div>
@@ -274,24 +308,61 @@ select option{background:#1D2026}
   </section>
 
   <section class="card det">
-    <div class="head"><div class="step">04</div><h2>Cumplimiento</h2><span class="muted">Pedidas → Entregadas → Facturadas</span></div>
+    <div class="head"><div class="step">04</div><h2>Cumplimiento</h2><span class="muted">Pedidas → Despachadas → Facturadas</span></div>
     <div class="dk" id="ck"></div>
     <div class="cum" id="cum"></div>
-    <div class="dmap-h"><span>RAZONES DE NO FACTURACIÓN</span><span id="rzTot"></span></div>
-    <div class="bars" id="rz"></div>
+    <div class="rz2">
+      <div><div class="dmap-h"><span>RAZONES DE NO DESPACHO</span></div><div class="bars" id="rzD"></div></div>
+      <div><div class="dmap-h"><span>RAZONES DE NO FACTURACIÓN</span></div><div class="bars" id="rzF"></div></div>
+    </div>
+  </section>
+
+  <section class="card det">
+    <div class="head"><div class="step">05</div><h2>Tiempos</h2><span class="muted">Tiempo corrido (incluye noches y fines de semana)</span></div>
+    <div class="tts" id="tk"></div>
+    <div class="ml-note" id="tNote"></div>
+    <div class="dmap-h"><span>POR VENDEDOR</span></div>
+    <div class="tbl"><table class="tv"><thead><tr><th>VENDEDOR</th><th class="rt">UNIDADES</th><th class="rt">PEDIDO → DESPACHO</th><th class="rt">DESPACHO → FACTURA</th><th class="rt">% DESPACHO</th><th class="rt">% FACTURACIÓN</th></tr></thead><tbody id="tvTb"></tbody></table></div>
+    <div class="dmap-h"><span>¿A QUÉ HORA PIDEN LOS VENDEDORES?</span><span id="hrsPk"></span></div>
+    <div class="hrs" id="hrs"></div>
   </section>
   </div>
 
   <section class="card det" id="misSec" hidden>
-    <div class="head"><div class="step">05</div><h2>Mis pedidos</h2><span class="muted" id="misWho"></span></div>
+    <div class="head"><div class="step">VEN</div><h2>Mis pedidos</h2><span class="muted" id="misWho"></span></div>
     <div class="dk" id="mk"></div>
     <div class="tabs" id="misTabs">
-      <button type="button" data-f="pend" class="on">Pendientes de entrega</button>
-      <button type="button" data-f="rep">Por reportar facturación</button>
-      <button type="button" data-f="done">Reportadas</button>
+      <button type="button" data-f="pend" class="on">Pendientes de despacho</button>
+      <button type="button" data-f="des">Despachados</button>
+      <button type="button" data-f="nod">No despachados</button>
       <button type="button" data-f="all">Todas</button>
     </div>
     <div id="misList" class="mlist"></div>
+  </section>
+
+  <section class="card det" id="logSec" hidden>
+    <div class="head"><div class="step">LOG</div><h2>Logística</h2><span class="muted">Despachos</span></div>
+    <div class="dk" id="lk"></div>
+    <div class="tabs" id="logTabs">
+      <button type="button" data-f="pend" class="on">Pendiente de despachar</button>
+      <button type="button" data-f="des">Despachado</button>
+      <button type="button" data-f="nod">No despachado</button>
+    </div>
+    <div class="rfil"><select id="logVen"></select><input id="logQ" placeholder="Buscar cliente, chasis, ID, ciudad…"></div>
+    <div id="logList" class="mlist rlist"></div>
+  </section>
+
+  <section class="card det" id="coordSec" hidden>
+    <div class="head"><div class="step">COO</div><h2>Coordinador</h2><span class="muted">Facturación</span></div>
+    <div class="dk" id="ckk"></div>
+    <div class="tabs" id="coordTabs">
+      <button type="button" data-f="por" class="on">Por facturar</button>
+      <button type="button" data-f="fac">Facturado</button>
+      <button type="button" data-f="nof">No facturado</button>
+      <button type="button" data-f="sin">Sin despachar</button>
+    </div>
+    <div class="rfil"><select id="coordVen"></select><input id="coordQ" placeholder="Buscar cliente, chasis, ID, ciudad…"></div>
+    <div id="coordList" class="mlist rlist"></div>
   </section>
 </main>
 
@@ -308,11 +379,23 @@ select option{background:#1D2026}
   </form>
 </div>
 
+<div class="overlay" id="rolOv">
+  <form class="ok-card login" id="rolForm">
+    <div class="ok-ic lk"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+    <h3 id="rolTitle">ACCESO</h3>
+    <p>Ingresa tu contraseña</p>
+    <input type="password" id="rolPwd" placeholder="Contraseña" autocomplete="current-password">
+    <div class="lerr" id="rolErr"></div>
+    <button class="cta" type="submit" id="rolBtn">ENTRAR</button>
+    <button class="ghost" type="button" id="rolCancel">Cancelar</button>
+  </form>
+</div>
+
 <div class="overlay" id="loginOv">
   <form class="ok-card login" id="loginForm">
     <div class="ok-ic lk"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
     <h3>ACCESO GERENCIA</h3>
-    <p>Ingresa la contraseña para ver Detalle y Cumplimiento</p>
+    <p>Ingresa la contraseña para ver Detalle, Cumplimiento y Tiempos</p>
     <input type="password" id="pwd" placeholder="Contraseña" autocomplete="current-password">
     <div class="lerr" id="lerr"></div>
     <button class="cta" type="submit" id="loginBtn">ENTRAR</button>
@@ -404,6 +487,7 @@ const ANIOS = [2026,2027];
 const ANIOS_MODELO = { "ECO DELUXE":[2026] };
 const aniosDe = m => m ? (ANIOS_MODELO[m] || ANIOS) : [];
 const MAX_ROWS = 50;
+
 
 /* ================= STATE ================= */
 const $ = s => document.querySelector(s);
@@ -716,46 +800,105 @@ function setLocked(locked){
 async function loadDetalle(){
   if(!KEY && !IS_DEMO){ setLocked(true); return false; }
   try{
-    if(IS_DEMO) PED = demoPed();
+    if(IS_DEMO){ PED = demoPed(); LINEAS = demoLines().filter(l=>l.anulado!=="SI"); ANULG = {[Object.keys(VENDEDORES)[0]]:1}; }
     else{
       const j = await (await fetch(SCRIPT_URL+"?action=data&key="+encodeURIComponent(KEY)+"&_="+Date.now())).json();
       if(!j.ok && j.error==="AUTH"){ KEY=""; try{localStorage.removeItem("hot_key");}catch(_){} setLocked(true); return "auth"; }
       if(!j.ok) throw new Error(j.error);
       if(!Array.isArray(j.pedidos)) throw new Error("El Apps Script no tiene la versión nueva. Vuelve a implementarlo.");
-      PED = j.pedidos; ANULG = j.anuladas||{};
+      PED = j.pedidos; LINEAS = j.lineas||[]; ANULG = j.anuladas||{};
     }
   }catch(e){ setLocked(false); $("#bars").innerHTML = `<div class="empty-b">No se pudo cargar el detalle: ${esc(e.message)}</div>`; return false; }
   setLocked(false);
-  drawDetalle(); drawCumplimiento();
+  drawDetalle(); drawCumplimiento(); drawTiempos();
   return true;
 }
+/* ================= UTILIDADES DE TIEMPO ================= */
+const hrs = (a,b) => (a && b) ? (Date.parse(b) - Date.parse(a)) / 36e5 : null;
+function fmtDur(h){
+  if(h==null || isNaN(h)) return "—";
+  const neg = h < 0; h = Math.abs(h);
+  let s;
+  if(h < 1) s = Math.max(1,Math.round(h*60)) + " min";
+  else if(h < 24) s = Math.floor(h) + " h " + String(Math.round((h%1)*60)).padStart(2,"0") + " min";
+  else s = Math.floor(h/24) + " d " + Math.round(h%24) + " h";
+  return (neg?"−":"") + s;
+}
+const avg = a => a.length ? a.reduce((s,x)=>s+x,0)/a.length : null;
+const med = a => { if(!a.length) return null; const b=[...a].sort((x,y)=>x-y), m=b.length>>1; return b.length%2?b[m]:(b[m-1]+b[m])/2; };
+const fdt = s => s ? s.slice(0,10)+" "+s.slice(11,16) : "—";
+const ageNow = s => s ? fmtDur((Date.now()-Date.parse(s))/36e5) : "—";
+
+/* ================= 04 CUMPLIMIENTO ================= */
+let LINEAS = [];
+function barList(obj, emptyTxt){
+  const ks=Object.keys(obj).sort((a,b)=>obj[b]-obj[a]), mx=Math.max(1,...ks.map(k=>obj[k])), tot=ks.reduce((s,k)=>s+obj[k],0);
+  return ks.length ? ks.map(k=>`<div class="bar"><div class="n">${esc(k)}</div>
+    <div class="track"><i style="width:${(obj[k]/mx*82).toFixed(1)}%"></i><span>${obj[k]} · ${Math.round(obj[k]/tot*100)}%</span></div></div>`).join("")
+    : `<div class="empty-b">${emptyTxt}</div>`;
+}
 function drawCumplimiento(){
-  const sum=(ps,k)=>ps.reduce((s,p)=>s+(p[k]||0),0);
-  const agg = Object.keys(VENDEDORES).map(n=>{const ps=PED.filter(p=>p.vendedor===n);
-    const ped=sum(ps,"unidades"), ent=sum(ps,"entregadas"), mar=sum(ps,"marcadas"), fac=sum(ps,"facturadas"), nof=sum(ps,"noFacturadas");
-    return {n,z:VENDEDORES[n].zona,ped,ent,fac,nof,anu:ANULG[n]||0,pend:ped-mar,porRep:Math.max(0,ent-fac-nof),pe:ped?ent/ped:0,pf:ent?fac/ent:0};})
-    .sort((a,b)=>b.pe-a.pe||b.ped-a.ped);
-  const T=k=>agg.reduce((s,a)=>s+a[k],0), P=T("ped"), E=T("ent"), F=T("fac"), PR=T("porRep"), PE=T("pend");
-  $("#ck").innerHTML = `<div>ENTREGA<b>${P?Math.round(E/P*100):0}%</b></div><div>FACTURACIÓN<b>${E?Math.round(F/E*100):0}%</b></div>
-    <div>PEDIDAS<b>${P}</b></div><div>ENTREGADAS<b>${E}</b></div><div>FACTURADAS<b>${F}</b></div><div>SIN REPORTE VENDEDOR<b>${PR}</b></div>`;
+  const agg = Object.keys(VENDEDORES).map(n=>{
+    const L = LINEAS.filter(l=>l.vendedor===n);
+    const ped=L.length, des=L.filter(l=>l.estado==="DESPACHADO").length, nod=L.filter(l=>l.estado==="NO DESPACHADO").length;
+    const fac=L.filter(l=>l.facturado==="SI").length, nof=L.filter(l=>l.facturado==="NO").length;
+    const sinFac=L.filter(l=>l.estado==="DESPACHADO" && !l.facturado).length;
+    return {n,z:VENDEDORES[n].zona,ped,des,nod,fac,nof,sinFac,pend:ped-des-nod,anu:ANULG[n]||0,pd:ped?des/ped:0,pf:des?fac/des:0};
+  }).sort((a,b)=>b.pd-a.pd||b.ped-a.ped);
+  const T=k=>agg.reduce((s,a)=>s+a[k],0), P=T("ped"), D=T("des"), F=T("fac");
+  $("#ck").innerHTML = `<div>DESPACHO<b>${P?Math.round(D/P*100):0}%</b></div><div>FACTURACIÓN<b>${D?Math.round(F/D*100):0}%</b></div>
+    <div>PEDIDAS<b>${P}</b></div><div>DESPACHADAS<b>${D}</b></div><div>FACTURADAS<b>${F}</b></div>
+    <div>PEND. DESPACHO<b>${T("pend")}</b></div><div>POR FACTURAR<b>${T("sinFac")}</b></div>`;
   const mrow=(lb,num,den,pct,cls)=>`<div class="mrow"><span class="lb">${lb}</span><div class="meter ${cls}"><i style="width:${(pct*100).toFixed(1)}%"></i></div>
     <span class="fr">${num}/${den}</span><span class="pc">${den?Math.round(pct*100)+"%":"—"}</span></div>`;
   $("#cum").innerHTML = agg.map(a=>`<div class="cv">
       <div class="n">${esc(a.n)}<small>${esc(a.z)}</small></div>
-      <div class="ms">${mrow("ENTREGA",a.ent,a.ped,a.pe,"")}${mrow("FACTURACIÓN",a.fac,a.ent,a.pf,"f")}
-        ${(a.pend||a.porRep||a.anu)?`<div class="pend">${[a.pend?a.pend+" sin marcar entrega":"",a.porRep?a.porRep+" entregada(s) sin reporte del vendedor":"",a.anu?a.anu+" anulada(s) por el vendedor":""].filter(Boolean).join(" · ")}</div>`:""}</div>
+      <div class="ms">${mrow("DESPACHO",a.des,a.ped,a.pd,"")}${mrow("FACTURACIÓN",a.fac,a.des,a.pf,"f")}
+        ${(a.pend||a.sinFac||a.nod||a.anu)?`<div class="pend">${[a.pend?a.pend+" pendiente(s) de despacho":"",a.nod?a.nod+" no despachada(s)":"",
+          a.sinFac?a.sinFac+" despachada(s) por facturar":"",a.anu?a.anu+" anulada(s) por el vendedor":""].filter(Boolean).join(" · ")}</div>`:""}</div>
     </div>`).join("");
-  // razones
-  const rz={}; PED.forEach(p=>Object.entries(p.razones||{}).forEach(([k,v])=>rz[k]=(rz[k]||0)+v));
-  const ks=Object.keys(rz).sort((a,b)=>rz[b]-rz[a]), mx=Math.max(1,...ks.map(k=>rz[k])), tot=ks.reduce((s,k)=>s+rz[k],0);
-  $("#rzTot").textContent = tot ? tot+" no facturada(s)" : "";
-  $("#rz").innerHTML = ks.length ? ks.map(k=>`<div class="bar"><div class="n">${esc(k)}</div>
-    <div class="track"><i style="width:${(rz[k]/mx*82).toFixed(1)}%"></i><span>${rz[k]} · ${Math.round(rz[k]/tot*100)}%</span></div></div>`).join("")
-    : `<div class="empty-b">Aún no hay unidades reportadas como no facturadas</div>`;
+  const rd={}, rf={};
+  LINEAS.forEach(l=>{ if(l.estado==="NO DESPACHADO"){ const k=l.razonDesp||"SIN RAZÓN"; rd[k]=(rd[k]||0)+1; }
+                      if(l.facturado==="NO"){ const k=l.razonFact||"SIN RAZÓN"; rf[k]=(rf[k]||0)+1; } });
+  $("#rzD").innerHTML = barList(rd,"Sin unidades marcadas como no despachadas");
+  $("#rzF").innerHTML = barList(rf,"Sin unidades marcadas como no facturadas");
+}
+
+/* ================= 05 TIEMPOS ================= */
+function drawTiempos(){
+  const tD = LINEAS.map(l=>hrs(l.tsPed,l.tsDesp)).filter(x=>x!=null && x>=0);
+  const tF = LINEAS.map(l=>hrs(l.tsDesp,l.tsFact)).filter(x=>x!=null && x>=0);
+  const tT = LINEAS.map(l=>hrs(l.tsPed,l.tsFact)).filter(x=>x!=null && x>=0);
+  const antes = LINEAS.filter(l=>l.tsFact && (!l.tsDesp || Date.parse(l.tsFact)<Date.parse(l.tsDesp))).length;
+  const pend = LINEAS.filter(l=>l.estado==="PENDIENTE" && l.tsPed).sort((a,b)=>a.tsPed.localeCompare(b.tsPed));
+  const porF = LINEAS.filter(l=>l.estado==="DESPACHADO" && !l.facturado && l.tsDesp).sort((a,b)=>a.tsDesp.localeCompare(b.tsDesp));
+  const tile=(lb,h,sub)=>`<div class="tt"><span>${lb}</span><b>${fmtDur(h)}</b><small>${sub}</small></div>`;
+  $("#tk").innerHTML =
+    tile("LOGÍSTICA · PEDIDO → DESPACHO", avg(tD), `promedio · mediana ${fmtDur(med(tD))} · ${tD.length} u.`) +
+    tile("COORDINADOR · DESPACHO → FACTURA", avg(tF), `promedio · mediana ${fmtDur(med(tF))} · ${tF.length} u.`) +
+    tile("TOTAL · PEDIDO → FACTURA", avg(tT), `promedio · mediana ${fmtDur(med(tT))} · ${tT.length} u.`) +
+    tile("PENDIENTE MÁS ANTIGUO (DESPACHO)", pend.length?(Date.now()-Date.parse(pend[0].tsPed))/36e5:null, pend.length?`${esc(pend[0].cliente)} · ${pend.length} pendiente(s)`:"sin pendientes") +
+    tile("DESPACHADO SIN FACTURAR MÁS ANTIGUO", porF.length?(Date.now()-Date.parse(porF[0].tsDesp))/36e5:null, porF.length?`${esc(porF[0].cliente)} · ${porF.length} por facturar`:"sin pendientes");
+  $("#tNote").textContent = antes ? `${antes} unidad(es) se facturaron antes del despacho (no entran en "despacho → factura").` : "";
+  // por vendedor
+  const rows = Object.keys(VENDEDORES).map(n=>{
+    const L=LINEAS.filter(l=>l.vendedor===n);
+    const d=L.map(l=>hrs(l.tsPed,l.tsDesp)).filter(x=>x!=null&&x>=0), f=L.map(l=>hrs(l.tsDesp,l.tsFact)).filter(x=>x!=null&&x>=0);
+    const des=L.filter(l=>l.estado==="DESPACHADO").length, fac=L.filter(l=>l.facturado==="SI").length;
+    return `<tr><td>${esc(n)}<small>${esc(VENDEDORES[n].zona)}</small></td><td class="rt">${L.length}</td>
+      <td class="rt">${fmtDur(avg(d))}</td><td class="rt">${fmtDur(avg(f))}</td>
+      <td class="rt">${L.length?Math.round(des/L.length*100)+"%":"—"}</td><td class="rt">${des?Math.round(fac/des*100)+"%":"—"}</td></tr>`;}).join("");
+  $("#tvTb").innerHTML = rows;
+  // hora de pedidos
+  const hh = Array(24).fill(0); LINEAS.forEach(l=>{ if(l.tsPed) hh[+l.tsPed.slice(11,13)]++; });
+  const mx = Math.max(1,...hh), pk = hh.indexOf(Math.max(...hh));
+  $("#hrs").innerHTML = hh.map((v,h)=>`<div class="hc" data-tip="${String(h).padStart(2,"0")}:00 – ${String(h).padStart(2,"0")}:59 · ${v} unidad(es)">
+      <i style="height:${(v/mx*100).toFixed(1)}%"></i><span>${h%3===0?String(h).padStart(2,"0"):""}</span></div>`).join("");
+  $("#hrsPk").textContent = LINEAS.length ? `Hora pico: ${String(pk).padStart(2,"0")}:00 (${hh[pk]} u.)` : "";
 }
 
 /* ================= MIS PEDIDOS (vendedor) ================= */
-let MIS = null, MLINES = [], RAZ = [], misF = "pend", drafts = {}, anulOpen = {}, editOpen = {};
+let MIS = null, MLINES = [], misF = "pend", anulOpen = {}, editOpen = {};
 let MOT_ANUL = ["CLIENTE YA NO DESEA","ERROR EN EL PEDIDO","PEDIDO DUPLICADO","CAMBIO DE MODELO / COLOR","OTRO"];
 try{ MIS = JSON.parse(localStorage.getItem("hot_mis")||"null"); }catch(_){}
 $("#misVen").innerHTML += Object.keys(VENDEDORES).map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join("");
@@ -769,62 +912,75 @@ function setMis(on){
 async function loadMis(){
   if(!MIS) { setMis(false); return false; }
   try{
-    if(IS_DEMO){ MLINES = demoMis(); RAZ = ["CLIENTE DESISTIÓ","CRÉDITO NO APROBADO","CAMBIO DE MODELO / COLOR","PRECIO / CONDICIONES","DOCUMENTACIÓN INCOMPLETA","UNIDAD CON DAÑO / NOVEDAD","OTRO"]; }
+    if(IS_DEMO){ MLINES = demoLines().filter(l=>l.vendedor===MIS.vendedor); }
     else{
       const j = await (await fetch(`${SCRIPT_URL}?action=mis&vendedor=${encodeURIComponent(MIS.vendedor)}&pin=${encodeURIComponent(MIS.pin)}&_=${Date.now()}`)).json();
       if(!j.ok){ if(j.error==="PIN"||j.error==="BLOQUEADO"){ const e=j.error; MIS=null; try{localStorage.removeItem("hot_mis");}catch(_){} setMis(false); return e; } throw new Error(j.error); }
-      MLINES = j.lineas||[]; RAZ = j.razones||[]; if(j.motivosAnulacion) MOT_ANUL = j.motivosAnulacion;
+      MLINES = j.lineas||[]; if(j.motivosAnulacion) MOT_ANUL = j.motivosAnulacion;
     }
   }catch(e){ setMis(true); $("#misList").innerHTML = `<div class="empty-b">No se pudo cargar: ${esc(e.message)}</div>`; return false; }
   setMis(true); drawMis(); return true;
 }
+function setTabCounts(sel, cnt){
+  document.querySelectorAll(sel+" button").forEach(b=>{ b.dataset.lbl ||= b.textContent; b.textContent = `${b.dataset.lbl} (${cnt[b.dataset.f]??0})`; });
+}
+function estBadge(l){
+  if(l.anulado==="SI") return `<span class="bdg">ANULADA</span>`;
+  const e = l.estado==="DESPACHADO" ? `<span class="bdg ok">DESPACHADO</span>` : l.estado==="NO DESPACHADO" ? `<span class="bdg no">NO DESPACHADO</span>` : `<span class="bdg wt">PENDIENTE DESPACHO</span>`;
+  const f = l.facturado==="SI" ? `<span class="bdg ok">FACTURADO</span>` : l.facturado==="NO" ? `<span class="bdg no">NO FACTURADO</span>` : "";
+  return `<span class="bdgs">${e}${f}</span>`;
+}
 function drawMis(){
-  const live = MLINES.filter(l=>l.anulado!=="SI"), anul = MLINES.length - live.length;
-  const ent = live.filter(l=>l.entrega===1), fac = live.filter(l=>l.facturado==="SI"), nof = live.filter(l=>l.facturado==="NO");
-  const porRep = ent.filter(l=>!l.facturado), pend = live.filter(l=>l.entrega==="");
-  $("#mk").innerHTML = `<div>PEDIDAS<b>${live.length}</b></div><div>ENTREGADAS<b>${ent.length}</b></div><div>FACTURADAS<b>${fac.length}</b></div><div>NO FACTURADAS<b>${nof.length}</b></div><div>POR REPORTAR<b>${porRep.length}</b></div><div>ANULADAS<b>${anul}</b></div>`;
-  const cnt = {pend:pend.length, rep:porRep.length, done:live.filter(l=>l.facturado).length, all:MLINES.length};
-  document.querySelectorAll("#misTabs button").forEach(b=>{ b.dataset.lbl ||= b.textContent; b.textContent = `${b.dataset.lbl} (${cnt[b.dataset.f]})`; });
-  const list = misF==="rep" ? porRep : misF==="pend" ? pend : misF==="done" ? live.filter(l=>l.facturado) : MLINES;
-  const sorted = [...list].sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
-  $("#misList").innerHTML = sorted.length ? sorted.map(misHTML).join("")
-    : `<div class="empty-b">${misF==="rep"?"No tienes unidades entregadas pendientes de reportar":misF==="pend"?"No tienes líneas pendientes de entrega":"Sin registros"}</div>`;
+  const live = MLINES.filter(l=>l.anulado!=="SI");
+  const pend = live.filter(l=>l.estado==="PENDIENTE"), des = live.filter(l=>l.estado==="DESPACHADO"), nod = live.filter(l=>l.estado==="NO DESPACHADO");
+  const fac = live.filter(l=>l.facturado==="SI");
+  $("#mk").innerHTML = `<div>PEDIDAS<b>${live.length}</b></div><div>PEND. DESPACHO<b>${pend.length}</b></div><div>DESPACHADAS<b>${des.length}</b></div>
+    <div>NO DESPACHADAS<b>${nod.length}</b></div><div>FACTURADAS<b>${fac.length}</b></div><div>ANULADAS<b>${MLINES.length-live.length}</b></div>`;
+  setTabCounts("#misTabs",{pend:pend.length,des:des.length,nod:nod.length,all:MLINES.length});
+  const list = misF==="pend" ? pend : misF==="des" ? des : misF==="nod" ? nod : MLINES;
+  const sorted = [...list].sort((a,b)=>String(b.tsPed).localeCompare(String(a.tsPed)));
+  $("#misList").innerHTML = sorted.length ? sorted.map(misHTML).join("") : `<div class="empty-b">Sin líneas en esta pestaña</div>`;
+}
+function lineInfo(l, withVend){
+  return `<div class="ml-sub">${withVend?`<b>${esc(l.vendedor)}</b> · ${esc(l.zona)} · `:""}${esc(l.modelo)} ${esc(l.color)} ${esc(l.anio)} · $${money(l.precio)} · ${esc(l.plazo)} m</div>
+    <div class="ml-sub">${esc(l.direccion)} · ${esc(l.ciudad)}, ${esc(l.provincia)}</div>
+    <div class="ml-sub dim">Pedido ${fdt(l.tsPed)} · ${esc(l.id)} · línea ${l.linea}</div>`;
+}
+function despInfo(l){
+  if(l.estado==="DESPACHADO") return `<div class="ml-done">Despachado ${fdt(l.tsDesp)} · <b>CHASIS ${esc(l.chasis)}</b> · RAMV ${esc(l.ramv)}${l.motor?" · MOTOR "+esc(l.motor):""}${l.guia?" · GUÍA "+esc(l.guia):""}
+     · Transporte ${l.transporte==="SI"?"SÍ · $"+money(Number(l.valor)||0):"NO"} · <span class="dim">tardó ${fmtDur(hrs(l.tsPed,l.tsDesp))}</span></div>`;
+  if(l.estado==="NO DESPACHADO") return `<div class="ml-done">No despachado ${fdt(l.tsDesp)} · <b>${esc(l.razonDesp)}</b>${l.comentDesp?" — "+esc(l.comentDesp):""}</div>`;
+  return "";
+}
+function factInfo(l){
+  if(l.facturado==="SI") return `<div class="ml-done">Facturado ${fdt(l.tsFact)}${l.tsDesp?` · <span class="dim">${fmtDur(hrs(l.tsDesp,l.tsFact))} desde el despacho</span>`:""}</div>`;
+  if(l.facturado==="NO") return `<div class="ml-done">No facturado ${fdt(l.tsFact)} · <b>${esc(l.razonFact)}</b>${l.comentFact?" — "+esc(l.comentFact):""}</div>`;
+  return "";
 }
 function misHTML(l){
-  const k = lkey(l), d = drafts[k] || {facturado:l.facturado||"",razon:l.razon||"",comentario:l.comentario||""};
+  const k = lkey(l);
   if(l.anulado==="SI") return `<div class="ml anul" data-k="${esc(k)}">
-    <div class="ml-top"><b>${esc(l.cliente)}</b><span class="bdg">ANULADA</span></div>
-    <div class="ml-sub">${esc(l.modelo)} ${esc(l.color)} ${esc(l.anio)} · $${money(l.precio)} · ${esc(l.fecha)} · ${esc(l.id)}</div>
+    <div class="ml-top"><b>${esc(l.cliente)}</b>${estBadge(l)}</div>${lineInfo(l)}
     <div class="ml-note">Anulada: ${esc(l.motivoAnulacion)}${l.fechaAnulacion?" · "+esc(l.fechaAnulacion):""}</div></div>`;
-  const bd = l.entrega===1 ? `<span class="bdg ok">ENTREGADA</span>` : l.entrega===0 ? `<span class="bdg no">NO ENTREGADA</span>` : `<span class="bdg">PENDIENTE ENTREGA</span>`;
-  const valid = d.facturado==="SI" || (d.facturado==="NO" && d.razon && (d.razon!=="OTRO" || d.comentario.trim()));
-  const changed = d.facturado!==(l.facturado||"") || d.razon!==(l.razon||"") || d.comentario!==(l.comentario||"");
-  let act;
-  if(l.entrega===1){
-    act = `<div class="ml-act">
-      <div class="yn"><button type="button" data-v="SI" class="${d.facturado==="SI"?"on":""}">Facturado</button><button type="button" data-v="NO" class="${d.facturado==="NO"?"on":""}">No facturado</button></div>
-      ${d.facturado==="NO"?`<select data-f="razon">${opts(RAZ,d.razon,"Razón…")}</select>
-      <input data-f="comentario" value="${esc(d.comentario)}" placeholder="${d.razon==="OTRO"?"Comentario (obligatorio)":"Comentario (opcional)"}">`:""}
-      <button type="button" class="save" ${valid&&changed?"":"disabled"}>GUARDAR</button></div>`
-      + (l.facturado?`<div class="ml-done">Reportado: <b>${l.facturado==="SI"?"FACTURADO":"NO FACTURADO — "+esc(l.razon)}</b>${l.freporte?" · "+esc(l.freporte):""}</div>`:"");
-  } else if(l.entrega==="" && editOpen[k]){
-    act = editHTML(editOpen[k]);
-  } else if(l.entrega===""){
-    const otras = MLINES.filter(x=>x.id===l.id && x.anulado!=="SI" && x.entrega==="" && lkey(x)!==k).length;
-    const a = anulOpen[k];
-    act = a ? `<div class="ml-act anul-box">
-        <select data-a="motivo">${opts(MOT_ANUL,a.motivo,"Motivo de anulación…")}</select>
-        ${otras?`<label class="chk"><input type="checkbox" data-a="todo"${a.todo?" checked":""}> Anular todo el pedido (${otras+1} líneas)</label>`:""}
-        <button type="button" class="save anul-ok" ${a.motivo?"":"disabled"}>CONFIRMAR ANULACIÓN</button>
-        <button type="button" class="lnk anul-cancel">Cancelar</button></div>`
-      : `<div class="ml-act"><span class="ml-note" style="margin:0;flex:1">Podrás reportar la facturación cuando la unidad figure como entregada.</span>
-        <button type="button" class="lnk ed-open">Editar</button>
-        <button type="button" class="lnk del anul-open">Anular</button></div>`;
-  } else act = `<div class="ml-note">Podrás reportar la facturación cuando la unidad figure como entregada.</div>`;
+  let act = "";
+  if(l.estado==="PENDIENTE"){
+    if(editOpen[k]) act = editHTML(editOpen[k]);
+    else{
+      const otras = MLINES.filter(x=>x.id===l.id && x.anulado!=="SI" && x.estado==="PENDIENTE" && lkey(x)!==k).length;
+      const a = anulOpen[k];
+      act = a ? `<div class="ml-act anul-box">
+          <select data-a="motivo">${opts(MOT_ANUL,a.motivo,"Motivo de anulación…")}</select>
+          ${otras?`<label class="chk"><input type="checkbox" data-a="todo"${a.todo?" checked":""}> Anular todo el pedido (${otras+1} líneas)</label>`:""}
+          <button type="button" class="save anul-ok" ${a.motivo?"":"disabled"}>CONFIRMAR ANULACIÓN</button>
+          <button type="button" class="lnk anul-cancel">Cancelar</button></div>`
+        : `<div class="ml-act"><span class="ml-note" style="margin:0;flex:1">Esperando despacho · ${ageNow(l.tsPed)}</span>
+          <button type="button" class="lnk ed-open">Editar</button>
+          <button type="button" class="lnk del anul-open">Anular</button></div>`;
+    }
+  }
   return `<div class="ml" data-k="${esc(k)}">
-    <div class="ml-top"><b>${esc(l.cliente)}</b>${bd}</div>
-    <div class="ml-sub">${esc(l.modelo)} ${esc(l.color)} ${esc(l.anio)} · $${money(l.precio)} · ${esc(l.plazo)} m · ${esc(l.ciudad)} · ${esc(l.fecha)} · ${esc(l.id)}</div>
-    ${act}</div>`;
+    <div class="ml-top"><b>${esc(l.cliente)}</b>${estBadge(l)}</div>
+    ${lineInfo(l)}${despInfo(l)}${factInfo(l)}${act}</div>`;
 }
 function editHTML(e){
   const cl = (VENDEDORES[MIS.vendedor]||{clientes:[]}).clientes;
@@ -846,87 +1002,62 @@ function editHTML(e){
     <button type="button" class="save ed-ok" ${ok?"":"disabled"}>GUARDAR CAMBIOS</button>
     <button type="button" class="lnk ed-cancel">Cancelar</button></div>`;
 }
-function draftOf(el){ const k=el.closest(".ml").dataset.k, l=MLINES.find(x=>lkey(x)===k);
-  return drafts[k] ||= {facturado:l.facturado||"",razon:l.razon||"",comentario:l.comentario||""}; }
+async function postJSON(body){
+  const res = await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(body)});
+  const j = await res.json(); if(!j.ok) throw new Error(j.error); return j;
+}
 $("#misList").addEventListener("click",async e=>{
-  const ao = e.target.closest(".anul-open"), ac = e.target.closest(".anul-cancel"), ok = e.target.closest(".anul-ok");
-  if(ao){ anulOpen[ao.closest(".ml").dataset.k] = {motivo:"",todo:false}; drawMis(); return; }
-  const eo = e.target.closest(".ed-open"), ec = e.target.closest(".ed-cancel"), eok = e.target.closest(".ed-ok");
-  if(eo){ const k=eo.closest(".ml").dataset.k, l=MLINES.find(x=>lkey(x)===k);
+  const card = e.target.closest(".ml"); if(!card) return;
+  const k = card.dataset.k, l = MLINES.find(x=>lkey(x)===k);
+  if(e.target.closest(".anul-open")){ anulOpen[k] = {motivo:"",todo:false}; delete editOpen[k]; drawMis(); return; }
+  if(e.target.closest(".anul-cancel")){ delete anulOpen[k]; drawMis(); return; }
+  if(e.target.closest(".ed-open")){
     editOpen[k] = {cliente:l.cliente, plazo:String(l.plazo), modelo:l.modelo, color:l.color, anio:String(l.anio),
       direccion:String(l.direccion||""), provincia:String(l.provincia||""), ciudad:String(l.ciudad||"")};
     delete anulOpen[k]; drawMis(); return; }
-  if(ec){ delete editOpen[ec.closest(".ml").dataset.k]; drawMis(); return; }
-  if(eok){
-    const k = eok.closest(".ml").dataset.k, l = MLINES.find(x=>lkey(x)===k), ed = editOpen[k];
-    eok.disabled = true; eok.textContent = "GUARDANDO…";
-    try{
-      let precio = (PRECIOS[ed.plazo]||{})[ed.modelo];
-      if(!IS_DEMO){
-        const res = await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
-          body:JSON.stringify({action:"editar",vendedor:MIS.vendedor,pin:MIS.pin,item:{uid:l.uid,linea:l.linea,...ed,
-            plazo:Number(ed.plazo),anio:Number(ed.anio),direccion:ed.direccion.trim().toUpperCase(),ciudad:ed.ciudad.trim().toUpperCase()}})});
-        const j = await res.json(); if(!j.ok) throw new Error(j.error); precio = j.precio;
-      }
-      Object.assign(l,{...ed,plazo:Number(ed.plazo),anio:Number(ed.anio),direccion:ed.direccion.trim().toUpperCase(),ciudad:ed.ciudad.trim().toUpperCase(),precio});
-      delete editOpen[k]; drawMis(); toast("Línea actualizada");
-    }catch(err){ toast("No se guardó: "+err.message,true); eok.disabled=false; eok.textContent="GUARDAR CAMBIOS"; }
-    return;
-  }
-  if(ac){ delete anulOpen[ac.closest(".ml").dataset.k]; drawMis(); return; }
+  if(e.target.closest(".ed-cancel")){ delete editOpen[k]; drawMis(); return; }
+  const ok = e.target.closest(".anul-ok"), eok = e.target.closest(".ed-ok");
   if(ok){
-    const k = ok.closest(".ml").dataset.k, l = MLINES.find(x=>lkey(x)===k), a = anulOpen[k];
-    const targets = a.todo ? MLINES.filter(x=>x.id===l.id && x.anulado!=="SI" && x.entrega==="") : [l];
+    const a = anulOpen[k];
+    const targets = a.todo ? MLINES.filter(x=>x.id===l.id && x.anulado!=="SI" && x.estado==="PENDIENTE") : [l];
     ok.disabled = true; ok.textContent = "ANULANDO…";
     try{
-      if(!IS_DEMO){
-        const res = await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
-          body:JSON.stringify({action:"anular",vendedor:MIS.vendedor,pin:MIS.pin,items:targets.map(x=>({uid:x.uid,linea:x.linea,motivo:a.motivo}))})});
-        const j = await res.json(); if(!j.ok) throw new Error(j.error);
-      }
+      if(!IS_DEMO) await postJSON({action:"anular",vendedor:MIS.vendedor,pin:MIS.pin,items:targets.map(x=>({uid:x.uid,linea:x.linea,motivo:a.motivo}))});
       const f = new Date().toLocaleString("es-EC");
       targets.forEach(x=>Object.assign(x,{anulado:"SI",motivoAnulacion:a.motivo,fechaAnulacion:f}));
       delete anulOpen[k]; drawMis(); toast(targets.length>1?`${targets.length} líneas anuladas`:"Línea anulada");
     }catch(err){ toast("No se anuló: "+err.message,true); ok.disabled=false; ok.textContent="CONFIRMAR ANULACIÓN"; }
-    return;
   }
-  const yn = e.target.closest(".yn button"), sv = e.target.closest(".save");
-  if(yn){ const d=draftOf(yn); d.facturado=yn.dataset.v; if(d.facturado==="SI"){d.razon="";} drawMis(); return; }
-  if(sv){
-    const card=sv.closest(".ml"), k=card.dataset.k, l=MLINES.find(x=>lkey(x)===k), d=drafts[k];
-    sv.disabled=true; sv.textContent="GUARDANDO…";
+  if(eok){
+    const ed = editOpen[k];
+    eok.disabled = true; eok.textContent = "GUARDANDO…";
     try{
-      if(!IS_DEMO){
-        const res = await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
-          body:JSON.stringify({action:"facturacion",vendedor:MIS.vendedor,pin:MIS.pin,items:[{uid:l.uid,linea:l.linea,...d}]})});
-        const j = await res.json(); if(!j.ok) throw new Error(j.error);
-      }
-      Object.assign(l,{facturado:d.facturado,razon:d.facturado==="NO"?d.razon:"",comentario:d.comentario,freporte:new Date().toLocaleString("es-EC")});
-      delete drafts[k]; drawMis(); toast("Reporte guardado");
-    }catch(err){ toast("No se guardó: "+err.message,true); sv.disabled=false; sv.textContent="GUARDAR"; }
+      const item = {uid:l.uid,linea:l.linea,...ed,plazo:Number(ed.plazo),anio:Number(ed.anio),direccion:ed.direccion.trim().toUpperCase(),ciudad:ed.ciudad.trim().toUpperCase()};
+      let precio = (PRECIOS[ed.plazo]||{})[ed.modelo];
+      if(!IS_DEMO){ const j = await postJSON({action:"editar",vendedor:MIS.vendedor,pin:MIS.pin,item}); precio = j.precio; }
+      Object.assign(l,{...item,precio}); delete editOpen[k]; drawMis(); toast("Línea actualizada");
+    }catch(err){ toast("No se guardó: "+err.message,true); eok.disabled=false; eok.textContent="GUARDAR CAMBIOS"; }
   }
 });
 $("#misList").addEventListener("change",e=>{
+  const card = e.target.closest(".ml"); if(!card) return; const k = card.dataset.k;
   const ef=e.target.dataset.e;
-  if(ef){ const ed=editOpen[e.target.closest(".ml").dataset.k]; ed[ef]=e.target.value;
+  if(ef){ const ed=editOpen[k]; ed[ef]=e.target.value;
     if(ef==="modelo"){ const cs=coloresDe(ed.modelo), as=aniosDe(ed.modelo).map(String);
       if(!cs.includes(ed.color)) ed.color = cs.length===1?cs[0]:"";
       if(!as.includes(ed.anio)) ed.anio = as.length===1?as[0]:""; }
     drawMis(); return; }
-  const aa=e.target.dataset.a; if(aa){ const a=anulOpen[e.target.closest(".ml").dataset.k]; if(aa==="motivo") a.motivo=e.target.value; else a.todo=e.target.checked; drawMis(); return; }
-  const f=e.target.dataset.f; if(!f) return; draftOf(e.target)[f]=e.target.value; drawMis();});
+  const aa=e.target.dataset.a;
+  if(aa){ const a=anulOpen[k]; if(aa==="motivo") a.motivo=e.target.value; else a.todo=e.target.checked; drawMis(); }
+});
 $("#misList").addEventListener("input",e=>{
-  if(e.target.dataset.e==="direccion"||e.target.dataset.e==="ciudad"){ const card=e.target.closest(".ml"), ed=editOpen[card.dataset.k]; ed[e.target.dataset.e]=e.target.value;
-    const ok = ed.cliente && ed.plazo && ed.modelo && ed.color && ed.anio && ed.direccion.trim() && ed.provincia && ed.ciudad.trim();
-    card.querySelector(".ed-ok").disabled = !ok; return; }
-  if(e.target.dataset.f!=="comentario") return; const d=draftOf(e.target); d.comentario=e.target.value;
-  const card=e.target.closest(".ml"), l=MLINES.find(x=>lkey(x)===card.dataset.k), btn=card.querySelector(".save");
-  const valid = d.facturado==="SI" || (d.facturado==="NO" && d.razon && (d.razon!=="OTRO" || d.comentario.trim()));
-  const changed = d.facturado!==(l.facturado||"") || d.razon!==(l.razon||"") || d.comentario!==(l.comentario||"");
-  btn.disabled = !(valid&&changed); });
+  const f=e.target.dataset.e; if(f!=="direccion" && f!=="ciudad") return;
+  const card=e.target.closest(".ml"), ed=editOpen[card.dataset.k]; ed[f]=e.target.value;
+  card.querySelector(".ed-ok").disabled = !(ed.cliente && ed.plazo && ed.modelo && ed.color && ed.anio && ed.direccion.trim() && ed.provincia && ed.ciudad.trim());
+});
 document.querySelectorAll("#misTabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#misTabs button").forEach(x=>x.classList.toggle("on",x===b)); misF=b.dataset.f; drawMis();});
 $("#misBtn").onclick = ()=>{
-  if(!$("#misSec").hidden){ MIS=null; drafts={}; try{localStorage.removeItem("hot_mis");}catch(_){} setMis(false); toast("Sesión cerrada"); return; }
+  if(!$("#misSec").hidden){ MIS=null; editOpen={}; anulOpen={}; try{localStorage.removeItem("hot_mis");}catch(_){} setMis(false); toast("Sesión cerrada"); return; }
   $("#misErr").textContent=""; $("#misPin").value=""; $("#misVen").value = vend() || "";
   $("#misOv").classList.add("show"); setTimeout(()=>($("#misVen").value?$("#misPin"):$("#misVen")).focus(),50);
 };
@@ -944,13 +1075,241 @@ $("#misForm").onsubmit = async e=>{
   $("#misOv").classList.remove("show");
   setTimeout(()=>$("#misSec").scrollIntoView({behavior:"smooth"}),150);
 };
-function demoMis(){
-  const v = MIS.vendedor, cl = VENDEDORES[v].clientes;
-  return Array.from({length:8},(_,i)=>({uid:"demo"+i,linea:1,id:"HO-DEMO-"+i,fecha:"2026-09-"+String(20+i),cliente:cl[i%cl.length],
-    modelo:["ECO 150","XOOM 110","HUNK 160","XPULSE 200"][i%4],color:"NEGRO",anio:2026,plazo:6,precio:1706.42,ciudad:"QUITO",
-    entrega:i<5?1:(i===5?0:""),status:"",direccion:"AV. AMAZONAS Y COLON",provincia:"PICHINCHA",anulado:i===7?"SI":"",motivoAnulacion:i===7?"CLIENTE YA NO DESEA":"",fechaAnulacion:"",facturado:i===0?"SI":i===1?"NO":"",razon:i===1?"CRÉDITO NO APROBADO":"",comentario:"",freporte:i<2?"2026-09-28 10:00":""}));
-}
 window.addEventListener("load",loadMis);
+
+/* ================= LOGÍSTICA y COORDINADOR ================= */
+const ROL = {
+  logistica:   {sec:"#logSec",  btn:"#logBtn",  txt:"#logTxt",  lbl:"Logística",   key:"", lines:[], tab:"pend", open:{}, q:"", ven:""},
+  coordinador: {sec:"#coordSec",btn:"#coordBtn",txt:"#coordTxt",lbl:"Coordinador", key:"", lines:[], tab:"por",  open:{}, q:"", ven:""}
+};
+let RAZ = ["CLIENTE DESISTIÓ","CRÉDITO NO APROBADO","CAMBIO DE MODELO / COLOR","PRECIO / CONDICIONES","DOCUMENTACIÓN INCOMPLETA","UNIDAD CON DAÑO / NOVEDAD","OTRO"];
+let RAZ_D = ["SIN STOCK"].concat(RAZ);
+Object.keys(ROL).forEach(r=>{ try{ ROL[r].key = localStorage.getItem("hot_key_"+r)||""; }catch(_){} });
+function setRol(r,on){
+  const R=ROL[r]; $(R.sec).hidden=!on; $(R.btn).classList.toggle("on",on); $(R.txt).textContent = on ? "Salir de "+R.lbl.toLowerCase() : R.lbl;
+}
+async function loadRol(r){
+  const R = ROL[r];
+  if(!R.key && !IS_DEMO){ setRol(r,false); return false; }
+  try{
+    if(IS_DEMO) R.lines = demoLines().filter(l=>l.anulado!=="SI");
+    else{
+      const j = await (await fetch(`${SCRIPT_URL}?action=rol&rol=${r}&key=${encodeURIComponent(R.key)}&_=${Date.now()}`)).json();
+      if(!j.ok && (j.error==="AUTH"||j.error==="BLOQUEADO")){ const e=j.error; R.key=""; try{localStorage.removeItem("hot_key_"+r);}catch(_){} setRol(r,false); return e; }
+      if(!j.ok) throw new Error(j.error);
+      R.lines = j.lineas||[]; if(j.razones) RAZ=j.razones; if(j.razonesDesp) RAZ_D=j.razonesDesp;
+    }
+  }catch(e){ setRol(r,true); $(R.sec+" .rlist").innerHTML = `<div class="empty-b">No se pudo cargar: ${esc(e.message)}</div>`; return false; }
+  setRol(r,true); drawRol(r); return true;
+}
+function filtRol(R, L){
+  const q = norm(R.q);
+  return L.filter(l=>(!R.ven || l.vendedor===R.ven) && (!q || norm([l.cliente,l.chasis,l.id,l.ciudad,l.modelo,l.ramv].join(" ")).includes(q)));
+}
+function drawRol(r){ r==="logistica" ? drawLog() : drawCoord(); }
+
+/* ---- Logística ---- */
+function drawLog(){
+  const R = ROL.logistica, L = filtRol(R, R.lines);
+  const pend = L.filter(l=>l.estado==="PENDIENTE").sort((a,b)=>a.tsPed.localeCompare(b.tsPed));
+  const des  = L.filter(l=>l.estado==="DESPACHADO").sort((a,b)=>b.tsDesp.localeCompare(a.tsDesp));
+  const nod  = L.filter(l=>l.estado==="NO DESPACHADO").sort((a,b)=>b.tsDesp.localeCompare(a.tsDesp));
+  const hoy = new Date().toLocaleDateString("en-CA",{timeZone:"America/Guayaquil"});
+  $("#lk").innerHTML = `<div>PENDIENTES<b>${pend.length}</b></div><div>DESPACHADAS HOY<b>${des.filter(l=>l.tsDesp.startsWith(hoy)).length}</b></div>
+    <div>DESPACHADAS<b>${des.length}</b></div><div>NO DESPACHADAS<b>${nod.length}</b></div><div>PENDIENTE MÁS ANTIGUO<b>${pend.length?ageNow(pend[0].tsPed):"—"}</b></div>`;
+  setTabCounts("#logTabs",{pend:pend.length,des:des.length,nod:nod.length});
+  const list = R.tab==="pend" ? pend : R.tab==="des" ? des : nod;
+  $("#logList").innerHTML = list.length ? list.map(logHTML).join("") : `<div class="empty-b">Sin líneas en esta pestaña</div>`;
+}
+function logHTML(l){
+  const k = lkey(l), o = ROL.logistica.open[k];
+  let act;
+  if(o && o.modo==="desp") act = despForm(o);
+  else if(o && o.modo==="nod") act = `<div class="ed">
+      <label class="f w2"><span>RAZÓN NO DESPACHO *</span><select data-d="razon">${opts(RAZ_D,o.razon,"Razón…")}</select></label>
+      <label class="f w2"><span>COMENTARIO ${o.razon==="OTRO"?"*":"(opcional)"}</span><input data-d="comentario" value="${esc(o.comentario)}"></label></div>
+    <div class="ml-act"><span style="flex:1"></span>
+      <button type="button" class="save d-ok" ${o.razon&&(o.razon!=="OTRO"||o.comentario.trim())?"":"disabled"}>CONFIRMAR NO DESPACHO</button>
+      <button type="button" class="lnk d-cancel">Cancelar</button></div>`;
+  else if(l.estado==="PENDIENTE") act = `<div class="ml-act"><span class="ml-note" style="margin:0;flex:1">Esperando ${ageNow(l.tsPed)}</span>
+      <button type="button" class="save d-open" data-m="desp">DESPACHAR</button>
+      <button type="button" class="lnk del d-open" data-m="nod">No se despacha</button></div>`;
+  else act = `<div class="ml-act"><span style="flex:1"></span><button type="button" class="lnk d-open" data-m="${l.estado==="DESPACHADO"?"desp":"nod"}">Corregir</button>
+      ${l.estado==="DESPACHADO"?`<button type="button" class="lnk d-open" data-m="nod">Cambiar a no despachado</button>`:`<button type="button" class="lnk d-open" data-m="desp">Despachar</button>`}
+      ${l.facturado?"":`<button type="button" class="lnk del d-revert">Volver a pendiente</button>`}</div>`;
+  return `<div class="ml" data-k="${esc(k)}">
+    <div class="ml-top"><b>${esc(l.cliente)}</b>${estBadge(l)}</div>
+    ${lineInfo(l,true)}${despInfo(l)}${factInfo(l)}${act}</div>`;
+}
+function despValid(o){
+  return /^[A-Z0-9]{17}$/.test(o.chasis) && o.ramv.trim() && (o.transporte==="NO" || (o.transporte==="SI" && Number(o.valor)>0));
+}
+function despForm(o){
+  return `<div class="ed">
+    <label class="f w2"><span>CHASIS * <em class="${o.chasis.length===17?"okc":""}">${o.chasis.length}/17</em></span><input data-d="chasis" value="${esc(o.chasis)}" maxlength="17" autocomplete="off" class="mono"></label>
+    <label class="f w2"><span>RAMV *</span><input data-d="ramv" value="${esc(o.ramv)}" autocomplete="off" class="mono"></label>
+    <label class="f w2"><span>MOTOR (opcional)</span><input data-d="motor" value="${esc(o.motor)}" autocomplete="off" class="mono"></label>
+    <label class="f w2"><span>GUÍA DE REMISIÓN (opcional)</span><input data-d="guia" value="${esc(o.guia)}" autocomplete="off"></label>
+    <div class="f w2"><span>ASIGNACIÓN DE TRANSPORTE *</span><div class="yn tr"><button type="button" data-v="SI" class="${o.transporte==="SI"?"on":""}">SÍ</button><button type="button" data-v="NO" class="${o.transporte==="NO"?"on":""}">NO</button></div></div>
+    ${o.transporte==="SI"?`<label class="f w2"><span>VALOR $ *</span><input data-d="valor" value="${esc(o.valor)}" inputmode="decimal" placeholder="0.00"></label>`:""}
+  </div>
+  <div class="ml-act"><span class="ml-note" style="margin:0;flex:1">Al guardar se marca la hora y la línea pasa a DESPACHADO.</span>
+    <button type="button" class="save d-ok" ${despValid(o)?"":"disabled"}>GUARDAR DESPACHO</button>
+    <button type="button" class="lnk d-cancel">Cancelar</button></div>`;
+}
+async function saveRol(r, l, item, btn, label){
+  btn.disabled = true; btn.textContent = "GUARDANDO…";
+  try{
+    let nl;
+    if(IS_DEMO){
+      const now = new Date(Date.now()-5*36e5).toISOString().slice(0,19)+"-05:00";
+      nl = {...l, ...item};
+      if(r==="logistica"){ if(item.estado!==l.estado) nl.tsDesp = item.estado==="PENDIENTE"?"":now;
+        if(item.estado==="DESPACHADO") nl.razonDesp=""; if(item.estado!=="DESPACHADO") Object.assign(nl,{chasis:"",ramv:"",motor:"",guia:"",transporte:"",valor:""});
+        if(item.estado==="NO DESPACHADO"){ nl.razonDesp=item.razon; nl.comentDesp=item.comentario; } }
+      else { if(item.facturado!==l.facturado) nl.tsFact=now; nl.razonFact=item.facturado==="NO"?item.razon:""; nl.comentFact=item.comentario; }
+    } else {
+      const j = await postJSON({action:r==="logistica"?"despachar":"facturar", key:ROL[r].key, items:[{uid:l.uid,linea:l.linea,...item}]});
+      nl = j.lineas[0];
+    }
+    Object.assign(l, nl); delete ROL[r].open[lkey(l)]; drawRol(r); toast(label);
+  }catch(err){ toast("No se guardó: "+err.message,true); btn.disabled=false; btn.textContent="REINTENTAR"; }
+}
+$("#logList").addEventListener("click",e=>{
+  const card = e.target.closest(".ml"); if(!card) return;
+  const R = ROL.logistica, k = card.dataset.k, l = R.lines.find(x=>lkey(x)===k);
+  const op = e.target.closest(".d-open");
+  if(op){ R.open[k] = op.dataset.m==="desp"
+      ? {modo:"desp",chasis:l.chasis||"",ramv:l.ramv||"",motor:l.motor||"",guia:l.guia||"",transporte:l.transporte||"",valor:l.valor===""||l.valor==null?"":String(l.valor)}
+      : {modo:"nod",razon:l.razonDesp||"",comentario:l.comentDesp||""};
+    drawLog(); return; }
+  if(e.target.closest(".d-cancel")){ delete R.open[k]; drawLog(); return; }
+  const yn = e.target.closest(".yn.tr button");
+  if(yn){ const o=R.open[k]; o.transporte=yn.dataset.v; if(o.transporte==="NO") o.valor=""; drawLog(); return; }
+  if(e.target.closest(".d-revert")){ saveRol("logistica", l, {estado:"PENDIENTE"}, e.target.closest(".d-revert"), "Línea devuelta a pendiente"); return; }
+  const ok = e.target.closest(".d-ok");
+  if(ok){ const o = R.open[k];
+    if(o.modo==="desp") saveRol("logistica", l, {estado:"DESPACHADO",chasis:o.chasis,ramv:o.ramv.trim().toUpperCase(),motor:o.motor.trim().toUpperCase(),guia:o.guia.trim().toUpperCase(),transporte:o.transporte,valor:o.transporte==="SI"?Number(o.valor):""}, ok, "Despacho registrado");
+    else saveRol("logistica", l, {estado:"NO DESPACHADO",razon:o.razon,comentario:o.comentario.trim()}, ok, "Registrado como no despachado");
+  }
+});
+$("#logList").addEventListener("input",e=>{
+  const f = e.target.dataset.d; if(!f) return;
+  const card = e.target.closest(".ml"), o = ROL.logistica.open[card.dataset.k];
+  if(f==="chasis"){ const pos=e.target.selectionStart; e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,""); e.target.setSelectionRange(pos,pos);
+    const em = card.querySelector("label em"); if(em){ em.textContent = e.target.value.length+"/17"; em.className = e.target.value.length===17?"okc":""; } }
+  if(f==="valor") e.target.value = e.target.value.replace(/[^0-9.]/g,"");
+  o[f] = e.target.value;
+  const ok = card.querySelector(".d-ok");
+  if(ok) ok.disabled = o.modo==="desp" ? !despValid(o) : !(o.razon && (o.razon!=="OTRO"||o.comentario.trim()));
+});
+$("#logList").addEventListener("change",e=>{
+  if(e.target.dataset.d!=="razon") return;
+  const k = e.target.closest(".ml").dataset.k; ROL.logistica.open[k].razon = e.target.value; drawLog();
+});
+
+/* ---- Coordinador ---- */
+function drawCoord(){
+  const R = ROL.coordinador, L = filtRol(R, R.lines);
+  const por = L.filter(l=>l.estado==="DESPACHADO" && !l.facturado).sort((a,b)=>a.tsDesp.localeCompare(b.tsDesp));
+  const fac = L.filter(l=>l.facturado==="SI").sort((a,b)=>b.tsFact.localeCompare(a.tsFact));
+  const nof = L.filter(l=>l.facturado==="NO").sort((a,b)=>b.tsFact.localeCompare(a.tsFact));
+  const sin = L.filter(l=>l.estado!=="DESPACHADO" && !l.facturado).sort((a,b)=>a.tsPed.localeCompare(b.tsPed));
+  $("#ckk").innerHTML = `<div>POR FACTURAR<b>${por.length}</b></div><div>FACTURADAS<b>${fac.length}</b></div><div>NO FACTURADAS<b>${nof.length}</b></div>
+    <div>SIN DESPACHAR<b>${sin.length}</b></div><div>MÁS ANTIGUO POR FACTURAR<b>${por.length?ageNow(por[0].tsDesp):"—"}</b></div>`;
+  setTabCounts("#coordTabs",{por:por.length,fac:fac.length,nof:nof.length,sin:sin.length});
+  const list = R.tab==="por" ? por : R.tab==="fac" ? fac : R.tab==="nof" ? nof : sin;
+  $("#coordList").innerHTML = list.length ? list.map(coordHTML).join("") : `<div class="empty-b">Sin líneas en esta pestaña</div>`;
+}
+function coordHTML(l){
+  const k = lkey(l), o = ROL.coordinador.open[k];
+  let act;
+  if(o){
+    const valid = o.facturado==="SI" || (o.facturado==="NO" && o.razon && (o.razon!=="OTRO" || o.comentario.trim()));
+    act = `<div class="ml-act">
+      <div class="yn fc"><button type="button" data-v="SI" class="${o.facturado==="SI"?"on":""}">Facturado</button><button type="button" data-v="NO" class="${o.facturado==="NO"?"on":""}">No facturado</button></div>
+      ${o.facturado==="NO"?`<select data-c="razon">${opts(RAZ,o.razon,"Razón…")}</select>
+        <input data-c="comentario" value="${esc(o.comentario)}" placeholder="${o.razon==="OTRO"?"Comentario (obligatorio)":"Comentario (opcional)"}">`:""}
+      <button type="button" class="save c-ok" ${valid?"":"disabled"}>GUARDAR</button>
+      <button type="button" class="lnk c-cancel">Cancelar</button></div>
+      ${l.estado!=="DESPACHADO"?`<div class="ml-note">Esta unidad aún no figura como despachada.</div>`:""}`;
+  } else act = `<div class="ml-act"><span class="ml-note" style="margin:0;flex:1">${l.estado==="DESPACHADO"&&!l.facturado?"Despachado hace "+ageNow(l.tsDesp):""}</span>
+      <button type="button" class="${l.facturado?"lnk":"save"} c-open">${l.facturado?"Corregir":"MARCAR FACTURACIÓN"}</button></div>`;
+  return `<div class="ml" data-k="${esc(k)}">
+    <div class="ml-top"><b>${esc(l.cliente)}</b>${estBadge(l)}</div>
+    ${lineInfo(l,true)}${despInfo(l)}${factInfo(l)}${act}</div>`;
+}
+$("#coordList").addEventListener("click",e=>{
+  const card = e.target.closest(".ml"); if(!card) return;
+  const R = ROL.coordinador, k = card.dataset.k, l = R.lines.find(x=>lkey(x)===k);
+  if(e.target.closest(".c-open")){ R.open[k] = {facturado:l.facturado||"",razon:l.razonFact||"",comentario:l.comentFact||""}; drawCoord(); return; }
+  if(e.target.closest(".c-cancel")){ delete R.open[k]; drawCoord(); return; }
+  const yn = e.target.closest(".yn.fc button");
+  if(yn){ const o=R.open[k]; o.facturado=yn.dataset.v; if(o.facturado==="SI") o.razon=""; drawCoord(); return; }
+  const ok = e.target.closest(".c-ok");
+  if(ok){ const o=R.open[k]; saveRol("coordinador", l, {facturado:o.facturado,razon:o.razon,comentario:o.comentario.trim()}, ok, "Facturación registrada"); }
+});
+$("#coordList").addEventListener("change",e=>{
+  if(e.target.dataset.c!=="razon") return;
+  const k=e.target.closest(".ml").dataset.k; ROL.coordinador.open[k].razon=e.target.value; drawCoord();
+});
+$("#coordList").addEventListener("input",e=>{
+  if(e.target.dataset.c!=="comentario") return;
+  const card=e.target.closest(".ml"), o=ROL.coordinador.open[card.dataset.k]; o.comentario=e.target.value;
+  card.querySelector(".c-ok").disabled = !(o.facturado==="SI" || (o.facturado==="NO" && o.razon && (o.razon!=="OTRO" || o.comentario.trim())));
+});
+
+/* ---- tabs, filtros y acceso por rol ---- */
+[["logistica","#logTabs","#logVen","#logQ"],["coordinador","#coordTabs","#coordVen","#coordQ"]].forEach(([r,tabs,ven,q])=>{
+  document.querySelectorAll(tabs+" button").forEach(b=>b.onclick=()=>{ document.querySelectorAll(tabs+" button").forEach(x=>x.classList.toggle("on",x===b)); ROL[r].tab=b.dataset.f; drawRol(r); });
+  $(ven).innerHTML = `<option value="">Todos los vendedores</option>` + Object.keys(VENDEDORES).map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join("");
+  $(ven).onchange = e=>{ ROL[r].ven = e.target.value; drawRol(r); };
+  $(q).oninput = e=>{ ROL[r].q = e.target.value; drawRol(r); };
+  $(ROL[r].btn).onclick = ()=>{
+    if(!$(ROL[r].sec).hidden){ ROL[r].key=""; try{localStorage.removeItem("hot_key_"+r);}catch(_){} setRol(r,false); toast("Sesión cerrada"); return; }
+    $("#rolOv").dataset.rol = r; $("#rolTitle").textContent = "ACCESO "+ROL[r].lbl.toUpperCase();
+    $("#rolErr").textContent=""; $("#rolPwd").value=""; $("#rolOv").classList.add("show"); setTimeout(()=>$("#rolPwd").focus(),50);
+  };
+  window.addEventListener("load",()=>loadRol(r));
+});
+$("#rolCancel").onclick = ()=>$("#rolOv").classList.remove("show");
+$("#rolForm").onsubmit = async e=>{
+  e.preventDefault();
+  const r = $("#rolOv").dataset.rol, v = $("#rolPwd").value.trim();
+  if(!v){ $("#rolErr").textContent="Ingresa la contraseña"; return; }
+  $("#rolBtn").disabled=true; $("#rolBtn").textContent="VERIFICANDO…";
+  ROL[r].key = v; const res = await loadRol(r);
+  $("#rolBtn").disabled=false; $("#rolBtn").textContent="ENTRAR";
+  if(res==="AUTH"){ $("#rolErr").textContent="Contraseña incorrecta"; return; }
+  if(res==="BLOQUEADO"){ $("#rolErr").textContent="Demasiados intentos. Espera 10 minutos."; return; }
+  try{ localStorage.setItem("hot_key_"+r, v); }catch(_){}
+  $("#rolOv").classList.remove("show");
+  setTimeout(()=>$(ROL[r].sec).scrollIntoView({behavior:"smooth"}),150);
+};
+// recarga automática cada 2 min de los paneles abiertos
+setInterval(()=>{ Object.keys(ROL).forEach(r=>{ if(!$(ROL[r].sec).hidden && !Object.keys(ROL[r].open).length) loadRol(r); }); }, 120000);
+
+/* ================= DEMO (?demo) ================= */
+let _demo = null;
+function demoLines(){
+  if(_demo) return _demo;
+  const ven = Object.keys(VENDEDORES), out = [], base = Date.now() - 6*864e5;
+  const isoAt = t => new Date(t-5*36e5).toISOString().slice(0,19)+"-05:00";
+  for(let i=0;i<36;i++){
+    const v = ven[i%5], cl = VENDEDORES[v].clientes, m = MODELOS[i%MODELOS.length], tp = base + i*3.7*36e5 + (i%4)*36e5;
+    const est = i<22 ? "DESPACHADO" : i<25 ? "NO DESPACHADO" : "PENDIENTE";
+    const td = est==="PENDIENTE" ? "" : isoAt(tp + (6+i%9*5)*36e5);
+    const fac = est==="DESPACHADO" ? (i<14?"SI":i<17?"NO":"") : "";
+    out.push({uid:"demo"+i, linea:1, id:"HO-DEMO-"+(100+i), tsPed:isoAt(tp), vendedor:v, zona:VENDEDORES[v].zona, cliente:cl[i%cl.length],
+      plazo:6+i%3, modelo:m, color:coloresDe(m)[0], anio:aniosDe(m)[0], precio:(PRECIOS[6+i%3]||{})[m]||0,
+      direccion:"AV. PRINCIPAL "+(100+i), provincia:["PICHINCHA","GUAYAS","MANABÍ","LOS RÍOS","NAPO"][i%5], ciudad:["QUITO","GUAYAQUIL","MANTA","BABAHOYO","TENA"][i%5],
+      estado:est, chasis:est==="DESPACHADO"?"MD2A21BX"+String(1e8+i).slice(1):"", ramv:est==="DESPACHADO"?"RV-"+(5000+i):"", motor:"", guia:i%2?"001-001-"+(900+i):"",
+      transporte:est==="DESPACHADO"?(i%3?"SI":"NO"):"", valor:est==="DESPACHADO"&&i%3?45+i:"", razonDesp:est==="NO DESPACHADO"?["SIN STOCK","CRÉDITO NO APROBADO","SIN STOCK"][i%3]:"", comentDesp:"",
+      tsDesp:td, facturado:fac, razonFact:fac==="NO"?["CRÉDITO NO APROBADO","DOCUMENTACIÓN INCOMPLETA","CLIENTE DESISTIÓ"][i%3]:"", comentFact:"",
+      tsFact:fac?isoAt(Date.parse(td)+(3+i%7*6)*36e5):"", anulado:i===35?"SI":"", motivoAnulacion:i===35?"CLIENTE YA NO DESEA":"", fechaAnulacion:""});
+  }
+  return _demo = out;
+}
 
 $("#lockBtn").onclick = ()=>{
   if(!$("#gerencia").hidden){ KEY=""; try{localStorage.removeItem("hot_key");}catch(_){} setLocked(true); toast("Sesión de gerencia cerrada"); return; }
@@ -976,6 +1335,10 @@ $("#bars").addEventListener("mousemove",e=>{const b=e.target.closest(".bar"); if
   dtip.innerHTML=b.dataset.tip; dtip.classList.add("show");
   dtip.style.left=Math.min(e.clientX+14,innerWidth-dtip.offsetWidth-8)+"px"; dtip.style.top=(e.clientY+14)+"px";});
 $("#bars").addEventListener("mouseleave",()=>dtip.classList.remove("show"));
+$("#hrs").addEventListener("mousemove",e=>{const b=e.target.closest(".hc"); if(!b){dtip.classList.remove("show");return;}
+  dtip.textContent=b.dataset.tip; dtip.classList.add("show");
+  dtip.style.left=Math.min(e.clientX+14,innerWidth-dtip.offsetWidth-8)+"px"; dtip.style.top=(e.clientY+14)+"px";});
+$("#hrs").addEventListener("mouseleave",()=>dtip.classList.remove("show"));
 function demoPed(){
   const c={SIERRA:[-0.18,-78.48],GUAYAS:[-2.17,-79.9],ORIENTE:[-1.49,-77.99],"MANABÍ":[-0.95,-80.72],"LOS RÍOS":[-1.8,-79.53]};
   return Array.from({length:30},(_,i)=>{const n=Object.keys(VENDEDORES)[i%5],z=VENDEDORES[n].zona,u=1+i%5;
