@@ -854,7 +854,7 @@ function drawCumplimiento(){
   }).sort((a,b)=>b.pa-a.pa||b.ped-a.ped);
   const T=k=>agg.reduce((s,a)=>s+a[k],0), P=T("ped"), A=T("asi"), F=T("fac");
   $("#ck").innerHTML = `<div>ASIGNACIÓN<b>${P?Math.round(A/P*100):0}%</b></div><div>FACTURACIÓN<b>${A?Math.round(F/A*100):0}%</b></div>
-    <div>PEDIDAS<b>${P}</b></div><div>ASIGNADAS<b>${A}</b></div><div>DESPACHADAS<b>${T("dsp")}</b></div><div>RECIBIDAS CLIENTE<b>${T("rec")}</b></div>
+    <div>PEDIDAS<b>${P}</b></div><div>ASIGNADAS<b>${A}</b></div><div>DESPACHADAS<b>${T("dsp")}</b></div><div>NO DESPACHADAS<b>${LINEAS.filter(l=>isAsig(l)&&l.despachado==="NO").length}</b></div><div>RECIBIDAS CLIENTE<b>${T("rec")}</b></div>
     <div>FACTURADAS<b>${F}</b></div><div>PEND. ASIGNACIÓN<b>${T("pend")}</b></div><div>POR FACTURAR<b>${T("sinFac")}</b></div>`;
   const mrow=(lb,num,den,pct,cls)=>`<div class="mrow"><span class="lb">${lb}</span><div class="meter ${cls}"><i style="width:${(pct*100).toFixed(1)}%"></i></div>
     <span class="fr">${num}/${den}</span><span class="pc">${den?Math.round(pct*100)+"%":"—"}</span></div>`;
@@ -943,7 +943,7 @@ function setTabCounts(sel, cnt){
 function estBadge(l){
   if(l.anulado==="SI") return `<span class="bdg">ANULADA</span>`;
   const e = l.estado==="ASIGNADO" ? `<span class="bdg ok">ASIGNADO</span>` : l.estado==="NO ASIGNADO" ? `<span class="bdg no">NO ASIGNADO</span>` : `<span class="bdg wt">PENDIENTE ASIGNACIÓN</span>`;
-  const d = isDesp(l) ? `<span class="bdg ok">DESPACHADO</span>` : "";
+  const d = isDesp(l) ? `<span class="bdg ok">DESPACHADO</span>` : isAsig(l)&&l.despachado==="NO" ? `<span class="bdg no">NO DESPACHADO</span>` : "";
   const rc = !isDesp(l) ? "" : l.recibido==="SI" ? `<span class="bdg ok">RECIBIDO</span>` : l.recibido==="NO" ? `<span class="bdg no">NO RECIBIDO</span>` : "";
   const f = l.facturado==="SI" ? `<span class="bdg ok">FACTURADO</span>` : l.facturado==="NO" ? `<span class="bdg no">NO FACTURADO</span>` : "";
   return `<span class="bdgs">${e}${d}${rc}${f}</span>`;
@@ -973,6 +973,7 @@ function asigInfo(l){
   return "";
 }
 function despInfo(l){
+  if(isAsig(l) && l.despachado==="NO") return `<div class="ml-done">No despachado ${fdt(l.tsDesp)} · <b>${esc(l.motivoDesp)}</b>${l.comentDesp?" — "+esc(l.comentDesp):""}</div>`;
   if(!isDesp(l)) return "";
   return `<div class="ml-done">Despachado ${fdt(l.tsDesp)}${l.tsAsig&&l.tsDesp?` · <span class="dim">${fmtDur(hrs(l.tsAsig,l.tsDesp))} desde la asignación</span>`:""}${l.comentDesp?" — "+esc(l.comentDesp):""}</div>`;
 }
@@ -1114,6 +1115,7 @@ const ROL = {
 };
 let RAZ = ["CLIENTE DESISTIÓ","CRÉDITO NO APROBADO","CAMBIO DE MODELO / COLOR","PRECIO / CONDICIONES","DOCUMENTACIÓN INCOMPLETA","UNIDAD CON DAÑO / NOVEDAD","OTRO"];
 let RAZ_A = ["SIN STOCK"].concat(RAZ);
+let MOT_DESP = ["SIN TRANSPORTE DISPONIBLE","CLIENTE PIDIÓ POSTERGAR","DIRECCIÓN INCORRECTA / INCOMPLETA","PENDIENTE DE PAGO / CRÉDITO","DOCUMENTACIÓN INCOMPLETA","UNIDAD CON DAÑO / NOVEDAD","OTRO"];
 let MOT_REC = ["CLIENTE AUSENTE / LOCAL CERRADO","DIRECCIÓN INCORRECTA","CLIENTE RECHAZÓ LA UNIDAD","UNIDAD CON DAÑO / NOVEDAD","DOCUMENTACIÓN INCOMPLETA","OTRO"];
 Object.keys(ROL).forEach(r=>{ try{ ROL[r].key = localStorage.getItem("hot_key_"+r)||""; }catch(_){} });
 function setRol(r,on){
@@ -1128,7 +1130,7 @@ async function loadRol(r){
       const j = await (await fetch(`${SCRIPT_URL}?action=rol&rol=${r}&key=${encodeURIComponent(R.key)}&_=${Date.now()}`)).json();
       if(!j.ok && (j.error==="AUTH"||j.error==="BLOQUEADO")){ const e=j.error; R.key=""; try{localStorage.removeItem("hot_key_"+r);}catch(_){} setRol(r,false); return e; }
       if(!j.ok) throw new Error(j.error);
-      R.lines = j.lineas||[]; if(j.razones) RAZ=j.razones; if(j.razonesAsig) RAZ_A=j.razonesAsig; if(j.motivosRec) MOT_REC=j.motivosRec;
+      R.lines = j.lineas||[]; if(j.razones) RAZ=j.razones; if(j.razonesAsig) RAZ_A=j.razonesAsig; if(j.motivosDesp) MOT_DESP=j.motivosDesp; if(j.motivosRec) MOT_REC=j.motivosRec;
     }
   }catch(e){ setRol(r,true); $(R.sec+" .rlist").innerHTML = `<div class="empty-b">No se pudo cargar: ${esc(e.message)}</div>`; return false; }
   setRol(r,true); drawRol(r); return true;
@@ -1149,7 +1151,7 @@ function drawLog(){
   const hoy = new Date().toLocaleDateString("en-CA",{timeZone:"America/Guayaquil"});
   $("#lk").innerHTML = `<div>PEND. ASIGNAR<b>${pend.length}</b></div><div>ASIGNADAS HOY<b>${asi.filter(l=>ts(l.tsAsig).startsWith(hoy)).length}</b></div>
     <div>ASIGNADAS<b>${asi.length}</b></div><div>POR DESPACHAR<b>${asi.filter(l=>pasoLog(l)===0).length}</b></div>
-    <div>POR CONFIRMAR RECEPCIÓN<b>${asi.filter(l=>pasoLog(l)===1).length}</b></div><div>NO ASIGNADAS<b>${noa.length}</b></div>
+    <div>NO DESPACHADAS<b>${asi.filter(l=>l.despachado==="NO").length}</b></div><div>POR CONFIRMAR RECEPCIÓN<b>${asi.filter(l=>pasoLog(l)===1).length}</b></div><div>NO ASIGNADAS<b>${noa.length}</b></div>
     <div>PENDIENTE MÁS ANTIGUO<b>${pend.length?ageNow(pend[0].tsPed):"—"}</b></div>`;
   setTabCounts("#logTabs",{pend:pend.length,des:asi.length,nod:noa.length});
   const list = R.tab==="pend" ? pend : R.tab==="des" ? asi : noa;
@@ -1167,16 +1169,15 @@ function logHTML(l){
     <div class="ml-act"><span style="flex:1"></span>
       <button type="button" class="save d-ok" ${o.razon&&(o.razon!=="OTRO"||o.comentario.trim())?"":"disabled"}>CONFIRMAR NO ASIGNACIÓN</button>
       <button type="button" class="lnk d-cancel">Cancelar</button></div>`;
-  else if(o && o.modo==="dsp") act = `<div class="ed">
-      <label class="f w2"><span>COMENTARIO DESPACHO (opcional)</span><input data-d="comentario" value="${esc(o.comentario)}"></label></div>
-    <div class="ml-act"><span class="ml-note" style="margin:0;flex:1">Al confirmar se marca la fecha y hora de despacho.</span>
-      <button type="button" class="save d-ok">CONFIRMAR DESPACHO</button>
-      <button type="button" class="lnk d-cancel">Cancelar</button></div>`;
+  else if(o && o.modo==="dsp") act = dspForm(o);
   else if(o && o.modo==="rec") act = recForm(o);
   else if(l.estado==="PENDIENTE") act = `<div class="ml-act"><span class="ml-note" style="margin:0;flex:1">Esperando ${ageNow(l.tsPed)}</span>
       ${B("save","asig","ASIGNAR")}${B("lnk del","nod","No se asigna")}</div>`;
   else if(l.estado==="NO ASIGNADO") act = `<div class="ml-act"><span style="flex:1"></span>
       ${B("lnk","nod","Corregir")}${B("lnk","asig","Asignar")}${revert}</div>`;
+  else if(l.despachado==="NO") act = `<div class="ml-act"><span class="ml-note" style="margin:0;flex:1">No despachado hace ${ageNow(l.tsDesp)}</span>
+      ${B("save","dsp","CONFIRMAR DESPACHO")}${B("lnk","asig","Corregir asignación")}
+      <button type="button" class="lnk del x-undo" data-x="despacho">Deshacer despacho</button></div>`;
   else if(pasoLog(l)===0) act = `<div class="ml-act"><span class="ml-note" style="margin:0;flex:1">Asignado hace ${ageNow(l.tsAsig)}</span>
       ${B("save","dsp","CONFIRMAR DESPACHO")}${B("lnk","asig","Corregir")}${B("lnk","nod","Cambiar a no asignado")}${revert}</div>`;
   else if(pasoLog(l)===1) act = `<div class="ml-act"><span class="ml-note" style="margin:0;flex:1">En tránsito · ${ageNow(l.tsDesp)}</span>
@@ -1205,6 +1206,17 @@ function asigForm(o){
     <button type="button" class="save d-ok" ${asigValid(o)?"":"disabled"}>GUARDAR ASIGNACIÓN</button>
     <button type="button" class="lnk d-cancel">Cancelar</button></div>`;
 }
+function dspValid(o){ return o.despachado==="SI" || (o.despachado==="NO" && !!o.motivo); }
+function dspForm(o){
+  return `<div class="ed">
+    <div class="f w2"><span>¿SE DESPACHÓ LA UNIDAD? *</span><div class="yn dp"><button type="button" data-v="SI" class="${o.despachado==="SI"?"on":""}">SÍ</button><button type="button" data-v="NO" class="${o.despachado==="NO"?"on":""}">NO</button></div></div>
+    ${o.despachado==="NO"?`<label class="f w2"><span>MOTIVO *</span><select data-d="motivo">${opts(MOT_DESP,o.motivo,"Motivo…")}</select></label>`:""}
+    <label class="f w2"><span>COMENTARIO (opcional)</span><input data-d="comentario" value="${esc(o.comentario)}"></label>
+  </div>
+  <div class="ml-act"><span class="ml-note" style="margin:0;flex:1">Se marca la fecha y hora del despacho.</span>
+    <button type="button" class="save d-ok" ${dspValid(o)?"":"disabled"}>GUARDAR DESPACHO</button>
+    <button type="button" class="lnk d-cancel">Cancelar</button></div>`;
+}
 function recValid(o){ return o.recibido==="SI" || (o.recibido==="NO" && !!o.motivo); }
 function recForm(o){
   return `<div class="ed">
@@ -1227,7 +1239,8 @@ async function saveRol(r, l, item, btn, label){
       if(action==="asignar"){ if(item.estado!==l.estado) nl.tsAsig = item.estado==="PENDIENTE"?"":now;
         if(item.estado==="ASIGNADO") Object.assign(nl,{razonAsig:"",comentAsig:""});
         else Object.assign(nl,{chasis:"",ramv:"",motor:"",guia:"",transporte:"",valor:"",razonAsig:item.razon||"",comentAsig:item.comentario||""}); }
-      else if(action==="despacho"){ nl.tsDesp = item.despachado==="SI" ? (l.despachado==="SI"?l.tsDesp:now) : ""; nl.comentDesp = item.despachado==="SI"?item.comentario:""; }
+      else if(action==="despacho"){ nl.tsDesp = item.despachado ? (item.despachado===l.despachado?l.tsDesp:now) : "";
+        Object.assign(nl,{motivoDesp:item.despachado==="NO"?item.motivo:"",comentDesp:item.despachado?item.comentario:""}); }
       else if(action==="recibir"){ if(item.recibido!==l.recibido) nl.tsRec = item.recibido?now:"";
         Object.assign(nl,{motivoRec:item.recibido==="NO"?item.motivo:"",comentRec:item.recibido?item.comentario:""}); }
       else { if(item.facturado!==l.facturado) nl.tsFact=now; nl.razonFact=item.facturado==="NO"?item.razon:""; nl.comentFact=item.comentario; }
@@ -1236,7 +1249,9 @@ async function saveRol(r, l, item, btn, label){
       nl = j.lineas[0];
     }
     Object.assign(l, nl); delete ROL[r].open[lkey(l)]; drawRol(r); toast(label);
-  }catch(err){ toast("No se guardó: "+err.message,true); btn.disabled=false; btn.textContent="REINTENTAR"; }
+  }catch(err){
+    const m = /Pedido vacío/.test(err.message) ? "el Apps Script no tiene la versión nueva (Implementar → Nueva versión)" : err.message;
+    toast("No se guardó: "+m,true); btn.disabled=false; btn.textContent="REINTENTAR"; }
 }
 $("#logList").addEventListener("click",e=>{
   const card = e.target.closest(".ml"); if(!card) return;
@@ -1244,25 +1259,27 @@ $("#logList").addEventListener("click",e=>{
   const op = e.target.closest(".d-open");
   if(op){ const m = op.dataset.m;
     R.open[k] = m==="asig" ? {modo:"asig",chasis:l.chasis||"",ramv:l.ramv||"",motor:l.motor||"",guia:l.guia||"",transporte:l.transporte||"",valor:l.valor===""||l.valor==null?"":String(l.valor)}
-      : m==="dsp" ? {modo:"dsp",comentario:l.comentDesp||""}
+      : m==="dsp" ? {modo:"dsp",despachado:l.despachado||"",motivo:l.motivoDesp||"",comentario:l.comentDesp||""}
       : m==="rec" ? {modo:"rec",recibido:l.recibido||"",motivo:l.motivoRec||"",comentario:l.comentRec||""}
       : {modo:"nod",razon:l.razonAsig||"",comentario:l.comentAsig||""};
     drawLog(); return; }
   if(e.target.closest(".d-cancel")){ delete R.open[k]; drawLog(); return; }
   const yn = e.target.closest(".yn.tr button");
   if(yn){ const o=R.open[k]; o.transporte=yn.dataset.v; if(o.transporte==="NO") o.valor=""; drawLog(); return; }
+  const yd = e.target.closest(".yn.dp button");
+  if(yd){ const o=R.open[k]; o.despachado=yd.dataset.v; if(o.despachado==="SI") o.motivo=""; drawLog(); return; }
   const yr = e.target.closest(".yn.rc button");
   if(yr){ const o=R.open[k]; o.recibido=yr.dataset.v; if(o.recibido==="SI") o.motivo=""; drawLog(); return; }
   const un = e.target.closest(".x-undo");
   if(un){ un.dataset.x==="despacho"
-      ? saveRol("logistica", l, {_action:"despacho",despachado:"",comentario:""}, un, "Despacho deshecho")
+      ? saveRol("logistica", l, {_action:"despacho",despachado:"",motivo:"",comentario:""}, un, "Despacho deshecho")
       : saveRol("logistica", l, {_action:"recibir",recibido:"",motivo:"",comentario:""}, un, "Recepción deshecha");
     return; }
   if(e.target.closest(".d-revert")){ saveRol("logistica", l, {estado:"PENDIENTE"}, e.target.closest(".d-revert"), "Línea devuelta a pendiente"); return; }
   const ok = e.target.closest(".d-ok");
   if(ok){ const o = R.open[k];
     if(o.modo==="asig") saveRol("logistica", l, {estado:"ASIGNADO",chasis:o.chasis,ramv:o.ramv.trim().toUpperCase(),motor:o.motor.trim().toUpperCase(),guia:o.guia.trim().toUpperCase(),transporte:o.transporte,valor:o.transporte==="SI"?Number(o.valor):""}, ok, "Asignación registrada");
-    else if(o.modo==="dsp") saveRol("logistica", l, {_action:"despacho",despachado:"SI",comentario:o.comentario.trim()}, ok, "Despacho confirmado");
+    else if(o.modo==="dsp") saveRol("logistica", l, {_action:"despacho",despachado:o.despachado,motivo:o.motivo,comentario:o.comentario.trim()}, ok, o.despachado==="SI"?"Despacho confirmado":"Registrado como no despachado");
     else if(o.modo==="rec") saveRol("logistica", l, {_action:"recibir",recibido:o.recibido,motivo:o.motivo,comentario:o.comentario.trim()}, ok, o.recibido==="SI"?"Recepción confirmada":"Registrado como no recibido");
     else saveRol("logistica", l, {estado:"NO ASIGNADO",razon:o.razon,comentario:o.comentario.trim()}, ok, "Registrado como no asignado");
   }
@@ -1275,7 +1292,7 @@ $("#logList").addEventListener("input",e=>{
   if(f==="valor") e.target.value = e.target.value.replace(/[^0-9.]/g,"");
   o[f] = e.target.value;
   const ok = card.querySelector(".d-ok");
-  if(ok) ok.disabled = o.modo==="asig" ? !asigValid(o) : o.modo==="dsp" ? false : o.modo==="rec" ? !recValid(o) : !(o.razon && (o.razon!=="OTRO"||o.comentario.trim()));
+  if(ok) ok.disabled = o.modo==="asig" ? !asigValid(o) : o.modo==="dsp" ? !dspValid(o) : o.modo==="rec" ? !recValid(o) : !(o.razon && (o.razon!=="OTRO"||o.comentario.trim()));
 });
 $("#logList").addEventListener("change",e=>{
   const f = e.target.dataset.d; if(f!=="razon" && f!=="motivo") return;
@@ -1373,16 +1390,16 @@ function demoLines(){
     const v = ven[i%5], cl = VENDEDORES[v].clientes, m = MODELOS[i%MODELOS.length], tp = base + i*3.7*36e5 + (i%4)*36e5;
     const est = i<22 ? "ASIGNADO" : i<25 ? "NO ASIGNADO" : "PENDIENTE", A = est==="ASIGNADO";
     const ta = est==="PENDIENTE" ? "" : isoAt(tp + (6+i%9*5)*36e5);
-    const dsp = A && i<16 ? "SI" : "";
+    const dsp = A && i<16 ? "SI" : A && i<18 ? "NO" : "";
     const td = dsp ? isoAt(Date.parse(ta)+(4+i%5*3)*36e5) : "";
-    const rec = dsp ? (i<8?"SI":i<10?"NO":"") : "";
+    const rec = dsp==="SI" ? (i<8?"SI":i<10?"NO":"") : "";
     const fac = A ? (i<14?"SI":i<17?"NO":"") : "";
     out.push({uid:"demo"+i, linea:1, id:"HO-DEMO-"+(100+i), tsPed:isoAt(tp), vendedor:v, zona:VENDEDORES[v].zona, cliente:cl[i%cl.length],
       plazo:6+i%3, modelo:m, color:coloresDe(m)[0], anio:aniosDe(m)[0], precio:(PRECIOS[6+i%3]||{})[m]||0,
       direccion:"AV. PRINCIPAL "+(100+i), provincia:["PICHINCHA","GUAYAS","MANABÍ","LOS RÍOS","NAPO"][i%5], ciudad:["QUITO","GUAYAQUIL","MANTA","BABAHOYO","TENA"][i%5],
       estado:est, chasis:A?"MD2A21BX"+String(1e8+i).slice(1):"", ramv:A&&i%4?"RV-"+(5000+i):"", motor:"", guia:i%2?"001-001-"+(900+i):"",
       transporte:A?(i%3?"SI":"NO"):"", valor:A&&i%3?45+i:"", razonAsig:est==="NO ASIGNADO"?["SIN STOCK","CRÉDITO NO APROBADO","SIN STOCK"][i%3]:"", comentAsig:"", tsAsig:ta,
-      despachado:dsp, tsDesp:td, comentDesp:"",
+      despachado:dsp, motivoDesp:dsp==="NO"?"SIN TRANSPORTE DISPONIBLE":"", tsDesp:td, comentDesp:"",
       recibido:rec, motivoRec:rec==="NO"?["CLIENTE AUSENTE / LOCAL CERRADO","DIRECCIÓN INCORRECTA"][i%2]:"", tsRec:rec?isoAt(Date.parse(td)+(20+i*3)*36e5):"", comentRec:"",
       facturado:fac, razonFact:fac==="NO"?["CRÉDITO NO APROBADO","DOCUMENTACIÓN INCOMPLETA","CLIENTE DESISTIÓ"][i%3]:"", comentFact:"",
       tsFact:fac?isoAt(Date.parse(ta)+(3+i%7*6)*36e5):"",
