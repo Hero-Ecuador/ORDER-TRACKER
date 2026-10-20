@@ -204,7 +204,7 @@ select option{background:#1D2026}
 .yn.fc button.on[data-v=NO]{background:var(--red-soft);color:var(--red-2)}
 .yn{align-self:flex-start}
 .rz2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.tts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:8px}
+.tts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:8px}
 .tt{background:var(--card-2);border:1px solid var(--line);border-radius:12px;padding:12px}
 .tt span{display:block;font-size:10px;letter-spacing:1.2px;color:var(--muted);font-weight:600;min-height:26px}
 .tt b{display:block;font-family:"Barlow Condensed";font-weight:800;font-size:28px;margin:4px 0 2px;font-variant-numeric:tabular-nums}
@@ -308,11 +308,11 @@ table.tv .rt{text-align:right;font-variant-numeric:tabular-nums}
   </section>
 
   <section class="card det">
-    <div class="head"><div class="step">04</div><h2>Cumplimiento</h2><span class="muted">Pedidas → Despachadas → Facturadas</span></div>
+    <div class="head"><div class="step">04</div><h2>Cumplimiento</h2><span class="muted">Pedidas → Asignadas → Facturadas</span></div>
     <div class="dk" id="ck"></div>
     <div class="cum" id="cum"></div>
     <div class="rz2">
-      <div><div class="dmap-h"><span>RAZONES DE NO DESPACHO</span></div><div class="bars" id="rzD"></div></div>
+      <div><div class="dmap-h"><span>RAZONES DE NO ASIGNACIÓN</span></div><div class="bars" id="rzD"></div></div>
       <div><div class="dmap-h"><span>RAZONES DE NO FACTURACIÓN</span></div><div class="bars" id="rzF"></div></div>
     </div>
   </section>
@@ -322,7 +322,7 @@ table.tv .rt{text-align:right;font-variant-numeric:tabular-nums}
     <div class="tts" id="tk"></div>
     <div class="ml-note" id="tNote"></div>
     <div class="dmap-h"><span>POR VENDEDOR</span></div>
-    <div class="tbl"><table class="tv"><thead><tr><th>VENDEDOR</th><th class="rt">UNIDADES</th><th class="rt">PEDIDO → DESPACHO</th><th class="rt">DESPACHO → FACTURA</th><th class="rt">% DESPACHO</th><th class="rt">% FACTURACIÓN</th></tr></thead><tbody id="tvTb"></tbody></table></div>
+    <div class="tbl"><table class="tv"><thead><tr><th>VENDEDOR</th><th class="rt">UNIDADES</th><th class="rt">PEDIDO → ASIGNACIÓN</th><th class="rt">ASIGNACIÓN → FACTURA</th><th class="rt">% ASIGNACIÓN</th><th class="rt">% FACTURACIÓN</th></tr></thead><tbody id="tvTb"></tbody></table></div>
     <div class="dmap-h"><span>¿A QUÉ HORA PIDEN LOS VENDEDORES?</span><span id="hrsPk"></span></div>
     <div class="hrs" id="hrs"></div>
   </section>
@@ -332,21 +332,21 @@ table.tv .rt{text-align:right;font-variant-numeric:tabular-nums}
     <div class="head"><div class="step">VEN</div><h2>Mis pedidos</h2><span class="muted" id="misWho"></span></div>
     <div class="dk" id="mk"></div>
     <div class="tabs" id="misTabs">
-      <button type="button" data-f="pend" class="on">Pendientes de despacho</button>
-      <button type="button" data-f="des">Despachados</button>
-      <button type="button" data-f="nod">No despachados</button>
+      <button type="button" data-f="pend" class="on">Pendientes de asignar</button>
+      <button type="button" data-f="des">Asignados</button>
+      <button type="button" data-f="nod">No asignados</button>
       <button type="button" data-f="all">Todas</button>
     </div>
     <div id="misList" class="mlist"></div>
   </section>
 
   <section class="card det" id="logSec" hidden>
-    <div class="head"><div class="step">LOG</div><h2>Logística</h2><span class="muted">Despachos</span></div>
+    <div class="head"><div class="step">LOG</div><h2>Logística</h2><span class="muted">Asignación · Despacho · Recepción</span></div>
     <div class="dk" id="lk"></div>
     <div class="tabs" id="logTabs">
-      <button type="button" data-f="pend" class="on">Pendiente de despachar</button>
-      <button type="button" data-f="des">Despachado</button>
-      <button type="button" data-f="nod">No despachado</button>
+      <button type="button" data-f="pend" class="on">Pendiente de asignar</button>
+      <button type="button" data-f="des">Asignado</button>
+      <button type="button" data-f="nod">No asignado</button>
     </div>
     <div class="rfil"><select id="logVen"></select><input id="logQ" placeholder="Buscar cliente, chasis, ID, ciudad…"></div>
     <div id="logList" class="mlist rlist"></div>
@@ -359,7 +359,7 @@ table.tv .rt{text-align:right;font-variant-numeric:tabular-nums}
       <button type="button" data-f="por" class="on">Por facturar</button>
       <button type="button" data-f="fac">Facturado</button>
       <button type="button" data-f="nof">No facturado</button>
-      <button type="button" data-f="sin">Sin despachar</button>
+      <button type="button" data-f="sin">Sin asignar</button>
     </div>
     <div class="rfil"><select id="coordVen"></select><input id="coordQ" placeholder="Buscar cliente, chasis, ID, ciudad…"></div>
     <div id="coordList" class="mlist rlist"></div>
@@ -832,7 +832,11 @@ const fdt = s => s ? s.slice(0,10)+" "+s.slice(11,16) : "—";
 const ageNow = s => s ? fmtDur((Date.now()-Date.parse(s))/36e5) : "—";
 
 /* ================= 04 CUMPLIMIENTO ================= */
+// Flujo por unidad: PENDIENTE → ASIGNADO ─┬→ DESPACHADO → RECIBIDO SI/NO   (Logística)
+//                                        └→ FACTURADO SI/NO               (Coordinador)
 let LINEAS = [];
+const isAsig = l => l.estado==="ASIGNADO";
+const isDesp = l => isAsig(l) && l.despachado==="SI";
 function barList(obj, emptyTxt){
   const ks=Object.keys(obj).sort((a,b)=>obj[b]-obj[a]), mx=Math.max(1,...ks.map(k=>obj[k])), tot=ks.reduce((s,k)=>s+obj[k],0);
   return ks.length ? ks.map(k=>`<div class="bar"><div class="n">${esc(k)}</div>
@@ -842,54 +846,64 @@ function barList(obj, emptyTxt){
 function drawCumplimiento(){
   const agg = Object.keys(VENDEDORES).map(n=>{
     const L = LINEAS.filter(l=>l.vendedor===n);
-    const ped=L.length, des=L.filter(l=>l.estado==="DESPACHADO").length, nod=L.filter(l=>l.estado==="NO DESPACHADO").length;
+    const ped=L.length, asi=L.filter(isAsig).length, noa=L.filter(l=>l.estado==="NO ASIGNADO").length;
+    const dsp=L.filter(isDesp).length, rec=L.filter(l=>isDesp(l)&&l.recibido==="SI").length;
     const fac=L.filter(l=>l.facturado==="SI").length, nof=L.filter(l=>l.facturado==="NO").length;
-    const sinFac=L.filter(l=>l.estado==="DESPACHADO" && !l.facturado).length;
-    return {n,z:VENDEDORES[n].zona,ped,des,nod,fac,nof,sinFac,pend:ped-des-nod,anu:ANULG[n]||0,pd:ped?des/ped:0,pf:des?fac/des:0};
-  }).sort((a,b)=>b.pd-a.pd||b.ped-a.ped);
-  const T=k=>agg.reduce((s,a)=>s+a[k],0), P=T("ped"), D=T("des"), F=T("fac");
-  $("#ck").innerHTML = `<div>DESPACHO<b>${P?Math.round(D/P*100):0}%</b></div><div>FACTURACIÓN<b>${D?Math.round(F/D*100):0}%</b></div>
-    <div>PEDIDAS<b>${P}</b></div><div>DESPACHADAS<b>${D}</b></div><div>FACTURADAS<b>${F}</b></div>
-    <div>PEND. DESPACHO<b>${T("pend")}</b></div><div>POR FACTURAR<b>${T("sinFac")}</b></div>`;
+    const sinFac=L.filter(l=>isAsig(l) && !l.facturado).length;
+    return {n,z:VENDEDORES[n].zona,ped,asi,noa,dsp,rec,fac,nof,sinFac,pend:ped-asi-noa,anu:ANULG[n]||0,pa:ped?asi/ped:0,pf:asi?fac/asi:0};
+  }).sort((a,b)=>b.pa-a.pa||b.ped-a.ped);
+  const T=k=>agg.reduce((s,a)=>s+a[k],0), P=T("ped"), A=T("asi"), F=T("fac");
+  $("#ck").innerHTML = `<div>ASIGNACIÓN<b>${P?Math.round(A/P*100):0}%</b></div><div>FACTURACIÓN<b>${A?Math.round(F/A*100):0}%</b></div>
+    <div>PEDIDAS<b>${P}</b></div><div>ASIGNADAS<b>${A}</b></div><div>DESPACHADAS<b>${T("dsp")}</b></div><div>RECIBIDAS CLIENTE<b>${T("rec")}</b></div>
+    <div>FACTURADAS<b>${F}</b></div><div>PEND. ASIGNACIÓN<b>${T("pend")}</b></div><div>POR FACTURAR<b>${T("sinFac")}</b></div>`;
   const mrow=(lb,num,den,pct,cls)=>`<div class="mrow"><span class="lb">${lb}</span><div class="meter ${cls}"><i style="width:${(pct*100).toFixed(1)}%"></i></div>
     <span class="fr">${num}/${den}</span><span class="pc">${den?Math.round(pct*100)+"%":"—"}</span></div>`;
   $("#cum").innerHTML = agg.map(a=>`<div class="cv">
       <div class="n">${esc(a.n)}<small>${esc(a.z)}</small></div>
-      <div class="ms">${mrow("DESPACHO",a.des,a.ped,a.pd,"")}${mrow("FACTURACIÓN",a.fac,a.des,a.pf,"f")}
-        ${(a.pend||a.sinFac||a.nod||a.anu)?`<div class="pend">${[a.pend?a.pend+" pendiente(s) de despacho":"",a.nod?a.nod+" no despachada(s)":"",
-          a.sinFac?a.sinFac+" despachada(s) por facturar":"",a.anu?a.anu+" anulada(s) por el vendedor":""].filter(Boolean).join(" · ")}</div>`:""}</div>
+      <div class="ms">${mrow("ASIGNACIÓN",a.asi,a.ped,a.pa,"")}${mrow("FACTURACIÓN",a.fac,a.asi,a.pf,"f")}
+        ${(a.pend||a.sinFac||a.noa||a.anu)?`<div class="pend">${[a.pend?a.pend+" pendiente(s) de asignación":"",a.noa?a.noa+" no asignada(s)":"",
+          a.sinFac?a.sinFac+" asignada(s) por facturar":"",a.anu?a.anu+" anulada(s) por el vendedor":""].filter(Boolean).join(" · ")}</div>`:""}</div>
     </div>`).join("");
   const rd={}, rf={};
-  LINEAS.forEach(l=>{ if(l.estado==="NO DESPACHADO"){ const k=l.razonDesp||"SIN RAZÓN"; rd[k]=(rd[k]||0)+1; }
+  LINEAS.forEach(l=>{ if(l.estado==="NO ASIGNADO"){ const k=l.razonAsig||"SIN RAZÓN"; rd[k]=(rd[k]||0)+1; }
                       if(l.facturado==="NO"){ const k=l.razonFact||"SIN RAZÓN"; rf[k]=(rf[k]||0)+1; } });
-  $("#rzD").innerHTML = barList(rd,"Sin unidades marcadas como no despachadas");
+  $("#rzD").innerHTML = barList(rd,"Sin unidades marcadas como no asignadas");
   $("#rzF").innerHTML = barList(rf,"Sin unidades marcadas como no facturadas");
 }
 
 /* ================= 05 TIEMPOS ================= */
 function drawTiempos(){
-  const tD = LINEAS.map(l=>hrs(l.tsPed,l.tsDesp)).filter(x=>x!=null && x>=0);
-  const tF = LINEAS.map(l=>hrs(l.tsDesp,l.tsFact)).filter(x=>x!=null && x>=0);
-  const tT = LINEAS.map(l=>hrs(l.tsPed,l.tsFact)).filter(x=>x!=null && x>=0);
-  const antes = LINEAS.filter(l=>l.tsFact && (!l.tsDesp || Date.parse(l.tsFact)<Date.parse(l.tsDesp))).length;
+  const pos = a => a.filter(x=>x!=null && x>=0);
+  const tA = pos(LINEAS.map(l=>hrs(l.tsPed,l.tsAsig)));                                  // logística: pedido → asignación
+  const tD = pos(LINEAS.filter(isDesp).map(l=>hrs(l.tsAsig,l.tsDesp)));                  // logística: asignación → despacho
+  const tR = pos(LINEAS.filter(l=>isDesp(l)&&l.recibido).map(l=>hrs(l.tsDesp,l.tsRec))); // tránsito: despacho → recepción
+  const tF = pos(LINEAS.map(l=>hrs(l.tsAsig,l.tsFact)));                                 // coordinador: asignación → factura
+  const tT = pos(LINEAS.map(l=>hrs(l.tsPed,l.tsFact)));
+  const antes = LINEAS.filter(l=>l.tsFact && (!l.tsAsig || Date.parse(l.tsFact)<Date.parse(l.tsAsig))).length;
   const pend = LINEAS.filter(l=>l.estado==="PENDIENTE" && l.tsPed).sort((a,b)=>a.tsPed.localeCompare(b.tsPed));
-  const porF = LINEAS.filter(l=>l.estado==="DESPACHADO" && !l.facturado && l.tsDesp).sort((a,b)=>a.tsDesp.localeCompare(b.tsDesp));
+  const porF = LINEAS.filter(l=>isAsig(l) && !l.facturado && l.tsAsig).sort((a,b)=>a.tsAsig.localeCompare(b.tsAsig));
+  const porR = LINEAS.filter(l=>isDesp(l) && !l.recibido && l.tsDesp).sort((a,b)=>a.tsDesp.localeCompare(b.tsDesp));
   const tile=(lb,h,sub)=>`<div class="tt"><span>${lb}</span><b>${fmtDur(h)}</b><small>${sub}</small></div>`;
+  const st = a => `promedio · mediana ${fmtDur(med(a))} · ${a.length} u.`;
+  const age = s => (Date.now()-Date.parse(s))/36e5;
   $("#tk").innerHTML =
-    tile("LOGÍSTICA · PEDIDO → DESPACHO", avg(tD), `promedio · mediana ${fmtDur(med(tD))} · ${tD.length} u.`) +
-    tile("COORDINADOR · DESPACHO → FACTURA", avg(tF), `promedio · mediana ${fmtDur(med(tF))} · ${tF.length} u.`) +
-    tile("TOTAL · PEDIDO → FACTURA", avg(tT), `promedio · mediana ${fmtDur(med(tT))} · ${tT.length} u.`) +
-    tile("PENDIENTE MÁS ANTIGUO (DESPACHO)", pend.length?(Date.now()-Date.parse(pend[0].tsPed))/36e5:null, pend.length?`${esc(pend[0].cliente)} · ${pend.length} pendiente(s)`:"sin pendientes") +
-    tile("DESPACHADO SIN FACTURAR MÁS ANTIGUO", porF.length?(Date.now()-Date.parse(porF[0].tsDesp))/36e5:null, porF.length?`${esc(porF[0].cliente)} · ${porF.length} por facturar`:"sin pendientes");
-  $("#tNote").textContent = antes ? `${antes} unidad(es) se facturaron antes del despacho (no entran en "despacho → factura").` : "";
+    tile("LOGÍSTICA · PEDIDO → ASIGNACIÓN", avg(tA), st(tA)) +
+    tile("LOGÍSTICA · ASIGNACIÓN → DESPACHO", avg(tD), st(tD)) +
+    tile("TRÁNSITO · DESPACHO → RECEPCIÓN", avg(tR), st(tR)) +
+    tile("COORDINADOR · ASIGNACIÓN → FACTURA", avg(tF), st(tF)) +
+    tile("TOTAL · PEDIDO → FACTURA", avg(tT), st(tT)) +
+    tile("PENDIENTE DE ASIGNAR MÁS ANTIGUO", pend.length?age(pend[0].tsPed):null, pend.length?`${esc(pend[0].cliente)} · ${pend.length} pendiente(s)`:"sin pendientes") +
+    tile("ASIGNADO SIN FACTURAR MÁS ANTIGUO", porF.length?age(porF[0].tsAsig):null, porF.length?`${esc(porF[0].cliente)} · ${porF.length} por facturar`:"sin pendientes") +
+    tile("DESPACHADO SIN CONFIRMAR RECEPCIÓN", porR.length?age(porR[0].tsDesp):null, porR.length?`${esc(porR[0].cliente)} · ${porR.length} en tránsito`:"sin pendientes");
+  $("#tNote").textContent = antes ? `${antes} unidad(es) se facturaron antes de la asignación (no entran en "asignación → factura").` : "";
   // por vendedor
   const rows = Object.keys(VENDEDORES).map(n=>{
     const L=LINEAS.filter(l=>l.vendedor===n);
-    const d=L.map(l=>hrs(l.tsPed,l.tsDesp)).filter(x=>x!=null&&x>=0), f=L.map(l=>hrs(l.tsDesp,l.tsFact)).filter(x=>x!=null&&x>=0);
-    const des=L.filter(l=>l.estado==="DESPACHADO").length, fac=L.filter(l=>l.facturado==="SI").length;
+    const a=pos(L.map(l=>hrs(l.tsPed,l.tsAsig))), f=pos(L.map(l=>hrs(l.tsAsig,l.tsFact)));
+    const asi=L.filter(isAsig).length, fac=L.filter(l=>l.facturado==="SI").length;
     return `<tr><td>${esc(n)}<small>${esc(VENDEDORES[n].zona)}</small></td><td class="rt">${L.length}</td>
-      <td class="rt">${fmtDur(avg(d))}</td><td class="rt">${fmtDur(avg(f))}</td>
-      <td class="rt">${L.length?Math.round(des/L.length*100)+"%":"—"}</td><td class="rt">${des?Math.round(fac/des*100)+"%":"—"}</td></tr>`;}).join("");
+      <td class="rt">${fmtDur(avg(a))}</td><td class="rt">${fmtDur(avg(f))}</td>
+      <td class="rt">${L.length?Math.round(asi/L.length*100)+"%":"—"}</td><td class="rt">${asi?Math.round(fac/asi*100)+"%":"—"}</td></tr>`;}).join("");
   $("#tvTb").innerHTML = rows;
   // hora de pedidos
   const hh = Array(24).fill(0); LINEAS.forEach(l=>{ if(l.tsPed) hh[+l.tsPed.slice(11,13)]++; });
@@ -928,18 +942,21 @@ function setTabCounts(sel, cnt){
 }
 function estBadge(l){
   if(l.anulado==="SI") return `<span class="bdg">ANULADA</span>`;
-  const e = l.estado==="DESPACHADO" ? `<span class="bdg ok">DESPACHADO</span>` : l.estado==="NO DESPACHADO" ? `<span class="bdg no">NO DESPACHADO</span>` : `<span class="bdg wt">PENDIENTE DESPACHO</span>`;
+  const e = l.estado==="ASIGNADO" ? `<span class="bdg ok">ASIGNADO</span>` : l.estado==="NO ASIGNADO" ? `<span class="bdg no">NO ASIGNADO</span>` : `<span class="bdg wt">PENDIENTE ASIGNACIÓN</span>`;
+  const d = isDesp(l) ? `<span class="bdg ok">DESPACHADO</span>` : "";
+  const rc = !isDesp(l) ? "" : l.recibido==="SI" ? `<span class="bdg ok">RECIBIDO</span>` : l.recibido==="NO" ? `<span class="bdg no">NO RECIBIDO</span>` : "";
   const f = l.facturado==="SI" ? `<span class="bdg ok">FACTURADO</span>` : l.facturado==="NO" ? `<span class="bdg no">NO FACTURADO</span>` : "";
-  return `<span class="bdgs">${e}${f}</span>`;
+  return `<span class="bdgs">${e}${d}${rc}${f}</span>`;
 }
 function drawMis(){
   const live = MLINES.filter(l=>l.anulado!=="SI");
-  const pend = live.filter(l=>l.estado==="PENDIENTE"), des = live.filter(l=>l.estado==="DESPACHADO"), nod = live.filter(l=>l.estado==="NO DESPACHADO");
-  const fac = live.filter(l=>l.facturado==="SI");
-  $("#mk").innerHTML = `<div>PEDIDAS<b>${live.length}</b></div><div>PEND. DESPACHO<b>${pend.length}</b></div><div>DESPACHADAS<b>${des.length}</b></div>
-    <div>NO DESPACHADAS<b>${nod.length}</b></div><div>FACTURADAS<b>${fac.length}</b></div><div>ANULADAS<b>${MLINES.length-live.length}</b></div>`;
-  setTabCounts("#misTabs",{pend:pend.length,des:des.length,nod:nod.length,all:MLINES.length});
-  const list = misF==="pend" ? pend : misF==="des" ? des : misF==="nod" ? nod : MLINES;
+  const pend = live.filter(l=>l.estado==="PENDIENTE"), asi = live.filter(isAsig), noa = live.filter(l=>l.estado==="NO ASIGNADO");
+  const dsp = asi.filter(isDesp), rec = dsp.filter(l=>l.recibido==="SI"), fac = live.filter(l=>l.facturado==="SI");
+  $("#mk").innerHTML = `<div>PEDIDAS<b>${live.length}</b></div><div>PEND. ASIGNACIÓN<b>${pend.length}</b></div><div>ASIGNADAS<b>${asi.length}</b></div>
+    <div>DESPACHADAS<b>${dsp.length}</b></div><div>RECIBIDAS<b>${rec.length}</b></div><div>NO ASIGNADAS<b>${noa.length}</b></div>
+    <div>FACTURADAS<b>${fac.length}</b></div><div>ANULADAS<b>${MLINES.length-live.length}</b></div>`;
+  setTabCounts("#misTabs",{pend:pend.length,des:asi.length,nod:noa.length,all:MLINES.length});
+  const list = misF==="pend" ? pend : misF==="des" ? asi : misF==="nod" ? noa : MLINES;
   const sorted = [...list].sort((a,b)=>String(b.tsPed).localeCompare(String(a.tsPed)));
   $("#misList").innerHTML = sorted.length ? sorted.map(misHTML).join("") : `<div class="empty-b">Sin líneas en esta pestaña</div>`;
 }
@@ -948,14 +965,25 @@ function lineInfo(l, withVend){
     <div class="ml-sub">${esc(l.direccion)} · ${esc(l.ciudad)}, ${esc(l.provincia)}</div>
     <div class="ml-sub dim">Pedido ${fdt(l.tsPed)} · ${esc(l.id)} · línea ${l.linea}</div>`;
 }
-function despInfo(l){
-  if(l.estado==="DESPACHADO") return `<div class="ml-done">Despachado ${fdt(l.tsDesp)} · <b>CHASIS ${esc(l.chasis)}</b> · RAMV ${esc(l.ramv)}${l.motor?" · MOTOR "+esc(l.motor):""}${l.guia?" · GUÍA "+esc(l.guia):""}
-     · Transporte ${l.transporte==="SI"?"SÍ · $"+money(Number(l.valor)||0):"NO"} · <span class="dim">tardó ${fmtDur(hrs(l.tsPed,l.tsDesp))}</span></div>`;
-  if(l.estado==="NO DESPACHADO") return `<div class="ml-done">No despachado ${fdt(l.tsDesp)} · <b>${esc(l.razonDesp)}</b>${l.comentDesp?" — "+esc(l.comentDesp):""}</div>`;
+// Asignación (+ despacho y recepción cuando existen)
+function asigInfo(l){
+  if(l.estado==="ASIGNADO") return `<div class="ml-done">Asignado ${fdt(l.tsAsig)} · <b>CHASIS ${esc(l.chasis)}</b>${l.ramv?" · RAMV "+esc(l.ramv):""}${l.motor?" · MOTOR "+esc(l.motor):""}${l.guia?" · GUÍA "+esc(l.guia):""}
+     · Transporte ${l.transporte==="SI"?"SÍ · $"+money(Number(l.valor)||0):"NO"} · <span class="dim">tardó ${fmtDur(hrs(l.tsPed,l.tsAsig))}</span></div>` + despInfo(l) + recInfo(l);
+  if(l.estado==="NO ASIGNADO") return `<div class="ml-done">No asignado ${fdt(l.tsAsig)} · <b>${esc(l.razonAsig)}</b>${l.comentAsig?" — "+esc(l.comentAsig):""}</div>`;
   return "";
 }
+function despInfo(l){
+  if(!isDesp(l)) return "";
+  return `<div class="ml-done">Despachado ${fdt(l.tsDesp)}${l.tsAsig&&l.tsDesp?` · <span class="dim">${fmtDur(hrs(l.tsAsig,l.tsDesp))} desde la asignación</span>`:""}${l.comentDesp?" — "+esc(l.comentDesp):""}</div>`;
+}
+function recInfo(l){
+  if(!isDesp(l) || !l.recibido) return "";
+  const c = l.comentRec ? " — "+esc(l.comentRec) : "";
+  if(l.recibido==="SI") return `<div class="ml-done">Recibido por el cliente ${fdt(l.tsRec)}${l.tsDesp?` · <span class="dim">${fmtDur(hrs(l.tsDesp,l.tsRec))} en tránsito</span>`:""}${c}</div>`;
+  return `<div class="ml-done">No recibido ${fdt(l.tsRec)} · <b>${esc(l.motivoRec)}</b>${c}</div>`;
+}
 function factInfo(l){
-  if(l.facturado==="SI") return `<div class="ml-done">Facturado ${fdt(l.tsFact)}${l.tsDesp?` · <span class="dim">${fmtDur(hrs(l.tsDesp,l.tsFact))} desde el despacho</span>`:""}</div>`;
+  if(l.facturado==="SI") return `<div class="ml-done">Facturado ${fdt(l.tsFact)}${l.tsAsig?` · <span class="dim">${fmtDur(hrs(l.tsAsig,l.tsFact))} desde la asignación</span>`:""}</div>`;
   if(l.facturado==="NO") return `<div class="ml-done">No facturado ${fdt(l.tsFact)} · <b>${esc(l.razonFact)}</b>${l.comentFact?" — "+esc(l.comentFact):""}</div>`;
   return "";
 }
@@ -975,14 +1003,14 @@ function misHTML(l){
           ${otras?`<label class="chk"><input type="checkbox" data-a="todo"${a.todo?" checked":""}> Anular todo el pedido (${otras+1} líneas)</label>`:""}
           <button type="button" class="save anul-ok" ${a.motivo?"":"disabled"}>CONFIRMAR ANULACIÓN</button>
           <button type="button" class="lnk anul-cancel">Cancelar</button></div>`
-        : `<div class="ml-act"><span class="ml-note" style="margin:0;flex:1">Esperando despacho · ${ageNow(l.tsPed)}</span>
+        : `<div class="ml-act"><span class="ml-note" style="margin:0;flex:1">Esperando asignación · ${ageNow(l.tsPed)}</span>
           <button type="button" class="lnk ed-open">Editar</button>
           <button type="button" class="lnk del anul-open">Anular</button></div>`;
     }
   }
   return `<div class="ml" data-k="${esc(k)}">
     <div class="ml-top"><b>${esc(l.cliente)}</b>${estBadge(l)}</div>
-    ${lineInfo(l)}${despInfo(l)}${factInfo(l)}${act}</div>`;
+    ${lineInfo(l)}${asigInfo(l)}${factInfo(l)}${act}</div>`;
 }
 function editHTML(e){
   const cl = (VENDEDORES[MIS.vendedor]||{clientes:[]}).clientes;
@@ -1085,7 +1113,8 @@ const ROL = {
   coordinador: {sec:"#coordSec",btn:"#coordBtn",txt:"#coordTxt",lbl:"Coordinador", key:"", lines:[], tab:"por",  open:{}, q:"", ven:""}
 };
 let RAZ = ["CLIENTE DESISTIÓ","CRÉDITO NO APROBADO","CAMBIO DE MODELO / COLOR","PRECIO / CONDICIONES","DOCUMENTACIÓN INCOMPLETA","UNIDAD CON DAÑO / NOVEDAD","OTRO"];
-let RAZ_D = ["SIN STOCK"].concat(RAZ);
+let RAZ_A = ["SIN STOCK"].concat(RAZ);
+let MOT_REC = ["CLIENTE AUSENTE / LOCAL CERRADO","DIRECCIÓN INCORRECTA","CLIENTE RECHAZÓ LA UNIDAD","UNIDAD CON DAÑO / NOVEDAD","DOCUMENTACIÓN INCOMPLETA","OTRO"];
 Object.keys(ROL).forEach(r=>{ try{ ROL[r].key = localStorage.getItem("hot_key_"+r)||""; }catch(_){} });
 function setRol(r,on){
   const R=ROL[r]; $(R.sec).hidden=!on; $(R.btn).classList.toggle("on",on); $(R.txt).textContent = on ? "Salir de "+R.lbl.toLowerCase() : R.lbl;
@@ -1099,7 +1128,7 @@ async function loadRol(r){
       const j = await (await fetch(`${SCRIPT_URL}?action=rol&rol=${r}&key=${encodeURIComponent(R.key)}&_=${Date.now()}`)).json();
       if(!j.ok && (j.error==="AUTH"||j.error==="BLOQUEADO")){ const e=j.error; R.key=""; try{localStorage.removeItem("hot_key_"+r);}catch(_){} setRol(r,false); return e; }
       if(!j.ok) throw new Error(j.error);
-      R.lines = j.lineas||[]; if(j.razones) RAZ=j.razones; if(j.razonesDesp) RAZ_D=j.razonesDesp;
+      R.lines = j.lineas||[]; if(j.razones) RAZ=j.razones; if(j.razonesAsig) RAZ_A=j.razonesAsig; if(j.motivosRec) MOT_REC=j.motivosRec;
     }
   }catch(e){ setRol(r,true); $(R.sec+" .rlist").innerHTML = `<div class="empty-b">No se pudo cargar: ${esc(e.message)}</div>`; return false; }
   setRol(r,true); drawRol(r); return true;
@@ -1110,68 +1139,100 @@ function filtRol(R, L){
 }
 function drawRol(r){ r==="logistica" ? drawLog() : drawCoord(); }
 
-/* ---- Logística ---- */
+/* ---- Logística: ASIGNACIÓN → DESPACHO → RECEPCIÓN ---- */
+const pasoLog = l => !isDesp(l) ? 0 : !l.recibido ? 1 : 2;   // 0 por despachar · 1 en tránsito · 2 recepción registrada
 function drawLog(){
-  const R = ROL.logistica, L = filtRol(R, R.lines);
-  const pend = L.filter(l=>l.estado==="PENDIENTE").sort((a,b)=>a.tsPed.localeCompare(b.tsPed));
-  const des  = L.filter(l=>l.estado==="DESPACHADO").sort((a,b)=>b.tsDesp.localeCompare(a.tsDesp));
-  const nod  = L.filter(l=>l.estado==="NO DESPACHADO").sort((a,b)=>b.tsDesp.localeCompare(a.tsDesp));
+  const R = ROL.logistica, L = filtRol(R, R.lines), ts = x => x||"";
+  const pend = L.filter(l=>l.estado==="PENDIENTE").sort((a,b)=>ts(a.tsPed).localeCompare(ts(b.tsPed)));
+  const asi  = L.filter(isAsig).sort((a,b)=>pasoLog(a)-pasoLog(b) || ts(b.tsAsig).localeCompare(ts(a.tsAsig)));
+  const noa  = L.filter(l=>l.estado==="NO ASIGNADO").sort((a,b)=>ts(b.tsAsig).localeCompare(ts(a.tsAsig)));
   const hoy = new Date().toLocaleDateString("en-CA",{timeZone:"America/Guayaquil"});
-  $("#lk").innerHTML = `<div>PENDIENTES<b>${pend.length}</b></div><div>DESPACHADAS HOY<b>${des.filter(l=>l.tsDesp.startsWith(hoy)).length}</b></div>
-    <div>DESPACHADAS<b>${des.length}</b></div><div>NO DESPACHADAS<b>${nod.length}</b></div><div>PENDIENTE MÁS ANTIGUO<b>${pend.length?ageNow(pend[0].tsPed):"—"}</b></div>`;
-  setTabCounts("#logTabs",{pend:pend.length,des:des.length,nod:nod.length});
-  const list = R.tab==="pend" ? pend : R.tab==="des" ? des : nod;
+  $("#lk").innerHTML = `<div>PEND. ASIGNAR<b>${pend.length}</b></div><div>ASIGNADAS HOY<b>${asi.filter(l=>ts(l.tsAsig).startsWith(hoy)).length}</b></div>
+    <div>ASIGNADAS<b>${asi.length}</b></div><div>POR DESPACHAR<b>${asi.filter(l=>pasoLog(l)===0).length}</b></div>
+    <div>POR CONFIRMAR RECEPCIÓN<b>${asi.filter(l=>pasoLog(l)===1).length}</b></div><div>NO ASIGNADAS<b>${noa.length}</b></div>
+    <div>PENDIENTE MÁS ANTIGUO<b>${pend.length?ageNow(pend[0].tsPed):"—"}</b></div>`;
+  setTabCounts("#logTabs",{pend:pend.length,des:asi.length,nod:noa.length});
+  const list = R.tab==="pend" ? pend : R.tab==="des" ? asi : noa;
   $("#logList").innerHTML = list.length ? list.map(logHTML).join("") : `<div class="empty-b">Sin líneas en esta pestaña</div>`;
 }
 function logHTML(l){
   const k = lkey(l), o = ROL.logistica.open[k];
+  const B = (cls,m,txt)=>`<button type="button" class="${cls} d-open" data-m="${m}">${txt}</button>`;
+  const revert = l.facturado ? "" : `<button type="button" class="lnk del d-revert">Volver a pendiente</button>`;
   let act;
-  if(o && o.modo==="desp") act = despForm(o);
+  if(o && o.modo==="asig") act = asigForm(o);
   else if(o && o.modo==="nod") act = `<div class="ed">
-      <label class="f w2"><span>RAZÓN NO DESPACHO *</span><select data-d="razon">${opts(RAZ_D,o.razon,"Razón…")}</select></label>
+      <label class="f w2"><span>RAZÓN NO ASIGNACIÓN *</span><select data-d="razon">${opts(RAZ_A,o.razon,"Razón…")}</select></label>
       <label class="f w2"><span>COMENTARIO ${o.razon==="OTRO"?"*":"(opcional)"}</span><input data-d="comentario" value="${esc(o.comentario)}"></label></div>
     <div class="ml-act"><span style="flex:1"></span>
-      <button type="button" class="save d-ok" ${o.razon&&(o.razon!=="OTRO"||o.comentario.trim())?"":"disabled"}>CONFIRMAR NO DESPACHO</button>
+      <button type="button" class="save d-ok" ${o.razon&&(o.razon!=="OTRO"||o.comentario.trim())?"":"disabled"}>CONFIRMAR NO ASIGNACIÓN</button>
       <button type="button" class="lnk d-cancel">Cancelar</button></div>`;
+  else if(o && o.modo==="dsp") act = `<div class="ed">
+      <label class="f w2"><span>COMENTARIO DESPACHO (opcional)</span><input data-d="comentario" value="${esc(o.comentario)}"></label></div>
+    <div class="ml-act"><span class="ml-note" style="margin:0;flex:1">Al confirmar se marca la fecha y hora de despacho.</span>
+      <button type="button" class="save d-ok">CONFIRMAR DESPACHO</button>
+      <button type="button" class="lnk d-cancel">Cancelar</button></div>`;
+  else if(o && o.modo==="rec") act = recForm(o);
   else if(l.estado==="PENDIENTE") act = `<div class="ml-act"><span class="ml-note" style="margin:0;flex:1">Esperando ${ageNow(l.tsPed)}</span>
-      <button type="button" class="save d-open" data-m="desp">DESPACHAR</button>
-      <button type="button" class="lnk del d-open" data-m="nod">No se despacha</button></div>`;
-  else act = `<div class="ml-act"><span style="flex:1"></span><button type="button" class="lnk d-open" data-m="${l.estado==="DESPACHADO"?"desp":"nod"}">Corregir</button>
-      ${l.estado==="DESPACHADO"?`<button type="button" class="lnk d-open" data-m="nod">Cambiar a no despachado</button>`:`<button type="button" class="lnk d-open" data-m="desp">Despachar</button>`}
-      ${l.facturado?"":`<button type="button" class="lnk del d-revert">Volver a pendiente</button>`}</div>`;
+      ${B("save","asig","ASIGNAR")}${B("lnk del","nod","No se asigna")}</div>`;
+  else if(l.estado==="NO ASIGNADO") act = `<div class="ml-act"><span style="flex:1"></span>
+      ${B("lnk","nod","Corregir")}${B("lnk","asig","Asignar")}${revert}</div>`;
+  else if(pasoLog(l)===0) act = `<div class="ml-act"><span class="ml-note" style="margin:0;flex:1">Asignado hace ${ageNow(l.tsAsig)}</span>
+      ${B("save","dsp","CONFIRMAR DESPACHO")}${B("lnk","asig","Corregir")}${B("lnk","nod","Cambiar a no asignado")}${revert}</div>`;
+  else if(pasoLog(l)===1) act = `<div class="ml-act"><span class="ml-note" style="margin:0;flex:1">En tránsito · ${ageNow(l.tsDesp)}</span>
+      ${B("save","rec","CONFIRMAR RECEPCIÓN")}${B("lnk","asig","Corregir asignación")}
+      <button type="button" class="lnk del x-undo" data-x="despacho">Deshacer despacho</button></div>`;
+  else act = `<div class="ml-act"><span style="flex:1"></span>
+      ${B("lnk","rec","Corregir recepción")}${B("lnk","asig","Corregir asignación")}
+      <button type="button" class="lnk del x-undo" data-x="recibir">Deshacer recepción</button></div>`;
   return `<div class="ml" data-k="${esc(k)}">
     <div class="ml-top"><b>${esc(l.cliente)}</b>${estBadge(l)}</div>
-    ${lineInfo(l,true)}${despInfo(l)}${factInfo(l)}${act}</div>`;
+    ${lineInfo(l,true)}${asigInfo(l)}${factInfo(l)}${act}</div>`;
 }
-function despValid(o){
-  return /^[A-Z0-9]{17}$/.test(o.chasis) && o.ramv.trim() && (o.transporte==="NO" || (o.transporte==="SI" && Number(o.valor)>0));
+function asigValid(o){
+  return /^[A-Z0-9]{17}$/.test(o.chasis) && (o.transporte==="NO" || (o.transporte==="SI" && Number(o.valor)>0));
 }
-function despForm(o){
+function asigForm(o){
   return `<div class="ed">
     <label class="f w2"><span>CHASIS * <em class="${o.chasis.length===17?"okc":""}">${o.chasis.length}/17</em></span><input data-d="chasis" value="${esc(o.chasis)}" maxlength="17" autocomplete="off" class="mono"></label>
-    <label class="f w2"><span>RAMV *</span><input data-d="ramv" value="${esc(o.ramv)}" autocomplete="off" class="mono"></label>
+    <label class="f w2"><span>RAMV (opcional)</span><input data-d="ramv" value="${esc(o.ramv)}" autocomplete="off" class="mono"></label>
     <label class="f w2"><span>MOTOR (opcional)</span><input data-d="motor" value="${esc(o.motor)}" autocomplete="off" class="mono"></label>
     <label class="f w2"><span>GUÍA DE REMISIÓN (opcional)</span><input data-d="guia" value="${esc(o.guia)}" autocomplete="off"></label>
     <div class="f w2"><span>ASIGNACIÓN DE TRANSPORTE *</span><div class="yn tr"><button type="button" data-v="SI" class="${o.transporte==="SI"?"on":""}">SÍ</button><button type="button" data-v="NO" class="${o.transporte==="NO"?"on":""}">NO</button></div></div>
     ${o.transporte==="SI"?`<label class="f w2"><span>VALOR $ *</span><input data-d="valor" value="${esc(o.valor)}" inputmode="decimal" placeholder="0.00"></label>`:""}
   </div>
-  <div class="ml-act"><span class="ml-note" style="margin:0;flex:1">Al guardar se marca la hora y la línea pasa a DESPACHADO.</span>
-    <button type="button" class="save d-ok" ${despValid(o)?"":"disabled"}>GUARDAR DESPACHO</button>
+  <div class="ml-act"><span class="ml-note" style="margin:0;flex:1">Al guardar se marca la hora y la línea pasa a ASIGNADO.</span>
+    <button type="button" class="save d-ok" ${asigValid(o)?"":"disabled"}>GUARDAR ASIGNACIÓN</button>
+    <button type="button" class="lnk d-cancel">Cancelar</button></div>`;
+}
+function recValid(o){ return o.recibido==="SI" || (o.recibido==="NO" && !!o.motivo); }
+function recForm(o){
+  return `<div class="ed">
+    <div class="f w2"><span>¿EL CLIENTE RECIBIÓ LA UNIDAD? *</span><div class="yn rc"><button type="button" data-v="SI" class="${o.recibido==="SI"?"on":""}">SÍ</button><button type="button" data-v="NO" class="${o.recibido==="NO"?"on":""}">NO</button></div></div>
+    ${o.recibido==="NO"?`<label class="f w2"><span>MOTIVO *</span><select data-d="motivo">${opts(MOT_REC,o.motivo,"Motivo…")}</select></label>`:""}
+    <label class="f w2"><span>COMENTARIO (opcional)</span><input data-d="comentario" value="${esc(o.comentario)}"></label>
+  </div>
+  <div class="ml-act"><span class="ml-note" style="margin:0;flex:1">Se marca la fecha y hora de la recepción.</span>
+    <button type="button" class="save d-ok" ${recValid(o)?"":"disabled"}>GUARDAR RECEPCIÓN</button>
     <button type="button" class="lnk d-cancel">Cancelar</button></div>`;
 }
 async function saveRol(r, l, item, btn, label){
   btn.disabled = true; btn.textContent = "GUARDANDO…";
+  const action = item._action || (r==="logistica"?"asignar":"facturar"); delete item._action;
   try{
     let nl;
     if(IS_DEMO){
       const now = new Date(Date.now()-5*36e5).toISOString().slice(0,19)+"-05:00";
       nl = {...l, ...item};
-      if(r==="logistica"){ if(item.estado!==l.estado) nl.tsDesp = item.estado==="PENDIENTE"?"":now;
-        if(item.estado==="DESPACHADO") nl.razonDesp=""; if(item.estado!=="DESPACHADO") Object.assign(nl,{chasis:"",ramv:"",motor:"",guia:"",transporte:"",valor:""});
-        if(item.estado==="NO DESPACHADO"){ nl.razonDesp=item.razon; nl.comentDesp=item.comentario; } }
+      if(action==="asignar"){ if(item.estado!==l.estado) nl.tsAsig = item.estado==="PENDIENTE"?"":now;
+        if(item.estado==="ASIGNADO") Object.assign(nl,{razonAsig:"",comentAsig:""});
+        else Object.assign(nl,{chasis:"",ramv:"",motor:"",guia:"",transporte:"",valor:"",razonAsig:item.razon||"",comentAsig:item.comentario||""}); }
+      else if(action==="despacho"){ nl.tsDesp = item.despachado==="SI" ? (l.despachado==="SI"?l.tsDesp:now) : ""; nl.comentDesp = item.despachado==="SI"?item.comentario:""; }
+      else if(action==="recibir"){ if(item.recibido!==l.recibido) nl.tsRec = item.recibido?now:"";
+        Object.assign(nl,{motivoRec:item.recibido==="NO"?item.motivo:"",comentRec:item.recibido?item.comentario:""}); }
       else { if(item.facturado!==l.facturado) nl.tsFact=now; nl.razonFact=item.facturado==="NO"?item.razon:""; nl.comentFact=item.comentario; }
     } else {
-      const j = await postJSON({action:r==="logistica"?"despachar":"facturar", key:ROL[r].key, items:[{uid:l.uid,linea:l.linea,...item}]});
+      const j = await postJSON({action, key:ROL[r].key, items:[{uid:l.uid,linea:l.linea,...item}]});
       nl = j.lineas[0];
     }
     Object.assign(l, nl); delete ROL[r].open[lkey(l)]; drawRol(r); toast(label);
@@ -1181,18 +1242,29 @@ $("#logList").addEventListener("click",e=>{
   const card = e.target.closest(".ml"); if(!card) return;
   const R = ROL.logistica, k = card.dataset.k, l = R.lines.find(x=>lkey(x)===k);
   const op = e.target.closest(".d-open");
-  if(op){ R.open[k] = op.dataset.m==="desp"
-      ? {modo:"desp",chasis:l.chasis||"",ramv:l.ramv||"",motor:l.motor||"",guia:l.guia||"",transporte:l.transporte||"",valor:l.valor===""||l.valor==null?"":String(l.valor)}
-      : {modo:"nod",razon:l.razonDesp||"",comentario:l.comentDesp||""};
+  if(op){ const m = op.dataset.m;
+    R.open[k] = m==="asig" ? {modo:"asig",chasis:l.chasis||"",ramv:l.ramv||"",motor:l.motor||"",guia:l.guia||"",transporte:l.transporte||"",valor:l.valor===""||l.valor==null?"":String(l.valor)}
+      : m==="dsp" ? {modo:"dsp",comentario:l.comentDesp||""}
+      : m==="rec" ? {modo:"rec",recibido:l.recibido||"",motivo:l.motivoRec||"",comentario:l.comentRec||""}
+      : {modo:"nod",razon:l.razonAsig||"",comentario:l.comentAsig||""};
     drawLog(); return; }
   if(e.target.closest(".d-cancel")){ delete R.open[k]; drawLog(); return; }
   const yn = e.target.closest(".yn.tr button");
   if(yn){ const o=R.open[k]; o.transporte=yn.dataset.v; if(o.transporte==="NO") o.valor=""; drawLog(); return; }
+  const yr = e.target.closest(".yn.rc button");
+  if(yr){ const o=R.open[k]; o.recibido=yr.dataset.v; if(o.recibido==="SI") o.motivo=""; drawLog(); return; }
+  const un = e.target.closest(".x-undo");
+  if(un){ un.dataset.x==="despacho"
+      ? saveRol("logistica", l, {_action:"despacho",despachado:"",comentario:""}, un, "Despacho deshecho")
+      : saveRol("logistica", l, {_action:"recibir",recibido:"",motivo:"",comentario:""}, un, "Recepción deshecha");
+    return; }
   if(e.target.closest(".d-revert")){ saveRol("logistica", l, {estado:"PENDIENTE"}, e.target.closest(".d-revert"), "Línea devuelta a pendiente"); return; }
   const ok = e.target.closest(".d-ok");
   if(ok){ const o = R.open[k];
-    if(o.modo==="desp") saveRol("logistica", l, {estado:"DESPACHADO",chasis:o.chasis,ramv:o.ramv.trim().toUpperCase(),motor:o.motor.trim().toUpperCase(),guia:o.guia.trim().toUpperCase(),transporte:o.transporte,valor:o.transporte==="SI"?Number(o.valor):""}, ok, "Despacho registrado");
-    else saveRol("logistica", l, {estado:"NO DESPACHADO",razon:o.razon,comentario:o.comentario.trim()}, ok, "Registrado como no despachado");
+    if(o.modo==="asig") saveRol("logistica", l, {estado:"ASIGNADO",chasis:o.chasis,ramv:o.ramv.trim().toUpperCase(),motor:o.motor.trim().toUpperCase(),guia:o.guia.trim().toUpperCase(),transporte:o.transporte,valor:o.transporte==="SI"?Number(o.valor):""}, ok, "Asignación registrada");
+    else if(o.modo==="dsp") saveRol("logistica", l, {_action:"despacho",despachado:"SI",comentario:o.comentario.trim()}, ok, "Despacho confirmado");
+    else if(o.modo==="rec") saveRol("logistica", l, {_action:"recibir",recibido:o.recibido,motivo:o.motivo,comentario:o.comentario.trim()}, ok, o.recibido==="SI"?"Recepción confirmada":"Registrado como no recibido");
+    else saveRol("logistica", l, {estado:"NO ASIGNADO",razon:o.razon,comentario:o.comentario.trim()}, ok, "Registrado como no asignado");
   }
 });
 $("#logList").addEventListener("input",e=>{
@@ -1203,22 +1275,22 @@ $("#logList").addEventListener("input",e=>{
   if(f==="valor") e.target.value = e.target.value.replace(/[^0-9.]/g,"");
   o[f] = e.target.value;
   const ok = card.querySelector(".d-ok");
-  if(ok) ok.disabled = o.modo==="desp" ? !despValid(o) : !(o.razon && (o.razon!=="OTRO"||o.comentario.trim()));
+  if(ok) ok.disabled = o.modo==="asig" ? !asigValid(o) : o.modo==="dsp" ? false : o.modo==="rec" ? !recValid(o) : !(o.razon && (o.razon!=="OTRO"||o.comentario.trim()));
 });
 $("#logList").addEventListener("change",e=>{
-  if(e.target.dataset.d!=="razon") return;
-  const k = e.target.closest(".ml").dataset.k; ROL.logistica.open[k].razon = e.target.value; drawLog();
+  const f = e.target.dataset.d; if(f!=="razon" && f!=="motivo") return;
+  const k = e.target.closest(".ml").dataset.k; ROL.logistica.open[k][f] = e.target.value; drawLog();
 });
 
 /* ---- Coordinador ---- */
 function drawCoord(){
   const R = ROL.coordinador, L = filtRol(R, R.lines);
-  const por = L.filter(l=>l.estado==="DESPACHADO" && !l.facturado).sort((a,b)=>a.tsDesp.localeCompare(b.tsDesp));
+  const por = L.filter(l=>isAsig(l) && !l.facturado).sort((a,b)=>(a.tsAsig||"").localeCompare(b.tsAsig||""));
   const fac = L.filter(l=>l.facturado==="SI").sort((a,b)=>b.tsFact.localeCompare(a.tsFact));
   const nof = L.filter(l=>l.facturado==="NO").sort((a,b)=>b.tsFact.localeCompare(a.tsFact));
-  const sin = L.filter(l=>l.estado!=="DESPACHADO" && !l.facturado).sort((a,b)=>a.tsPed.localeCompare(b.tsPed));
+  const sin = L.filter(l=>!isAsig(l) && !l.facturado).sort((a,b)=>a.tsPed.localeCompare(b.tsPed));
   $("#ckk").innerHTML = `<div>POR FACTURAR<b>${por.length}</b></div><div>FACTURADAS<b>${fac.length}</b></div><div>NO FACTURADAS<b>${nof.length}</b></div>
-    <div>SIN DESPACHAR<b>${sin.length}</b></div><div>MÁS ANTIGUO POR FACTURAR<b>${por.length?ageNow(por[0].tsDesp):"—"}</b></div>`;
+    <div>SIN ASIGNAR<b>${sin.length}</b></div><div>MÁS ANTIGUO POR FACTURAR<b>${por.length?ageNow(por[0].tsAsig):"—"}</b></div>`;
   setTabCounts("#coordTabs",{por:por.length,fac:fac.length,nof:nof.length,sin:sin.length});
   const list = R.tab==="por" ? por : R.tab==="fac" ? fac : R.tab==="nof" ? nof : sin;
   $("#coordList").innerHTML = list.length ? list.map(coordHTML).join("") : `<div class="empty-b">Sin líneas en esta pestaña</div>`;
@@ -1234,12 +1306,12 @@ function coordHTML(l){
         <input data-c="comentario" value="${esc(o.comentario)}" placeholder="${o.razon==="OTRO"?"Comentario (obligatorio)":"Comentario (opcional)"}">`:""}
       <button type="button" class="save c-ok" ${valid?"":"disabled"}>GUARDAR</button>
       <button type="button" class="lnk c-cancel">Cancelar</button></div>
-      ${l.estado!=="DESPACHADO"?`<div class="ml-note">Esta unidad aún no figura como despachada.</div>`:""}`;
-  } else act = `<div class="ml-act"><span class="ml-note" style="margin:0;flex:1">${l.estado==="DESPACHADO"&&!l.facturado?"Despachado hace "+ageNow(l.tsDesp):""}</span>
+      ${!isAsig(l)?`<div class="ml-note">Esta unidad aún no figura como asignada.</div>`:""}`;
+  } else act = `<div class="ml-act"><span class="ml-note" style="margin:0;flex:1">${isAsig(l)&&!l.facturado?"Asignado hace "+ageNow(l.tsAsig):""}</span>
       <button type="button" class="${l.facturado?"lnk":"save"} c-open">${l.facturado?"Corregir":"MARCAR FACTURACIÓN"}</button></div>`;
   return `<div class="ml" data-k="${esc(k)}">
     <div class="ml-top"><b>${esc(l.cliente)}</b>${estBadge(l)}</div>
-    ${lineInfo(l,true)}${despInfo(l)}${factInfo(l)}${act}</div>`;
+    ${lineInfo(l,true)}${asigInfo(l)}${factInfo(l)}${act}</div>`;
 }
 $("#coordList").addEventListener("click",e=>{
   const card = e.target.closest(".ml"); if(!card) return;
@@ -1299,16 +1371,22 @@ function demoLines(){
   const isoAt = t => new Date(t-5*36e5).toISOString().slice(0,19)+"-05:00";
   for(let i=0;i<36;i++){
     const v = ven[i%5], cl = VENDEDORES[v].clientes, m = MODELOS[i%MODELOS.length], tp = base + i*3.7*36e5 + (i%4)*36e5;
-    const est = i<22 ? "DESPACHADO" : i<25 ? "NO DESPACHADO" : "PENDIENTE";
-    const td = est==="PENDIENTE" ? "" : isoAt(tp + (6+i%9*5)*36e5);
-    const fac = est==="DESPACHADO" ? (i<14?"SI":i<17?"NO":"") : "";
+    const est = i<22 ? "ASIGNADO" : i<25 ? "NO ASIGNADO" : "PENDIENTE", A = est==="ASIGNADO";
+    const ta = est==="PENDIENTE" ? "" : isoAt(tp + (6+i%9*5)*36e5);
+    const dsp = A && i<16 ? "SI" : "";
+    const td = dsp ? isoAt(Date.parse(ta)+(4+i%5*3)*36e5) : "";
+    const rec = dsp ? (i<8?"SI":i<10?"NO":"") : "";
+    const fac = A ? (i<14?"SI":i<17?"NO":"") : "";
     out.push({uid:"demo"+i, linea:1, id:"HO-DEMO-"+(100+i), tsPed:isoAt(tp), vendedor:v, zona:VENDEDORES[v].zona, cliente:cl[i%cl.length],
       plazo:6+i%3, modelo:m, color:coloresDe(m)[0], anio:aniosDe(m)[0], precio:(PRECIOS[6+i%3]||{})[m]||0,
       direccion:"AV. PRINCIPAL "+(100+i), provincia:["PICHINCHA","GUAYAS","MANABÍ","LOS RÍOS","NAPO"][i%5], ciudad:["QUITO","GUAYAQUIL","MANTA","BABAHOYO","TENA"][i%5],
-      estado:est, chasis:est==="DESPACHADO"?"MD2A21BX"+String(1e8+i).slice(1):"", ramv:est==="DESPACHADO"?"RV-"+(5000+i):"", motor:"", guia:i%2?"001-001-"+(900+i):"",
-      transporte:est==="DESPACHADO"?(i%3?"SI":"NO"):"", valor:est==="DESPACHADO"&&i%3?45+i:"", razonDesp:est==="NO DESPACHADO"?["SIN STOCK","CRÉDITO NO APROBADO","SIN STOCK"][i%3]:"", comentDesp:"",
-      tsDesp:td, facturado:fac, razonFact:fac==="NO"?["CRÉDITO NO APROBADO","DOCUMENTACIÓN INCOMPLETA","CLIENTE DESISTIÓ"][i%3]:"", comentFact:"",
-      tsFact:fac?isoAt(Date.parse(td)+(3+i%7*6)*36e5):"", anulado:i===35?"SI":"", motivoAnulacion:i===35?"CLIENTE YA NO DESEA":"", fechaAnulacion:""});
+      estado:est, chasis:A?"MD2A21BX"+String(1e8+i).slice(1):"", ramv:A&&i%4?"RV-"+(5000+i):"", motor:"", guia:i%2?"001-001-"+(900+i):"",
+      transporte:A?(i%3?"SI":"NO"):"", valor:A&&i%3?45+i:"", razonAsig:est==="NO ASIGNADO"?["SIN STOCK","CRÉDITO NO APROBADO","SIN STOCK"][i%3]:"", comentAsig:"", tsAsig:ta,
+      despachado:dsp, tsDesp:td, comentDesp:"",
+      recibido:rec, motivoRec:rec==="NO"?["CLIENTE AUSENTE / LOCAL CERRADO","DIRECCIÓN INCORRECTA"][i%2]:"", tsRec:rec?isoAt(Date.parse(td)+(20+i*3)*36e5):"", comentRec:"",
+      facturado:fac, razonFact:fac==="NO"?["CRÉDITO NO APROBADO","DOCUMENTACIÓN INCOMPLETA","CLIENTE DESISTIÓ"][i%3]:"", comentFact:"",
+      tsFact:fac?isoAt(Date.parse(ta)+(3+i%7*6)*36e5):"",
+      anulado:i===35?"SI":"", motivoAnulacion:i===35?"CLIENTE YA NO DESEA":"", fechaAnulacion:""});
   }
   return _demo = out;
 }
