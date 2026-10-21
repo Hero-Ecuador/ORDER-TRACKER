@@ -57,7 +57,9 @@ select option{background:#1D2026}
 @keyframes slideOut{to{opacity:0;transform:translateX(40px);height:0}}
 .num{font-family:"Barlow Condensed";font-weight:800;font-size:22px;color:var(--red);text-align:center;padding-top:22px}
 .fields{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:10px;min-width:0}
-.fields>.f{grid-column:span 2}.fields>.c-cli{grid-column:span 4}.fields>.c-mod,.fields>.c-col{grid-column:span 3}.fields>.c-dir{grid-column:span 4}
+.fields>.f{grid-column:span 2}.fields>.c-cli{grid-column:span 4}.fields>.c-mod,.fields>.c-col{grid-column:span 3}.fields>.c-prov,.fields>.c-ciu{grid-column:span 3}.fields>.c-dir{grid-column:span 12}
+.fields select{padding-left:10px;padding-right:24px;background-position:calc(100% - 14px) 19px,calc(100% - 9px) 19px}
+.price.cod{justify-content:center;font-size:13px;letter-spacing:.4px;font-family:ui-monospace,Menlo,Consolas,monospace;padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fields select,.fields input{background:var(--card)}
 
 .price{min-height:44px;display:flex;align-items:center;justify-content:flex-end;padding:0 12px;border-radius:10px;border:1px dashed var(--line);font-weight:700;font-size:17px;font-variant-numeric:tabular-nums;color:var(--muted)}
@@ -121,7 +123,7 @@ select option{background:#1D2026}
   .acts{flex-direction:row;position:absolute;top:8px;right:10px;padding:0}
   .acts button{width:32px;height:32px}
   .fields{grid-template-columns:1fr 1fr;padding-top:34px}
-  .fields>.f{grid-column:span 1}.fields>.c-cli,.fields>.c-dir,.fields>.c-pre{grid-column:span 2}
+  .fields>.f{grid-column:span 1}.fields>.c-cli,.fields>.c-dir{grid-column:span 2}
   .mark{font-size:28px}.sub{font-size:15px;letter-spacing:2px}
   .gtxt{display:none}
 }
@@ -183,7 +185,8 @@ select option{background:#1D2026}
 .lnk.del:hover{color:var(--red-2);border-color:var(--red)}
 .lnk.ed-open:hover{color:var(--text);border-color:#8C929C}
 .ed{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px;border-top:1px dashed var(--line);padding-top:12px}
-.ed .w2{grid-column:span 2}
+.ed .w2{grid-column:span 2}.ed .w3{grid-column:span 3}
+.price.desc{justify-content:flex-start;font-size:13px;font-weight:600;letter-spacing:.2px;padding:6px 12px;line-height:1.3}
 .ed select,.ed input{background:var(--card);min-height:40px;padding:8px 10px}
 .ed .price{min-height:40px}
 @media (max-width:720px){.ed{grid-template-columns:1fr 1fr}}
@@ -348,7 +351,7 @@ table.tv .rt{text-align:right;font-variant-numeric:tabular-nums}
       <button type="button" data-f="des">Asignado</button>
       <button type="button" data-f="nod">No asignado</button>
     </div>
-    <div class="rfil"><select id="logVen"></select><input id="logQ" placeholder="Buscar cliente, chasis, ID, ciudad…"></div>
+    <div class="rfil"><select id="logVen"></select><input id="logQ" placeholder="Buscar cliente, chasis, código, ID, ciudad…"></div>
     <div id="logList" class="mlist rlist"></div>
   </section>
 
@@ -484,6 +487,51 @@ const COLORES = {
   "XPULSE 200 RALLY":["BLANCO"]
 };
 const coloresDe = m => COLORES[COLOR_MODELO[m]] || [];
+// Tabla madre de códigos: modelo (nombre en tabla colores) → "COLOR(CÓDIGO)"
+const CODIGO = {
+  "ECO 150":["AZUL(MTHERO10018)","BLANCO(MTHERO10019)","NEGRO(MTHERO10016)","ROJO(MTHERO10017)"],
+  "ECO DELUXE":["NEGRO AZUL(MTHERO10020)","NEGRO PLOMO(MTECOD100135)","NEGRO ROJO(MTECOD100136)"],
+  "HUNK 125R":["AZUL(MTHERO100005)","NEGRO(MTHERO100003)","ROJO(MTHERO100004)"],
+  "HUNK 160 4V":["NEGRO(MTHUNK100132)","VERDE LIMA(MTHUNK100133)"],
+  "XOOM 110":["AZUL(MTHERO100002)","NEGRO(MTHERO100001)","BLANCO(MTHERO100006)"],
+  "XOOM 125R":["AMARILLO(MTHERO10014)","AZUL(MTHERO10013)","BLANCO(MTHERO10015)","PLOMO(MTHERO10012)","ROJO(MTHERO10011)"],
+  "XPULSE 200 4V FI":["NEGRO AZUL(MTHERO10008)","BLANCO AZUL(MTHERO10007)","PLOMO(MTHERO10010)","NEGRO ROJO(MTHERO10009)"],
+  "XPULSE 200 RALLY":["BLANCO(MTHERO10021)"]
+};
+// Descripción comercial por código (tabla madre)
+const DESCRIP = {
+  "MTECOD100135":"ECO DLX 22 I3S DRSC BLACK GREY STR",
+  "MTHERO10020":"ECO DLX 22 I3S DRSC BLACK NEXUS BLUE",
+  "MTECOD100136":"ECO DLX 22 I3S DRSC BLACK-RED STR",
+  "MTHERO10016":"ECO 150 DRS C CR BLACK W/O VISOR",
+  "MTHERO10017":"ECO 150 DRS C CR CANDY BL RED W/O VISOR",
+  "MTHERO10018":"ECO 150 DRS C CR VIBRANT BLUE W/O VISOR",
+  "MTHERO10019":"ECO 150 DRSCCR PEARL SIL WHITE W/O VISOR",
+  "MTHERO100005":"HUNK 125R CBS DS SL C COCKTAIL BLUE",
+  "MTHERO100003":"HUNK 125R CBS DS SL CS BLACK",
+  "MTHERO100004":"HUNK 125R CBS DS SL CS SPORTS RED",
+  "MTHUNK100132":"HUNK 1604VFI DDSCS PRE MAT SLATE BLK SIL",
+  "MTHUNK100133":"HUNK 1604VFI DDSCS PREM SHOTING NIGHT ST",
+  "MTHERO10008":"XPULSE 200 4V FI E5 DDSSS POLESTAR BLUE",
+  "MTHERO10009":"XPULSE 200 4V FI E5 DDSSS SPORTS RED",
+  "MTHERO10010":"XPULSE 2004V FI E5 DDSSS BLK INDUST GRAY",
+  "MTHERO10007":"XPULSE200 4VFI E5DDSSS MET NEXUS BLUE WH",
+  "MTHERO10021":"XPULSE2004VFIE5 PRO DDSSS PERL FADLESS W",
+  "MTHERO100001":"XOOM 110 VX DRSC BLACK",
+  "MTHERO100006":"XOOM 110 VX DRSC PEARL SILVER WHITE",
+  "MTHERO100002":"XOOM 110 VX DRSC POLESTAR BLUE",
+  "MTHERO10011":"XOOM 125R FI E5 DSS C INFERNO RED",
+  "MTHERO10012":"XOOM 125R FI E5 DSS C MATTE STORM GREY",
+  "MTHERO10013":"XOOM 125R FI E5 DSSC MAT NEXUS BLUE",
+  "MTHERO10014":"XOOM 125R FI E5 DSSC MATT GIALLO LIME",
+  "MTHERO10015":"XOOM 125R FI E5 DSSC PEARL SILVER WHITE"
+};
+const descDe = cod => DESCRIP[String(cod || "").trim()] || "";
+// Código según modelo (tabla de precios) + color; "" si no hay combinación
+const codigoDe = (m, c) => {
+  const x = (CODIGO[COLOR_MODELO[m]] || []).find(s => s.replace(/\s*\(.*\)\s*$/, "").trim() === String(c || "").trim());
+  return x ? x.match(/\(([^)]+)\)/)[1].trim() : "";
+};
 // AÑO MOTO: años por defecto y excepciones por modelo
 const ANIOS = [2026,2027];
 const ANIOS_MODELO = { "ECO DELUXE":[2026] };
@@ -513,7 +561,7 @@ const PIN = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke=
 
 function rowHTML(r,i){
   const v = VENDEDORES[vend()];
-  const p = priceOf(r);
+  const p = priceOf(r), cod = codigoDe(r.modelo, r.color);
   return `<div class="row" data-id="${r.id}">
     <div class="num">${String(i+1).padStart(2,"0")}</div>
     <div class="fields">
@@ -522,10 +570,11 @@ function rowHTML(r,i){
       <label class="f c-mod"><span>MODELO *</span><select data-k="modelo">${opts(MODELOS,r.modelo,"Modelo")}</select></label>
       <label class="f c-col"><span>COLOR *</span><select data-k="color"${r.modelo?"":" disabled"}>${opts(coloresDe(r.modelo),r.color,r.modelo?"Color":"Elige modelo")}</select></label>
       <label class="f"><span>AÑO MOTO *</span><select data-k="anio"${r.modelo?"":" disabled"}>${opts(aniosDe(r.modelo),r.anio,r.modelo?"Año":"Elige modelo")}</select></label>
+      <div class="f c-cod"><span>CÓDIGO</span><div class="price cod${cod?" set":""}" data-cod title="${esc(cod)}">${cod?esc(cod):"—"}</div></div>
       <div class="f c-pre"><span title="PRECIO UNITARIO">PRECIO UNIT.</span><div class="price${p!=null?" set":""}" data-price>${p!=null?"$"+money(p):"—"}</div></div>
-      <label class="f c-dir"><span>DIRECCIÓN DE DESPACHO *</span><div class="withBtn"><input data-k="direccion" value="${esc(r.direccion)}" placeholder="Dirección tienda" autocomplete="off"><button type="button" class="pin" data-act="geo" title="Completar con mi ubicación">${PIN}</button></div></label>
       <label class="f c-prov"><span>PROVINCIA *</span><select data-k="provincia">${opts(PROVINCIAS,r.provincia,"Provincia")}</select></label>
-      <label class="f"><span>CIUDAD *</span><input data-k="ciudad" value="${esc(r.ciudad)}" placeholder="Ciudad" autocomplete="off"></label>
+      <label class="f c-ciu"><span>CIUDAD *</span><input data-k="ciudad" value="${esc(r.ciudad)}" placeholder="Ciudad" autocomplete="off"></label>
+      <label class="f c-dir"><span>DIRECCIÓN DE DESPACHO *</span><div class="withBtn"><input data-k="direccion" value="${esc(r.direccion)}" placeholder="Dirección tienda" autocomplete="off"><button type="button" class="pin" data-act="geo" title="Completar con mi ubicación">${PIN}</button></div></label>
     </div>
     <div class="acts">
       <button type="button" data-act="dup" title="Agregar línea debajo (copia cliente y ubicación)">+</button>
@@ -594,6 +643,10 @@ function onField(e){
     const as = aniosDe(r.modelo), selA = rowEl.querySelector('[data-k="anio"]');
     if(!as.map(String).includes(String(r.anio))) r.anio = as.length===1 ? String(as[0]) : "";
     selA.innerHTML = opts(as,r.anio,r.modelo?"Año":"Elige modelo"); selA.disabled = !r.modelo; selA.classList.remove("err");
+  }
+  if(k==="modelo"||k==="color"){
+    const cod = codigoDe(r.modelo, r.color), el = rowEl.querySelector("[data-cod]");
+    el.textContent = cod || "—"; el.title = cod; el.classList.toggle("set", !!cod);
   }
   if(k==="plazo"||k==="modelo"){
     const p = priceOf(r), el = rowEl.querySelector("[data-price]");
@@ -690,7 +743,7 @@ function buildPayload(){
     vendedor: v, zona: VENDEDORES[v].zona,
     lat: geo?geo.lat:"", lng: geo?geo.lng:"", acc: geo?geo.acc:"",
     ts_cliente: new Date().toISOString(),
-    lineas: rows.map((r,i)=>({linea:i+1,cliente:r.cliente,plazo:r.plazo==="CONTADO"?"CONTADO":Number(r.plazo),modelo:r.modelo,color:r.color,anio:Number(r.anio),precio:priceOf(r),
+    lineas: rows.map((r,i)=>({linea:i+1,cliente:r.cliente,plazo:r.plazo==="CONTADO"?"CONTADO":Number(r.plazo),modelo:r.modelo,color:r.color,codigo:codigoDe(r.modelo,r.color),anio:Number(r.anio),precio:priceOf(r),
       direccion:r.direccion.trim().toUpperCase(),provincia:r.provincia,ciudad:r.ciudad.trim().toUpperCase()}))
   };
 }
@@ -961,7 +1014,7 @@ function drawMis(){
   $("#misList").innerHTML = sorted.length ? sorted.map(misHTML).join("") : `<div class="empty-b">Sin líneas en esta pestaña</div>`;
 }
 function lineInfo(l, withVend){
-  return `<div class="ml-sub">${withVend?`<b>${esc(l.vendedor)}</b> · ${esc(l.zona)} · `:""}${esc(l.modelo)} ${esc(l.color)} ${esc(l.anio)} · $${money(l.precio)} · ${l.plazo==="CONTADO"?"CONTADO":esc(l.plazo)+" m"}</div>
+  return `<div class="ml-sub">${withVend?`<b>${esc(l.vendedor)}</b> · ${esc(l.zona)} · `:""}${esc(l.modelo)} ${esc(l.color)} ${esc(l.anio)}${(l.codigo||codigoDe(l.modelo,l.color))?` · <b>${esc(l.codigo||codigoDe(l.modelo,l.color))}</b>`:""} · $${money(l.precio)} · ${l.plazo==="CONTADO"?"CONTADO":esc(l.plazo)+" m"}</div>
     <div class="ml-sub">${esc(l.direccion)} · ${esc(l.ciudad)}, ${esc(l.provincia)}</div>
     <div class="ml-sub dim">Pedido ${fdt(l.tsPed)} · ${esc(l.id)} · línea ${l.linea}</div>`;
 }
@@ -1024,6 +1077,7 @@ function editHTML(e){
     ${F("MODELO",`<select data-e="modelo">${opts(MODELOS,e.modelo,"Modelo")}</select>`)}
     ${F("COLOR",`<select data-e="color">${opts(coloresDe(e.modelo),e.color,"Color")}</select>`)}
     ${F("AÑO MOTO",`<select data-e="anio">${opts(aniosDe(e.modelo),e.anio,"Año")}</select>`)}
+    ${F("CÓDIGO",`<div class="price cod${codigoDe(e.modelo,e.color)?" set":""}">${codigoDe(e.modelo,e.color)||"—"}</div>`)}
     ${F("PRECIO UNIT.",`<div class="price${p!=null?" set":""}">${p!=null?"$"+money(p):"—"}</div>`)}
     ${F("DIRECCIÓN DE DESPACHO",`<input data-e="direccion" value="${esc(e.direccion)}" placeholder="Dirección tienda">`,"w2")}
     ${F("PROVINCIA",`<select data-e="provincia">${opts(PROVINCIAS,e.provincia,"Provincia")}</select>`)}
@@ -1137,7 +1191,7 @@ async function loadRol(r){
 }
 function filtRol(R, L){
   const q = norm(R.q);
-  return L.filter(l=>(!R.ven || l.vendedor===R.ven) && (!q || norm([l.cliente,l.chasis,l.id,l.ciudad,l.modelo,l.ramv].join(" ")).includes(q)));
+  return L.filter(l=>(!R.ven || l.vendedor===R.ven) && (!q || norm([l.cliente,l.chasis,l.id,l.ciudad,l.modelo,l.ramv,l.codigo||codigoDe(l.modelo,l.color)].join(" ")).includes(q)));
 }
 function drawRol(r){ r==="logistica" ? drawLog() : drawCoord(); }
 
@@ -1162,7 +1216,7 @@ function logHTML(l){
   const B = (cls,m,txt)=>`<button type="button" class="${cls} d-open" data-m="${m}">${txt}</button>`;
   const revert = l.facturado ? "" : `<button type="button" class="lnk del d-revert">Volver a pendiente</button>`;
   let act;
-  if(o && o.modo==="asig") act = asigForm(o);
+  if(o && o.modo==="asig") act = asigForm(o, l);
   else if(o && o.modo==="nod") act = `<div class="ed">
       <label class="f w2"><span>RAZÓN NO ASIGNACIÓN *</span><select data-d="razon">${opts(RAZ_A,o.razon,"Razón…")}</select></label>
       <label class="f w2"><span>COMENTARIO ${o.razon==="OTRO"?"*":"(opcional)"}</span><input data-d="comentario" value="${esc(o.comentario)}"></label></div>
@@ -1193,11 +1247,16 @@ function logHTML(l){
 function asigValid(o){
   return /^[A-Z0-9]{17}$/.test(o.chasis) && (o.transporte==="NO" || (o.transporte==="SI" && Number(o.valor)>0));
 }
-function asigForm(o){
+function asigForm(o, l){
+  const cod = l.codigo || codigoDe(l.modelo, l.color), desc = l.descrip || descDe(cod);
+  const ro = (lb, v, cls, extra) => `<div class="f ${cls}"><span>${lb}</span><div class="price ${extra}${v?" set":""}">${v?esc(v):"—"}</div></div>`;
   return `<div class="ed">
+    ${ro("CÓDIGO", cod, "w2", "cod")}
     <label class="f w2"><span>CHASIS * <em class="${o.chasis.length===17?"okc":""}">${o.chasis.length}/17</em></span><input data-d="chasis" value="${esc(o.chasis)}" maxlength="17" autocomplete="off" class="mono"></label>
-    <label class="f w2"><span>RAMV (opcional)</span><input data-d="ramv" value="${esc(o.ramv)}" autocomplete="off" class="mono"></label>
     <label class="f w2"><span>MOTOR (opcional)</span><input data-d="motor" value="${esc(o.motor)}" autocomplete="off" class="mono"></label>
+    <label class="f w2"><span>RAMV (opcional)</span><input data-d="ramv" value="${esc(o.ramv)}" autocomplete="off" class="mono"></label>
+    ${ro("AÑO", String(l.anio||""), "", "cod")}
+    ${ro("MODELO DESCRIP.", desc, "w3", "desc")}
     <label class="f w2"><span>GUÍA DE REMISIÓN (opcional)</span><input data-d="guia" value="${esc(o.guia)}" autocomplete="off"></label>
     <div class="f w2"><span>ASIGNACIÓN DE TRANSPORTE *</span><div class="yn tr"><button type="button" data-v="SI" class="${o.transporte==="SI"?"on":""}">SÍ</button><button type="button" data-v="NO" class="${o.transporte==="NO"?"on":""}">NO</button></div></div>
     ${o.transporte==="SI"?`<label class="f w2"><span>VALOR $ *</span><input data-d="valor" value="${esc(o.valor)}" inputmode="decimal" placeholder="0.00"></label>`:""}
