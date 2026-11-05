@@ -460,15 +460,22 @@ const VENDEDORES = {
     "JIMENEZ ROMAN GEOVANNY MILTON","MONTIEL ROMAN ALAIN GABRIEL","MOREIRA BENAVIDES JENNY VALENTINA",
     "MURILLO RAMOS LADY VALERIA","RUIZ ANDRADE ELBA FLORA","SALAZAR GUERRERO ROBERTO CARLOS","SOLORZANO CARREÑO NIEVE LILIANA",
     "SUQUILANDA STTOPER AMADO JOEL","TENELEMA QUIÑONEZ KLEYNAR SAMANTA","CORONEL BOHORQUEZ GISELLA DEL ROCIO","VARGAS LIMONES DIEGO ARMANDO","IMPORELLANA S.A.",
-    "VELIZ COELLO ALLISON JEANETTE"]}
+    "VELIZ COELLO ALLISON JEANETTE"]},
+  // Consignación / facturación: solo plazo RETAIL (precios en PRECIOS.RETAIL)
+  "FLORES CENTENO ZULAY ELIZABETH": { zona: "CONSIGNACIÓN-FACTURACIÓN", plazos: ["RETAIL"], clientes: [
+    "UNNOPARTS S.A.","CRESA-RETAIL S. A. S.","MMOTASA CIA. LTDA.","OTOM-RACING CIA. LTDA.","MASTERMOTO","MARCIMEX S A"]}
 };
 const MODELOS = ["ECO DELUXE","ECO 150","HUNK 125","HUNK 160","XOOM 110","XOOM 125","XPULSE 200","XPULSE RALLY"];
-const PLAZOS = [6,7,8,"CONTADO"];
+const PLAZOS = [6,7,8,"CONTADO"];                       // plazos por defecto
+const plazosDe = v => (VENDEDORES[v] && VENDEDORES[v].plazos) || PLAZOS;   // un vendedor puede tener sus propios plazos
+const plazoVal = p => (p === "" || isNaN(Number(p))) ? String(p) : Number(p); // 6/7/8 como número; CONTADO/RETAIL como texto
+const plazoTxt = p => isNaN(Number(p)) ? String(p) : p + " m";
 const PRECIOS = {
   6:{"ECO DELUXE":1288,"ECO 150":1706.42,"HUNK 125":1986.24,"HUNK 160":2936.82,"XOOM 110":1744,"XOOM 125":2224.84,"XPULSE 200":3680,"XPULSE RALLY":4140},
   7:{"ECO DELUXE":1304.1,"ECO 150":1727.75,"HUNK 125":2011.09,"HUNK 160":2973.53,"XOOM 110":1765.8,"XOOM 125":2252.65,"XPULSE 200":3726,"XPULSE RALLY":4191.75},
   8:{"ECO DELUXE":1320.2,"ECO 150":1749.08,"HUNK 125":2035.89,"HUNK 160":3010.24,"XOOM 110":1787.6,"XOOM 125":2280.46,"XPULSE 200":3772,"XPULSE RALLY":4243.5},
-  CONTADO:{"ECO DELUXE":1239.70,"ECO 150":1642.43,"HUNK 125":1911.76,"HUNK 160":2826.69,"XOOM 110":1678.60,"XOOM 125":2141.41,"XPULSE 200":3542,"XPULSE RALLY":3984.75}
+  CONTADO:{"ECO DELUXE":1239.70,"ECO 150":1642.43,"HUNK 125":1911.76,"HUNK 160":2826.69,"XOOM 110":1678.60,"XOOM 125":2141.41,"XPULSE 200":3542,"XPULSE RALLY":3984.75},
+  RETAIL:{"ECO DELUXE":1150,"ECO 150":1480,"HUNK 125":1730,"HUNK 160":2550,"XOOM 110":1605,"XOOM 125":1938,"XPULSE 200":3300,"XPULSE RALLY":3700}
 
 };
 const PROVINCIAS = ["AZUAY","BOLÍVAR","CAÑAR","CARCHI","CHIMBORAZO","COTOPAXI","EL ORO","ESMERALDAS","GALÁPAGOS","GUAYAS","IMBABURA","LOJA",
@@ -568,7 +575,7 @@ function rowHTML(r,i){
     <div class="num">${String(i+1).padStart(2,"0")}</div>
     <div class="fields">
       <label class="f c-cli"><span>CLIENTE *</span><select data-k="cliente"${v?"":" disabled"}>${opts(v?v.clientes:[],r.cliente,v?"Selecciona cliente…":"Elige primero el vendedor")}</select></label>
-      <label class="f"><span>PLAZO *</span><select data-k="plazo">${opts(PLAZOS,r.plazo,"Plazo")}</select></label>
+      <label class="f"><span>PLAZO *</span><select data-k="plazo">${opts(plazosDe(vend()),r.plazo,"Plazo")}</select></label>
       <label class="f c-mod"><span>MODELO *</span><select data-k="modelo">${opts(MODELOS,r.modelo,"Modelo")}</select></label>
       <label class="f c-col"><span>COLOR *</span><select data-k="color"${r.modelo?"":" disabled"}>${opts(coloresDe(r.modelo),r.color,r.modelo?"Color":"Elige modelo")}</select></label>
       <label class="f"><span>AÑO MOTO *</span><select data-k="anio"${r.modelo?"":" disabled"}>${opts(aniosDe(r.modelo),r.anio,r.modelo?"Año":"Elige modelo")}</select></label>
@@ -586,6 +593,8 @@ function rowHTML(r,i){
 }
 
 function render(){
+  const pl = plazosDe(vend()).map(String);
+  rows.forEach(r=>{ if(r.plazo!=="" && !pl.includes(String(r.plazo))) r.plazo=""; if(!r.plazo && pl.length===1) r.plazo=pl[0]; });
   $("#rows").innerHTML = rows.map(rowHTML).join("");
   $("#unidades").value = rows.length;
   $("#lineCount").textContent = rows.length + (rows.length===1?" línea":" líneas");
@@ -745,7 +754,7 @@ function buildPayload(){
     vendedor: v, zona: VENDEDORES[v].zona,
     lat: geo?geo.lat:"", lng: geo?geo.lng:"", acc: geo?geo.acc:"",
     ts_cliente: new Date().toISOString(),
-    lineas: rows.map((r,i)=>({linea:i+1,cliente:r.cliente,plazo:r.plazo==="CONTADO"?"CONTADO":Number(r.plazo),modelo:r.modelo,color:r.color,codigo:codigoDe(r.modelo,r.color),anio:Number(r.anio),precio:priceOf(r),
+    lineas: rows.map((r,i)=>({linea:i+1,cliente:r.cliente,plazo:plazoVal(r.plazo),modelo:r.modelo,color:r.color,codigo:codigoDe(r.modelo,r.color),anio:Number(r.anio),precio:priceOf(r),
       direccion:r.direccion.trim().toUpperCase(),provincia:r.provincia,ciudad:r.ciudad.trim().toUpperCase()}))
   };
 }
@@ -803,7 +812,8 @@ $("#okNew").onclick = ()=>{ $("#okOv").classList.remove("show"); resetOrder(); }
 /* ================= DETALLE + MAPA ================= */
 const VCOLOR = { // color fijo por vendedor
   "ANDINO MONTALVO DIEGO EDUARDO":"#2a78d6","PLUAS NAVARRO GABRIEL ALEJANDRO":"#eb6834",
-  "ELIZALDE SANCHEZ MARIA FERNANDA":"#1baf7a","MACIAS RAMIREZ VICTOR HUGO":"#eda100","MORA ESCALANTE ALISSON STEVEN":"#e87ba4"};
+  "ELIZALDE SANCHEZ MARIA FERNANDA":"#1baf7a","MACIAS RAMIREZ VICTOR HUGO":"#eda100","MORA ESCALANTE ALISSON STEVEN":"#e87ba4",
+  "FLORES CENTENO ZULAY ELIZABETH":"#8b5cf6"};
 let ANULG = {}, PED = [], metric = "u", dmap = null, dlayer = null;
 
 function drawDetalle(){
@@ -1016,7 +1026,7 @@ function drawMis(){
   $("#misList").innerHTML = sorted.length ? sorted.map(misHTML).join("") : `<div class="empty-b">Sin líneas en esta pestaña</div>`;
 }
 function lineInfo(l, withVend){
-  return `<div class="ml-sub">${withVend?`<b>${esc(l.vendedor)}</b> · ${esc(l.zona)} · `:""}${esc(l.modelo)} ${esc(l.color)} ${esc(l.anio)}${(l.codigo||codigoDe(l.modelo,l.color))?` · <b>${esc(l.codigo||codigoDe(l.modelo,l.color))}</b>`:""} · $${money(l.precio)} · ${l.plazo==="CONTADO"?"CONTADO":esc(l.plazo)+" m"}</div>
+  return `<div class="ml-sub">${withVend?`<b>${esc(l.vendedor)}</b> · ${esc(l.zona)} · `:""}${esc(l.modelo)} ${esc(l.color)} ${esc(l.anio)}${(l.codigo||codigoDe(l.modelo,l.color))?` · <b>${esc(l.codigo||codigoDe(l.modelo,l.color))}</b>`:""} · $${money(l.precio)} · ${esc(plazoTxt(l.plazo))}</div>
     <div class="ml-sub">${esc(l.direccion)} · ${esc(l.ciudad)}, ${esc(l.provincia)}</div>
     <div class="ml-sub dim">Pedido ${fdt(l.tsPed)} · ${esc(l.id)} · línea ${l.linea}</div>`;
 }
@@ -1075,7 +1085,7 @@ function editHTML(e){
   const F = (lb,html,cls="") => `<label class="f ${cls}"><span>${lb}</span>${html}</label>`;
   return `<div class="ed">
     ${F("CLIENTE",`<select data-e="cliente">${opts(cl,e.cliente,"Cliente")}</select>`,"w2")}
-    ${F("PLAZO",`<select data-e="plazo">${opts(PLAZOS,e.plazo,"Plazo")}</select>`)}
+    ${F("PLAZO",`<select data-e="plazo">${opts(plazosDe(MIS.vendedor),e.plazo,"Plazo")}</select>`)}
     ${F("MODELO",`<select data-e="modelo">${opts(MODELOS,e.modelo,"Modelo")}</select>`)}
     ${F("COLOR",`<select data-e="color">${opts(coloresDe(e.modelo),e.color,"Color")}</select>`)}
     ${F("AÑO MOTO",`<select data-e="anio">${opts(aniosDe(e.modelo),e.anio,"Año")}</select>`)}
@@ -1119,7 +1129,7 @@ $("#misList").addEventListener("click",async e=>{
     const ed = editOpen[k];
     eok.disabled = true; eok.textContent = "GUARDANDO…";
     try{
-      const item = {uid:l.uid,linea:l.linea,...ed,plazo:ed.plazo==="CONTADO"?"CONTADO":Number(ed.plazo),anio:Number(ed.anio),direccion:ed.direccion.trim().toUpperCase(),ciudad:ed.ciudad.trim().toUpperCase()};
+      const item = {uid:l.uid,linea:l.linea,...ed,plazo:plazoVal(ed.plazo),anio:Number(ed.anio),direccion:ed.direccion.trim().toUpperCase(),ciudad:ed.ciudad.trim().toUpperCase()};
       let precio = (PRECIOS[ed.plazo]||{})[ed.modelo];
       if(!IS_DEMO){ const j = await postJSON({action:"editar",vendedor:MIS.vendedor,pin:MIS.pin,item}); precio = j.precio; }
       Object.assign(l,{...item,precio}); delete editOpen[k]; drawMis(); toast("Línea actualizada");
