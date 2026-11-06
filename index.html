@@ -128,7 +128,13 @@ select option{background:#1D2026}
   .gtxt{display:none}
 }
 /* ---- GERENCIA ---- */
-.hdr-r{display:flex;gap:8px}
+.hdr-r{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+.mes{display:flex;align-items:center;gap:4px;border:1px solid rgba(228,0,43,.55);background:var(--red-soft);border-radius:999px;padding:0 2px 0 12px;font-size:10px;letter-spacing:1.2px;color:#fff;font-weight:700}
+.mes select{width:auto;min-height:30px;padding:4px 26px 4px 6px;border:0;background-color:transparent;font-weight:700;font-size:12px;letter-spacing:.5px;color:#fff;background-position:calc(100% - 14px) 13px,calc(100% - 9px) 13px;cursor:pointer}
+.mes select:focus{box-shadow:none}
+.mes select option{background:var(--card);color:var(--text)}
+.mes-tag:empty{display:none}
+@media (max-width:720px){.top{flex-wrap:wrap;row-gap:10px}.hdr-r{width:100%;justify-content:flex-start}.mes{order:-1}}
 #lockBtn svg{color:var(--muted)}
 #lockBtn.on{border-color:rgba(228,0,43,.5);color:var(--text)}
 #lockBtn.on svg{color:var(--red-2)}
@@ -258,6 +264,7 @@ table.tv .rt{text-align:right;font-variant-numeric:tabular-nums}
 <header class="top">
   <div class="brand"><span class="mark">HERO</span><span class="sub">ORDER TRACKER</span></div>
   <div class="hdr-r">
+    <label class="mes" title="Filtra por el mes del pedido"><span>MES</span><select id="mesSel"><option value="">Todos los meses</option></select></label>
     <button id="misBtn" class="pill" type="button" title="Mis pedidos"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span class="gtxt" id="misTxt">Mis pedidos</span></button>
     <button id="logBtn" class="pill" type="button" title="Logística"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 6h13v10H1zM14 10h4l3 3v3h-7z"/><circle cx="5.5" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/></svg><span class="gtxt" id="logTxt">Logística</span></button>
     <button id="coordBtn" class="pill" type="button" title="Coordinador"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h8M9 17h6"/></svg><span class="gtxt" id="coordTxt">Coordinador</span></button>
@@ -301,7 +308,7 @@ table.tv .rt{text-align:right;font-variant-numeric:tabular-nums}
 
   <div id="gerencia" hidden>
   <section class="card det">
-    <div class="head"><div class="step">03</div><h2>Detalle</h2>
+    <div class="head"><div class="step">03</div><h2>Detalle</h2><span class="bdg wt mes-tag"></span>
       <div class="seg"><button class="on" data-m="u" type="button">Unidades</button><button data-m="t" type="button">Monto</button></div></div>
     <div class="dk" id="dk"></div>
     <div class="bars" id="bars"><div class="empty-b">Cargando pedidos…</div></div>
@@ -311,7 +318,7 @@ table.tv .rt{text-align:right;font-variant-numeric:tabular-nums}
   </section>
 
   <section class="card det">
-    <div class="head"><div class="step">04</div><h2>Cumplimiento</h2><span class="muted">Pedidas → Asignadas → Facturadas</span></div>
+    <div class="head"><div class="step">04</div><h2>Cumplimiento</h2><span class="bdg wt mes-tag"></span><span class="muted">Pedidas → Asignadas → Facturadas</span></div>
     <div class="dk" id="ck"></div>
     <div class="cum" id="cum"></div>
     <div class="rz2">
@@ -321,7 +328,7 @@ table.tv .rt{text-align:right;font-variant-numeric:tabular-nums}
   </section>
 
   <section class="card det">
-    <div class="head"><div class="step">05</div><h2>Tiempos</h2><span class="muted">Tiempo corrido (incluye noches y fines de semana)</span></div>
+    <div class="head"><div class="step">05</div><h2>Tiempos</h2><span class="bdg wt mes-tag"></span><span class="muted">Tiempo corrido (incluye noches y fines de semana)</span></div>
     <div class="tts" id="tk"></div>
     <div class="ml-note" id="tNote"></div>
     <div class="dmap-h"><span>POR VENDEDOR</span></div>
@@ -332,7 +339,7 @@ table.tv .rt{text-align:right;font-variant-numeric:tabular-nums}
   </div>
 
   <section class="card det" id="misSec" hidden>
-    <div class="head"><div class="step">VEN</div><h2>Mis pedidos</h2><span class="muted" id="misWho"></span></div>
+    <div class="head"><div class="step">VEN</div><h2>Mis pedidos</h2><span class="bdg wt mes-tag"></span><span class="muted" id="misWho"></span></div>
     <div class="dk" id="mk"></div>
     <div class="tabs" id="misTabs">
       <button type="button" data-f="pend" class="on">Pendientes de asignar</button>
@@ -344,7 +351,7 @@ table.tv .rt{text-align:right;font-variant-numeric:tabular-nums}
   </section>
 
   <section class="card det" id="logSec" hidden>
-    <div class="head"><div class="step">LOG</div><h2>Logística</h2><span class="muted">Asignación · Despacho · Recepción</span></div>
+    <div class="head"><div class="step">LOG</div><h2>Logística</h2><span class="bdg wt mes-tag"></span><span class="muted">Asignación · Despacho · Recepción</span></div>
     <div class="dk" id="lk"></div>
     <div class="tabs" id="logTabs">
       <button type="button" data-f="pend" class="on">Pendiente de asignar</button>
@@ -356,7 +363,7 @@ table.tv .rt{text-align:right;font-variant-numeric:tabular-nums}
   </section>
 
   <section class="card det" id="coordSec" hidden>
-    <div class="head"><div class="step">COO</div><h2>Coordinador</h2><span class="muted">Facturación</span></div>
+    <div class="head"><div class="step">COO</div><h2>Coordinador</h2><span class="bdg wt mes-tag"></span><span class="muted">Facturación</span></div>
     <div class="dk" id="ckk"></div>
     <div class="tabs" id="coordTabs">
       <button type="button" data-f="por" class="on">Por facturar</button>
@@ -814,16 +821,39 @@ const VCOLOR = { // color fijo por vendedor
   "ANDINO MONTALVO DIEGO EDUARDO":"#2a78d6","PLUAS NAVARRO GABRIEL ALEJANDRO":"#eb6834",
   "ELIZALDE SANCHEZ MARIA FERNANDA":"#1baf7a","MACIAS RAMIREZ VICTOR HUGO":"#eda100","MORA ESCALANTE ALISSON STEVEN":"#e87ba4",
   "FLORES CENTENO ZULAY ELIZABETH":"#8b5cf6"};
-let ANULG = {}, PED = [], metric = "u", dmap = null, dlayer = null;
+let ANULG = {}, ANULM = {}, PED = [], metric = "u", dmap = null, dlayer = null;
+
+/* ---- Filtro por MES (según la fecha del pedido) ---- */
+const MESES = ["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
+const mesHoy = () => new Date().toLocaleDateString("en-CA",{timeZone:"America/Guayaquil"}).slice(0,7);
+let MES = mesHoy(); try{ const m = localStorage.getItem("hot_mes"); if(m!==null) MES = m; }catch(_){}
+const mesDe = x => String(x.tsPed || x.fecha || "").slice(0,7);       // "2026-11"
+const enMes = x => !MES || mesDe(x)===MES;
+const mesLbl = m => m ? MESES[+m.slice(5,7)-1]+" "+m.slice(0,4) : "TODOS LOS MESES";
+function buildMeses(){
+  const set = new Set([mesHoy()]); if(MES) set.add(MES);
+  [PED, LINEAS, MLINES, ROL.logistica.lines, ROL.coordinador.lines].forEach(a=>(a||[]).forEach(x=>{ const m=mesDe(x); if(/^\d{4}-\d{2}$/.test(m)) set.add(m); }));
+  $("#mesSel").innerHTML = [...set].sort().reverse().map(m=>`<option value="${m}"${m===MES?" selected":""}>${mesLbl(m)}</option>`).join("")
+    + `<option value=""${MES?"":" selected"}>TODOS LOS MESES</option>`;
+  document.querySelectorAll(".mes-tag").forEach(t=>t.textContent = mesLbl(MES));
+}
+function redrawMes(){
+  buildMeses();
+  if(!$("#gerencia").hidden && (PED.length||LINEAS.length)){ drawDetalle(); drawCumplimiento(); drawTiempos(); }
+  if(MIS && !$("#misSec").hidden) drawMis();
+  Object.keys(ROL).forEach(r=>{ if(!$(ROL[r].sec).hidden) drawRol(r); });
+}
+$("#mesSel").addEventListener("change",e=>{ MES = e.target.value; try{ localStorage.setItem("hot_mes",MES); }catch(_){} redrawMes(); });
 
 function drawDetalle(){
+  const PEDm = PED.filter(enMes);
   const sel = vend();
-  const agg = Object.keys(VENDEDORES).map(n=>{const ps=PED.filter(p=>p.vendedor===n);
+  const agg = Object.keys(VENDEDORES).map(n=>{const ps=PEDm.filter(p=>p.vendedor===n);
     return {n,z:VENDEDORES[n].zona,ped:ps.length,u:ps.reduce((s,p)=>s+p.unidades,0),t:ps.reduce((s,p)=>s+p.total,0)};})
     .sort((a,b)=>b[metric]-a[metric]);
   const max = Math.max(1,...agg.map(a=>a[metric]));
-  const U = PED.reduce((s,p)=>s+p.unidades,0), T = PED.reduce((s,p)=>s+p.total,0);
-  $("#dk").innerHTML = `<div>PEDIDOS<b>${PED.length}</b></div><div>UNIDADES<b>${U}</b></div><div>MONTO<b>$${money(T)}</b></div>`;
+  const U = PEDm.reduce((s,p)=>s+p.unidades,0), T = PEDm.reduce((s,p)=>s+p.total,0);
+  $("#dk").innerHTML = `<div>PEDIDOS<b>${PEDm.length}</b></div><div>UNIDADES<b>${U}</b></div><div>MONTO<b>$${money(T)}</b></div>`;
   const el = $("#bars"); el.classList.toggle("has-sel",!!sel);
   el.innerHTML = agg.map(a=>`<div class="bar${a.n===sel?" sel":""}" data-tip="<b>${esc(a.n)}</b><br>${esc(a.z)}<br>${a.ped} pedidos · ${a.u} unidades<br>$${money(a.t)}">
     <div class="n">${esc(a.n)}<small>${esc(a.z)}</small></div>
@@ -841,7 +871,7 @@ function drawDetalle(){
   }
   dlayer.clearLayers();
   const pts = [];
-  PED.forEach(p=>{
+  PEDm.forEach(p=>{
     if(p.lat==null||p.lng==null||isNaN(p.lat)) return;
     const mods = Object.entries(p.modelos||{}).map(([m,n])=>`${esc(m)} ×${n}`).join(", ");
     L.circleMarker([p.lat,p.lng],{radius:5+Math.sqrt(p.unidades)*2.5,color:"#fff",weight:2,
@@ -851,7 +881,7 @@ function drawDetalle(){
     pts.push([p.lat,p.lng]);
   });
   if(pts.length) dmap.fitBounds(pts,{padding:[30,30],maxZoom:12});
-  const sin = PED.length - pts.length;
+  const sin = PEDm.length - pts.length;
   $("#nogps").textContent = sin ? `${sin} sin GPS` : "";
   $("#legend").innerHTML = Object.keys(VCOLOR).map(n=>`<span><i style="background:${VCOLOR[n]}"></i>${esc(n)}</span>`).join("");
 }
@@ -873,11 +903,11 @@ async function loadDetalle(){
       if(!j.ok && j.error==="AUTH"){ KEY=""; try{localStorage.removeItem("hot_key");}catch(_){} setLocked(true); return "auth"; }
       if(!j.ok) throw new Error(j.error);
       if(!Array.isArray(j.pedidos)) throw new Error("El Apps Script no tiene la versión nueva. Vuelve a implementarlo.");
-      PED = j.pedidos; LINEAS = j.lineas||[]; ANULG = j.anuladas||{};
+      PED = j.pedidos; LINEAS = j.lineas||[]; ANULG = j.anuladas||{}; ANULM = j.anuladasMes||{};
     }
   }catch(e){ setLocked(false); $("#bars").innerHTML = `<div class="empty-b">No se pudo cargar el detalle: ${esc(e.message)}</div>`; return false; }
   setLocked(false);
-  drawDetalle(); drawCumplimiento(); drawTiempos();
+  buildMeses(); drawDetalle(); drawCumplimiento(); drawTiempos();
   return true;
 }
 /* ================= UTILIDADES DE TIEMPO ================= */
@@ -909,17 +939,18 @@ function barList(obj, emptyTxt){
     : `<div class="empty-b">${emptyTxt}</div>`;
 }
 function drawCumplimiento(){
+  const Lm = LINEAS.filter(enMes);
   const agg = Object.keys(VENDEDORES).map(n=>{
-    const L = LINEAS.filter(l=>l.vendedor===n);
+    const L = Lm.filter(l=>l.vendedor===n);
     const ped=L.length, asi=L.filter(isAsig).length, noa=L.filter(l=>l.estado==="NO ASIGNADO").length;
     const dsp=L.filter(isDesp).length, rec=L.filter(l=>isDesp(l)&&l.recibido==="SI").length;
     const fac=L.filter(l=>l.facturado==="SI").length, nof=L.filter(l=>l.facturado==="NO").length;
     const sinFac=L.filter(l=>isAsig(l) && !l.facturado).length;
-    return {n,z:VENDEDORES[n].zona,ped,asi,noa,dsp,rec,fac,nof,sinFac,pend:ped-asi-noa,anu:ANULG[n]||0,pa:ped?asi/ped:0,pf:asi?fac/asi:0};
+    return {n,z:VENDEDORES[n].zona,ped,asi,noa,dsp,rec,fac,nof,sinFac,pend:ped-asi-noa,anu:MES?((ANULM[n]||{})[MES]||0):(ANULG[n]||0),pa:ped?asi/ped:0,pf:asi?fac/asi:0};
   }).sort((a,b)=>b.pa-a.pa||b.ped-a.ped);
   const T=k=>agg.reduce((s,a)=>s+a[k],0), P=T("ped"), A=T("asi"), F=T("fac");
   $("#ck").innerHTML = `<div>ASIGNACIÓN<b>${P?Math.round(A/P*100):0}%</b></div><div>FACTURACIÓN<b>${A?Math.round(F/A*100):0}%</b></div>
-    <div>PEDIDAS<b>${P}</b></div><div>ASIGNADAS<b>${A}</b></div><div>DESPACHADAS<b>${T("dsp")}</b></div><div>NO DESPACHADAS<b>${LINEAS.filter(l=>isAsig(l)&&l.despachado==="NO").length}</b></div><div>RECIBIDAS CLIENTE<b>${T("rec")}</b></div>
+    <div>PEDIDAS<b>${P}</b></div><div>ASIGNADAS<b>${A}</b></div><div>DESPACHADAS<b>${T("dsp")}</b></div><div>NO DESPACHADAS<b>${Lm.filter(l=>isAsig(l)&&l.despachado==="NO").length}</b></div><div>RECIBIDAS CLIENTE<b>${T("rec")}</b></div>
     <div>FACTURADAS<b>${F}</b></div><div>PEND. ASIGNACIÓN<b>${T("pend")}</b></div><div>POR FACTURAR<b>${T("sinFac")}</b></div>`;
   const mrow=(lb,num,den,pct,cls)=>`<div class="mrow"><span class="lb">${lb}</span><div class="meter ${cls}"><i style="width:${(pct*100).toFixed(1)}%"></i></div>
     <span class="fr">${num}/${den}</span><span class="pc">${den?Math.round(pct*100)+"%":"—"}</span></div>`;
@@ -930,7 +961,7 @@ function drawCumplimiento(){
           a.sinFac?a.sinFac+" asignada(s) por facturar":"",a.anu?a.anu+" anulada(s) por el vendedor":""].filter(Boolean).join(" · ")}</div>`:""}</div>
     </div>`).join("");
   const rd={}, rf={};
-  LINEAS.forEach(l=>{ if(l.estado==="NO ASIGNADO"){ const k=l.razonAsig||"SIN RAZÓN"; rd[k]=(rd[k]||0)+1; }
+  Lm.forEach(l=>{ if(l.estado==="NO ASIGNADO"){ const k=l.razonAsig||"SIN RAZÓN"; rd[k]=(rd[k]||0)+1; }
                       if(l.facturado==="NO"){ const k=l.razonFact||"SIN RAZÓN"; rf[k]=(rf[k]||0)+1; } });
   $("#rzD").innerHTML = barList(rd,"Sin unidades marcadas como no asignadas");
   $("#rzF").innerHTML = barList(rf,"Sin unidades marcadas como no facturadas");
@@ -938,16 +969,17 @@ function drawCumplimiento(){
 
 /* ================= 05 TIEMPOS ================= */
 function drawTiempos(){
+  const Lm = LINEAS.filter(enMes);
   const pos = a => a.filter(x=>x!=null && x>=0);
-  const tA = pos(LINEAS.map(l=>hrs(l.tsPed,l.tsAsig)));                                  // logística: pedido → asignación
-  const tD = pos(LINEAS.filter(isDesp).map(l=>hrs(l.tsAsig,l.tsDesp)));                  // logística: asignación → despacho
-  const tR = pos(LINEAS.filter(l=>isDesp(l)&&l.recibido).map(l=>hrs(l.tsDesp,l.tsRec))); // tránsito: despacho → recepción
-  const tF = pos(LINEAS.map(l=>hrs(l.tsAsig,l.tsFact)));                                 // coordinador: asignación → factura
-  const tT = pos(LINEAS.map(l=>hrs(l.tsPed,l.tsFact)));
-  const antes = LINEAS.filter(l=>l.tsFact && (!l.tsAsig || Date.parse(l.tsFact)<Date.parse(l.tsAsig))).length;
-  const pend = LINEAS.filter(l=>l.estado==="PENDIENTE" && l.tsPed).sort((a,b)=>a.tsPed.localeCompare(b.tsPed));
-  const porF = LINEAS.filter(l=>isAsig(l) && !l.facturado && l.tsAsig).sort((a,b)=>a.tsAsig.localeCompare(b.tsAsig));
-  const porR = LINEAS.filter(l=>isDesp(l) && !l.recibido && l.tsDesp).sort((a,b)=>a.tsDesp.localeCompare(b.tsDesp));
+  const tA = pos(Lm.map(l=>hrs(l.tsPed,l.tsAsig)));                                  // logística: pedido → asignación
+  const tD = pos(Lm.filter(isDesp).map(l=>hrs(l.tsAsig,l.tsDesp)));                  // logística: asignación → despacho
+  const tR = pos(Lm.filter(l=>isDesp(l)&&l.recibido).map(l=>hrs(l.tsDesp,l.tsRec))); // tránsito: despacho → recepción
+  const tF = pos(Lm.map(l=>hrs(l.tsAsig,l.tsFact)));                                 // coordinador: asignación → factura
+  const tT = pos(Lm.map(l=>hrs(l.tsPed,l.tsFact)));
+  const antes = Lm.filter(l=>l.tsFact && (!l.tsAsig || Date.parse(l.tsFact)<Date.parse(l.tsAsig))).length;
+  const pend = Lm.filter(l=>l.estado==="PENDIENTE" && l.tsPed).sort((a,b)=>a.tsPed.localeCompare(b.tsPed));
+  const porF = Lm.filter(l=>isAsig(l) && !l.facturado && l.tsAsig).sort((a,b)=>a.tsAsig.localeCompare(b.tsAsig));
+  const porR = Lm.filter(l=>isDesp(l) && !l.recibido && l.tsDesp).sort((a,b)=>a.tsDesp.localeCompare(b.tsDesp));
   const tile=(lb,h,sub)=>`<div class="tt"><span>${lb}</span><b>${fmtDur(h)}</b><small>${sub}</small></div>`;
   const st = a => `promedio · mediana ${fmtDur(med(a))} · ${a.length} u.`;
   const age = s => (Date.now()-Date.parse(s))/36e5;
@@ -963,7 +995,7 @@ function drawTiempos(){
   $("#tNote").textContent = antes ? `${antes} unidad(es) se facturaron antes de la asignación (no entran en "asignación → factura").` : "";
   // por vendedor
   const rows = Object.keys(VENDEDORES).map(n=>{
-    const L=LINEAS.filter(l=>l.vendedor===n);
+    const L=Lm.filter(l=>l.vendedor===n);
     const a=pos(L.map(l=>hrs(l.tsPed,l.tsAsig))), f=pos(L.map(l=>hrs(l.tsAsig,l.tsFact)));
     const asi=L.filter(isAsig).length, fac=L.filter(l=>l.facturado==="SI").length;
     return `<tr><td>${esc(n)}<small>${esc(VENDEDORES[n].zona)}</small></td><td class="rt">${L.length}</td>
@@ -971,11 +1003,11 @@ function drawTiempos(){
       <td class="rt">${L.length?Math.round(asi/L.length*100)+"%":"—"}</td><td class="rt">${asi?Math.round(fac/asi*100)+"%":"—"}</td></tr>`;}).join("");
   $("#tvTb").innerHTML = rows;
   // hora de pedidos
-  const hh = Array(24).fill(0); LINEAS.forEach(l=>{ if(l.tsPed) hh[+l.tsPed.slice(11,13)]++; });
+  const hh = Array(24).fill(0); Lm.forEach(l=>{ if(l.tsPed) hh[+l.tsPed.slice(11,13)]++; });
   const mx = Math.max(1,...hh), pk = hh.indexOf(Math.max(...hh));
   $("#hrs").innerHTML = hh.map((v,h)=>`<div class="hc" data-tip="${String(h).padStart(2,"0")}:00 – ${String(h).padStart(2,"0")}:59 · ${v} unidad(es)">
       <i style="height:${(v/mx*100).toFixed(1)}%"></i><span>${h%3===0?String(h).padStart(2,"0"):""}</span></div>`).join("");
-  $("#hrsPk").textContent = LINEAS.length ? `Hora pico: ${String(pk).padStart(2,"0")}:00 (${hh[pk]} u.)` : "";
+  $("#hrsPk").textContent = Lm.length ? `Hora pico: ${String(pk).padStart(2,"0")}:00 (${hh[pk]} u.)` : "";
 }
 
 /* ================= MIS PEDIDOS (vendedor) ================= */
@@ -1000,7 +1032,7 @@ async function loadMis(){
       MLINES = j.lineas||[]; if(j.motivosAnulacion) MOT_ANUL = j.motivosAnulacion;
     }
   }catch(e){ setMis(true); $("#misList").innerHTML = `<div class="empty-b">No se pudo cargar: ${esc(e.message)}</div>`; return false; }
-  setMis(true); drawMis(); return true;
+  setMis(true); buildMeses(); drawMis(); return true;
 }
 function setTabCounts(sel, cnt){
   document.querySelectorAll(sel+" button").forEach(b=>{ b.dataset.lbl ||= b.textContent; b.textContent = `${b.dataset.lbl} (${cnt[b.dataset.f]??0})`; });
@@ -1014,14 +1046,15 @@ function estBadge(l){
   return `<span class="bdgs">${e}${d}${rc}${f}</span>`;
 }
 function drawMis(){
-  const live = MLINES.filter(l=>l.anulado!=="SI");
+  const Mm = MLINES.filter(enMes);
+  const live = Mm.filter(l=>l.anulado!=="SI");
   const pend = live.filter(l=>l.estado==="PENDIENTE"), asi = live.filter(isAsig), noa = live.filter(l=>l.estado==="NO ASIGNADO");
   const dsp = asi.filter(isDesp), rec = dsp.filter(l=>l.recibido==="SI"), fac = live.filter(l=>l.facturado==="SI");
   $("#mk").innerHTML = `<div>PEDIDAS<b>${live.length}</b></div><div>PEND. ASIGNACIÓN<b>${pend.length}</b></div><div>ASIGNADAS<b>${asi.length}</b></div>
     <div>DESPACHADAS<b>${dsp.length}</b></div><div>RECIBIDAS<b>${rec.length}</b></div><div>NO ASIGNADAS<b>${noa.length}</b></div>
-    <div>FACTURADAS<b>${fac.length}</b></div><div>ANULADAS<b>${MLINES.length-live.length}</b></div>`;
-  setTabCounts("#misTabs",{pend:pend.length,des:asi.length,nod:noa.length,all:MLINES.length});
-  const list = misF==="pend" ? pend : misF==="des" ? asi : misF==="nod" ? noa : MLINES;
+    <div>FACTURADAS<b>${fac.length}</b></div><div>ANULADAS<b>${Mm.length-live.length}</b></div>`;
+  setTabCounts("#misTabs",{pend:pend.length,des:asi.length,nod:noa.length,all:Mm.length});
+  const list = misF==="pend" ? pend : misF==="des" ? asi : misF==="nod" ? noa : Mm;
   const sorted = [...list].sort((a,b)=>String(b.tsPed).localeCompare(String(a.tsPed)));
   $("#misList").innerHTML = sorted.length ? sorted.map(misHTML).join("") : `<div class="empty-b">Sin líneas en esta pestaña</div>`;
 }
@@ -1199,11 +1232,11 @@ async function loadRol(r){
       R.lines = j.lineas||[]; if(j.razones) RAZ=j.razones; if(j.razonesAsig) RAZ_A=j.razonesAsig; if(j.motivosDesp) MOT_DESP=j.motivosDesp; if(j.motivosRec) MOT_REC=j.motivosRec;
     }
   }catch(e){ setRol(r,true); $(R.sec+" .rlist").innerHTML = `<div class="empty-b">No se pudo cargar: ${esc(e.message)}</div>`; return false; }
-  setRol(r,true); drawRol(r); return true;
+  setRol(r,true); buildMeses(); drawRol(r); return true;
 }
 function filtRol(R, L){
   const q = norm(R.q);
-  return L.filter(l=>(!R.ven || l.vendedor===R.ven) && (!q || norm([l.cliente,l.chasis,l.id,l.ciudad,l.modelo,l.ramv,l.codigo||codigoDe(l.modelo,l.color)].join(" ")).includes(q)));
+  return L.filter(l=>enMes(l) && (!R.ven || l.vendedor===R.ven) && (!q || norm([l.cliente,l.chasis,l.id,l.ciudad,l.modelo,l.ramv,l.codigo||codigoDe(l.modelo,l.color)].join(" ")).includes(q)));
 }
 function drawRol(r){ r==="logistica" ? drawLog() : drawCoord(); }
 
@@ -1510,9 +1543,10 @@ $("#hrs").addEventListener("mouseleave",()=>dtip.classList.remove("show"));
 function demoPed(){
   const c={SIERRA:[-0.18,-78.48],GUAYAS:[-2.17,-79.9],ORIENTE:[-1.49,-77.99],"MANABÍ":[-0.95,-80.72],"LOS RÍOS":[-1.8,-79.53]};
   return Array.from({length:30},(_,i)=>{const n=Object.keys(VENDEDORES)[i%5],z=VENDEDORES[n].zona,u=1+i%5;
-    return {vendedor:n,zona:z,fecha:"2026-09-"+String(1+i%28).padStart(2,"0"),hora:"10:00",ciudad:"CIUDAD",
+    return {vendedor:n,zona:z,fecha:new Date(Date.now()-(i%10)*864e5-5*36e5).toISOString().slice(0,10),hora:"10:00",ciudad:"CIUDAD",
       lat:c[z][0]+Math.sin(i)*.3,lng:c[z][1]+Math.cos(i)*.3,unidades:u,total:u*2100,entregadas:Math.floor(u*((i%5)+1)/6),marcadas:u-(i%3?0:1),facturadas:Math.floor(u*((i%5)+1)/6*0.7),noFacturadas:i%2,razones:i%2?{[["CRÉDITO NO APROBADO","CLIENTE DESISTIÓ","DOCUMENTACIÓN INCOMPLETA"][i%3]]:1}:{},clientes:["CLIENTE "+i],modelos:{"ECO 150":u}};});
 }
+buildMeses();
 window.addEventListener("load",loadDetalle);
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
